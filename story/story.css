@@ -67,6 +67,13 @@
   color: var(--kabuse-green);
 }
 
+.closing {
+  background-color: var(--natural-ivory);
+  color: var(--kabuse-green);
+  min-height: auto;
+  padding: 6rem 2rem;
+}
+
 .closing-branch {
   background-color: var(--kabuse-green);
   color: var(--natural-ivory);
