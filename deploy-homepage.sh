@@ -1,3 +1,13 @@
+#!/bin/bash
+# Deploy Sencha House homepage - run this from inside the Sencha-House-site repo
+set -e
+
+cd "$(git rev-parse --show-toplevel)" || { echo "Not in a git repo"; exit 1; }
+git checkout main
+git pull origin main
+
+# Write the new index.html
+cat > index.html << 'HTML_EOF'
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -799,3 +809,9 @@
 
 </body>
 </html>
+HTML_EOF
+
+git add -A
+git commit -m "feat: homepage split entry with video backgrounds"
+git push origin main
+echo "✅ Pushed to main. Netlify will auto-deploy to https://gregarious-babka-467492.netlify.app/"
