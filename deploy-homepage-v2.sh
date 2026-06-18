@@ -1,12 +1,8 @@
 #!/bin/bash
-# Deploy Sencha House homepage - run this from inside the Sencha-House-site repo
 set -e
-
 cd "$(git rev-parse --show-toplevel)" || { echo "Not in a git repo"; exit 1; }
 git checkout main
 git pull origin main
-
-# Write the new index.html
 cat > index.html << 'HTML_EOF'
 <!DOCTYPE html>
 <html lang="en">
@@ -574,7 +570,7 @@ cat > index.html << 'HTML_EOF'
     <a href="/ikeda-europe/" class="panel panel--ie" data-panel="ie">
       <div class="panel-bg">
         <video autoplay muted loop playsinline>
-          <source src="https://videos.pexels.com/video-files/3985699/3985699-uhd_2560_1440_25fps.mp4" type="video/mp4">
+          <source src="https://videos.pexels.com/video-files/3985699/3985699-hd_1920_1080_30fps.mp4" type="video/mp4">
         </video>
       </div>
       <div class="panel-overlay"></div>
@@ -621,6 +617,18 @@ cat > index.html << 'HTML_EOF'
 
       /* ---------- Detect mobile ---------- */
       const isMobile = window.matchMedia('(max-width: 768px)').matches;
+
+      /* ---------- Safety: force-clear loader after 3s ---------- */
+      setTimeout(() => {
+        if (loader && getComputedStyle(loader).opacity !== '0') {
+          loader.style.opacity = '0';
+          loader.style.pointerEvents = 'none';
+          document.querySelectorAll('.sh-tagline,.sh-wordmark,.sh-guided,.sh-enter,.ie-trade-stamp,.ie-wordmark,.ie-sub,.ie-enter,.corner-mark').forEach(el => { el.style.opacity = '1'; el.style.transform = 'none'; el.style.clipPath = 'none'; });
+          document.querySelectorAll('.bottom-bar span').forEach(el => el.style.opacity = '0.5');
+          if (divider) { divider.style.transform = 'translateX(-50%) scaleY(1)'; }
+          if (!isMobile) initHover();
+        }
+      }, 3000);
 
       /* ---------- GSAP defaults ---------- */
       gsap.defaults({ ease: 'expo.out', duration: 1 });
@@ -811,7 +819,10 @@ cat > index.html << 'HTML_EOF'
 </html>
 HTML_EOF
 
+# Clean up old deploy script
+rm -f deploy-homepage.sh
+
 git add -A
-git commit -m "feat: homepage split entry with video backgrounds"
+git commit -m "fix: correct IE video URL and add loader safety timeout"
 git push origin main
-echo "✅ Pushed to main. Netlify will auto-deploy to https://gregarious-babka-467492.netlify.app/"
+echo "Pushed to main. Netlify will auto-deploy."
