@@ -1,0 +1,136 @@
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  font-family: 'Lato', sans-serif;
+  overflow: hidden;
+}
+
+.split-container {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+}
+
+.panel {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: flex 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.panel-left {
+  background-color: #E6DAB8;
+  color: #08190E;
+}
+
+.panel-right {
+  background-color: #002633;
+  color: #E6DAB8;
+}
+
+.panel-content {
+  text-align: center;
+  padding: 2rem;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeUp 0.8s ease-out forwards;
+}
+
+.panel-left .panel-content {
+  animation-delay: 0.2s;
+}
+
+.panel-right .panel-content {
+  animation-delay: 0.4s;
+}
+
+.brand-title {
+  font-size: clamp(2rem, 5vw, 4.5rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin-bottom: 0.5rem;
+}
+
+.brand-subtitle {
+  font-size: clamp(1rem, 2vw, 1.5rem);
+  font-weight: 300;
+  letter-spacing: 0.05em;
+  margin-bottom: 2rem;
+  opacity: 0.8;
+}
+
+.trade-stamp {
+  display: inline-block;
+  color: #FF0033;
+  font-size: clamp(0.75rem, 1.2vw, 1rem);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin-bottom: 1rem;
+  border: 1.5px solid #FF0033;
+  padding: 0.4rem 1rem;
+}
+
+.coming-soon {
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: 300;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.5;
+  border-bottom: 1px solid currentColor;
+  padding-bottom: 0.25rem;
+}
+
+.split-container:has(.panel-left:hover) .panel-left {
+  flex: 1.25;
+}
+
+.split-container:has(.panel-left:hover) .panel-right {
+  flex: 0.75;
+}
+
+.split-container:has(.panel-right:hover) .panel-right {
+  flex: 1.25;
+}
+
+.split-container:has(.panel-right:hover) .panel-left {
+  flex: 0.75;
+}
+
+@media (max-width: 768px) {
+  .split-container {
+    flex-direction: column;
+  }
+
+  .panel {
+    flex: 1 !important;
+  }
+
+  .split-container:has(.panel-left:hover) .panel-left,
+  .split-container:has(.panel-right:hover) .panel-right {
+    flex: 1.15 !important;
+  }
+
+  .split-container:has(.panel-left:hover) .panel-right,
+  .split-container:has(.panel-right:hover) .panel-left {
+    flex: 0.85 !important;
+  }
+}
+
+@keyframes fadeUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
