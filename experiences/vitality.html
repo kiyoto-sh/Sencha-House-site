@@ -56,14 +56,8 @@
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
   <script src="../js/motion.js"></script>
+  <script src="../js/transitions.js"></script>
+  <script src="detail.js"></script>
   <script>
-    const heroImg = document.querySelector('.hero-image img');
-    if (sessionStorage.getItem('expTransition')) {
-      sessionStorage.removeItem('expTransition');
-      gsap.fromTo(heroImg, { scale: 1.15 }, { scale: 1, duration: 1.2, ease: 'power2.out', delay: 0.1 });
-    } else {
-      gsap.fromTo(heroImg, { scale: 1.08 }, { scale: 1, duration: 1.5, ease: 'power2.out' });
-    }
-  </script>
 </body>
 </html>

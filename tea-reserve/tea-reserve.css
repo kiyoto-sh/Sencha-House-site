@@ -1,10 +1,27 @@
-/* Tea Reserve */
+/* Tea Reserve — Masonry Gallery */
 
 .hero-gallery {
   background-color: var(--natural-ivory);
   color: var(--kabuse-green);
   min-height: 60vh;
   padding-top: 8rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-gallery::before {
+  content: '';
+  position: absolute;
+  inset: -10%;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2308190e' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  opacity: 0.06;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hero-gallery .container {
+  position: relative;
+  z-index: 1;
 }
 
 .gallery {
@@ -12,15 +29,60 @@
   padding: 2rem 2rem 6rem;
 }
 
+/* Masonry grid */
 .gallery-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 3rem;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 10px;
+  gap: 2rem;
+  max-width: 72rem;
+  margin: 0 auto;
 }
 
 .tea-card {
   display: flex;
   flex-direction: column;
+  grid-row: span 28;
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.tea-card:nth-child(2) {
+  grid-row: span 32;
+  margin-top: 3rem;
+}
+
+.tea-card:nth-child(3) {
+  grid-row: span 26;
+  margin-top: 1.5rem;
+}
+
+.tea-card:nth-child(4) {
+  grid-row: span 30;
+  margin-top: -2rem;
+}
+
+.tea-card:nth-child(5) {
+  grid-row: span 27;
+  margin-top: 2rem;
+}
+
+.tea-card:nth-child(6) {
+  grid-row: span 31;
+  margin-top: -1rem;
+}
+
+.tea-card:nth-child(7) {
+  grid-row: span 29;
+  margin-top: 1rem;
+}
+
+.tea-card:nth-child(8) {
+  grid-row: span 28;
+  margin-top: -3rem;
+}
+
+.tea-card:hover {
+  transform: translateY(-6px);
 }
 
 .tea-image {
@@ -28,6 +90,7 @@
   overflow: hidden;
   background-color: #ddd5b5;
   position: relative;
+  border-radius: 2px;
 }
 
 .tea-overlay {
@@ -37,10 +100,10 @@
   flex-direction: column;
   justify-content: flex-end;
   padding: 1.5rem;
-  background: linear-gradient(to top, rgba(8, 25, 14, 0.85) 0%, rgba(8, 25, 14, 0) 60%);
+  background: linear-gradient(to top, rgba(8, 25, 14, 0.88) 0%, rgba(8, 25, 14, 0) 65%);
   color: var(--natural-ivory);
   opacity: 0;
-  transform: translateY(10px);
+  transform: translateY(12px);
   transition: opacity 0.5s ease, transform 0.5s ease;
   pointer-events: none;
 }
@@ -52,15 +115,16 @@
 
 .tea-lot {
   font-family: 'Oswald', sans-serif;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  margin-bottom: 0.25rem;
+  letter-spacing: 0.12em;
+  margin-bottom: 0.35rem;
+  opacity: 0.9;
 }
 
 .tea-harvest {
   font-size: 0.85rem;
-  opacity: 0.8;
+  opacity: 0.75;
   font-style: italic;
 }
 
@@ -68,25 +132,30 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.6s ease;
+  transition: transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .tea-card:hover .tea-image img {
-  transform: scale(1.03);
+  transform: scale(1.06);
 }
 
 .tea-info {
-  padding: 1.5rem 0;
+  padding: 1.25rem 0;
 }
 
 .tea-info h3 {
-  font-size: 1.25rem;
-  margin-bottom: 0.25rem;
+  font-size: 1.15rem;
+  margin-bottom: 0.2rem;
+  transition: opacity 0.3s ease;
+}
+
+.tea-card:hover .tea-info h3 {
+  opacity: 0.6;
 }
 
 .tea-meta {
-  font-size: 0.85rem;
-  opacity: 0.6;
+  font-size: 0.8rem;
+  opacity: 0.5;
   margin-bottom: 1rem;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -95,11 +164,35 @@
 .tea-info .btn {
   color: var(--kabuse-green);
   border-color: var(--kabuse-green);
+  font-size: 0.7rem;
+  padding: 0.65rem 1.75rem;
+  transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+  overflow: hidden;
+}
+
+.tea-info .btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--kabuse-green);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  z-index: -1;
 }
 
 .tea-info .btn:hover {
-  background-color: var(--kabuse-green);
   color: var(--natural-ivory);
+  border-color: var(--kabuse-green);
+}
+
+.tea-info .btn:hover::before {
+  transform: scaleX(1);
+}
+
+.tea-info .btn:active {
+  transform: scale(0.97);
 }
 
 .site-footer {
@@ -110,11 +203,39 @@
 
 .site-footer a {
   border-bottom: 1px solid currentColor;
+  transition: opacity 0.3s ease;
 }
 
-@media (max-width: 768px) {
+.site-footer a:hover {
+  opacity: 0.5;
+}
+
+@media (max-width: 900px) {
+  .gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .tea-card,
+  .tea-card:nth-child(n) {
+    grid-row: span 28;
+    margin-top: 0;
+  }
+
+  .tea-card:nth-child(2) { margin-top: 2rem; }
+  .tea-card:nth-child(3) { margin-top: -1rem; }
+  .tea-card:nth-child(4) { margin-top: 1rem; }
+  .tea-card:nth-child(6) { margin-top: -2rem; }
+  .tea-card:nth-child(7) { margin-top: 1.5rem; }
+}
+
+@media (max-width: 600px) {
   .gallery-grid {
     grid-template-columns: 1fr;
-    gap: 2rem;
+  }
+
+  .tea-card,
+  .tea-card:nth-child(n) {
+    grid-row: span 25;
+    margin-top: 0;
   }
 }

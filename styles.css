@@ -118,6 +118,10 @@ html, body {
   opacity: 1;
 }
 
+.panel:active .enter-link {
+  transform: scale(0.98);
+}
+
 @media (max-width: 768px) {
   html, body {
     overflow: auto;

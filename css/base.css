@@ -1,5 +1,14 @@
 /* Sencha House / Ikeda Europe — Base Styles */
 
+.page-transition-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: var(--kabuse-green);
+  z-index: 99999;
+  display: none;
+  pointer-events: none;
+  transform: translateX(-100%);
+}
 :root {
   --vulcanic-red: #FF0033;
   --natural-ivory: #E6DAB8;
@@ -129,15 +138,17 @@ a:hover {
   border: 1.5px solid currentColor;
   background: transparent;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+  overflow: hidden;
 }
 
 .btn:hover {
-  background: currentColor;
+  opacity: 0.8;
 }
 
-.btn:hover span {
-  color: var(--natural-ivory);
+.btn:active {
+  transform: scale(0.97);
 }
 
 /* Navigation */
@@ -162,6 +173,22 @@ a:hover {
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
+  position: relative;
+}
+
+.nav a::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: currentColor;
+  transition: width 0.35s ease;
+}
+
+.nav a:hover::after {
+  width: 100%;
 }
 
 /* Responsive */

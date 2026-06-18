@@ -1,4 +1,4 @@
-/* Experiences Index */
+/* Experiences Index — Masonry */
 
 .experiences-hero {
   background-color: var(--natural-ivory);
@@ -8,6 +8,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.experiences-hero::before {
+  content: '';
+  position: absolute;
+  inset: -10%;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2308190e' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  opacity: 0.05;
+  pointer-events: none;
 }
 
 .experiences-grid {
@@ -18,18 +29,46 @@
 .experiences-grid .container {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 1px;
+  gap: 1.5rem;
   max-width: 72rem;
 }
 
 .exp-card {
   display: block;
   position: relative;
-  aspect-ratio: 4 / 3;
   overflow: hidden;
   text-decoration: none;
   border-bottom: none;
   cursor: pointer;
+  border-radius: 2px;
+  transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.5s ease;
+}
+
+.exp-card:nth-child(1) {
+  aspect-ratio: 4 / 3;
+}
+
+.exp-card:nth-child(2) {
+  aspect-ratio: 3 / 4;
+  margin-top: 3rem;
+}
+
+.exp-card:nth-child(3) {
+  aspect-ratio: 3 / 4;
+  margin-top: -3rem;
+}
+
+.exp-card:nth-child(4) {
+  aspect-ratio: 4 / 3;
+}
+
+.exp-card:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 20px 40px rgba(8, 25, 14, 0.12);
+}
+
+.exp-card:active {
+  transform: translateY(-2px) scale(0.995);
 }
 
 .exp-image {
@@ -42,11 +81,11 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.8s ease;
+  transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .exp-card:hover .exp-image img {
-  transform: scale(1.05);
+  transform: scale(1.08);
 }
 
 .exp-label {
@@ -56,13 +95,13 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: rgba(8, 25, 14, 0.35);
+  background: rgba(8, 25, 14, 0.3);
   color: var(--natural-ivory);
   transition: background 0.5s ease;
 }
 
 .exp-card:hover .exp-label {
-  background: rgba(8, 25, 14, 0.5);
+  background: rgba(8, 25, 14, 0.55);
 }
 
 .exp-name {
@@ -71,21 +110,37 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  position: relative;
+}
+
+.exp-name::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: var(--natural-ivory);
+  transition: width 0.4s ease, left 0.4s ease;
+}
+
+.exp-card:hover .exp-name::after {
+  width: 100%;
+  left: 0;
 }
 
 .exp-tag {
   font-family: 'Playfair Display', serif;
   font-style: italic;
   font-size: clamp(0.9rem, 1.5vw, 1.1rem);
-  margin-top: 0.5rem;
+  margin-top: 0.75rem;
   opacity: 0.8;
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
-/* Expansion animation state */
-.exp-card.is-expanding .exp-image {
-  position: fixed;
-  z-index: 999;
-  transition: none;
+.exp-card:hover .exp-tag {
+  opacity: 1;
+  transform: translateY(2px);
 }
 
 .site-footer {
@@ -96,10 +151,22 @@
 
 .site-footer a {
   border-bottom: 1px solid currentColor;
+  transition: opacity 0.3s ease;
+}
+
+.site-footer a:hover {
+  opacity: 0.5;
 }
 
 @media (max-width: 768px) {
   .experiences-grid .container {
     grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .exp-card,
+  .exp-card:nth-child(n) {
+    aspect-ratio: 4 / 3;
+    margin-top: 0;
   }
 }

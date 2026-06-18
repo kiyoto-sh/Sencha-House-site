@@ -21,7 +21,6 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transform: scale(1.15);
 }
 
 .exp-detail-hero .hero-content {
@@ -33,6 +32,7 @@
 .exp-detail-hero .hero-content h1 {
   color: var(--natural-ivory);
   text-shadow: 0 2px 20px rgba(0,0,0,0.4);
+  will-change: transform, opacity, clip-path;
 }
 
 .exp-detail-hero .hero-content .accent {
@@ -57,6 +57,12 @@
 .menu-item {
   border-top: 1px solid rgba(8, 25, 14, 0.15);
   padding-top: 1rem;
+  transition: transform 0.35s ease, border-color 0.35s ease;
+}
+
+.menu-item:hover {
+  transform: translateX(4px);
+  border-color: rgba(8, 25, 14, 0.4);
 }
 
 .menu-item dt {
@@ -66,6 +72,11 @@
   letter-spacing: 0.1em;
   opacity: 0.5;
   margin-bottom: 0.5rem;
+  transition: opacity 0.3s ease;
+}
+
+.menu-item:hover dt {
+  opacity: 0.8;
 }
 
 .menu-item dd {
@@ -84,11 +95,32 @@
   color: var(--natural-ivory);
   border-color: var(--natural-ivory);
   margin-top: 1.5rem;
+  position: relative;
+  overflow: hidden;
+  transition: color 0.4s ease;
+}
+
+.exp-detail-booking .btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--natural-ivory);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  z-index: -1;
 }
 
 .exp-detail-booking .btn:hover {
-  background-color: var(--natural-ivory);
   color: var(--kabuse-green);
+}
+
+.exp-detail-booking .btn:hover::before {
+  transform: scaleX(1);
+}
+
+.exp-detail-booking .btn:active {
+  transform: scale(0.97);
 }
 
 .site-footer {
@@ -100,4 +132,9 @@
 
 .site-footer a {
   border-bottom: 1px solid currentColor;
+  transition: opacity 0.3s ease;
+}
+
+.site-footer a:hover {
+  opacity: 0.5;
 }
