@@ -81,7 +81,7 @@ html, body {
   padding: 0.4rem 1rem;
 }
 
-.coming-soon {
+.enter-link {
   display: inline-block;
   font-size: 0.8rem;
   font-weight: 300;
@@ -90,6 +90,15 @@ html, body {
   opacity: 0.5;
   border-bottom: 1px solid currentColor;
   padding-bottom: 0.25rem;
+  transition: opacity 0.3s ease;
+}
+
+.panel:hover .enter-link {
+  opacity: 1;
+}
+
+.panel {
+  text-decoration: none;
 }
 
 .split-container:has(.panel-left:hover) .panel-left {

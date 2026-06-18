@@ -1,0 +1,68 @@
+/* Ikeda Europe Trade */
+
+.trade-hero {
+  background-color: var(--ocean-blue);
+  color: var(--natural-ivory);
+  padding-top: 8rem;
+}
+
+.credentials {
+  background-color: var(--ocean-blue);
+  color: var(--natural-ivory);
+  min-height: auto;
+  padding: 4rem 2rem;
+}
+
+.cert-stamps {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.stamp {
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border: 1px solid rgba(230, 218, 184, 0.4);
+  padding: 0.4rem 0.8rem;
+  color: var(--natural-ivory);
+}
+
+.context {
+  background-color: #001a22;
+  color: var(--natural-ivory);
+  min-height: auto;
+  padding: 6rem 2rem;
+}
+
+.stat-blocks {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 2rem;
+}
+
+.stat-number {
+  font-family: 'Oswald', sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--vulcanic-red);
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  opacity: 0.6;
+  margin-top: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.site-footer {
+  background-color: var(--ocean-blue);
+  color: var(--natural-ivory);
+  padding: 3rem 2rem;
+}
+
+.site-footer a {
+  border-bottom: 1px solid currentColor;
+}

@@ -1,0 +1,85 @@
+/* Tea Reserve */
+
+.hero-gallery {
+  background-color: var(--natural-ivory);
+  color: var(--kabuse-green);
+  min-height: 60vh;
+  padding-top: 8rem;
+}
+
+.gallery {
+  background-color: var(--natural-ivory);
+  padding: 2rem 2rem 6rem;
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 3rem;
+}
+
+.tea-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.tea-image {
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background-color: #ddd5b5;
+}
+
+.tea-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.tea-card:hover .tea-image img {
+  transform: scale(1.03);
+}
+
+.tea-info {
+  padding: 1.5rem 0;
+}
+
+.tea-info h3 {
+  font-size: 1.25rem;
+  margin-bottom: 0.25rem;
+}
+
+.tea-meta {
+  font-size: 0.85rem;
+  opacity: 0.6;
+  margin-bottom: 1rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.tea-info .btn {
+  color: var(--kabuse-green);
+  border-color: var(--kabuse-green);
+}
+
+.tea-info .btn:hover {
+  background-color: var(--kabuse-green);
+  color: var(--natural-ivory);
+}
+
+.site-footer {
+  background-color: var(--kabuse-green);
+  color: var(--natural-ivory);
+  padding: 3rem 2rem;
+}
+
+.site-footer a {
+  border-bottom: 1px solid currentColor;
+}
+
+@media (max-width: 768px) {
+  .gallery-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}
