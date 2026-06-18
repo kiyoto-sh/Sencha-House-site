@@ -51,7 +51,6 @@ html, body {
   padding: 2rem;
   opacity: 0;
   transform: translateY(20px);
-  animation: fadeUp 0.8s ease-out forwards;
   position: relative;
   z-index: 2;
 }
@@ -64,14 +63,6 @@ html, body {
 .panel-right {
   background-color: #002633;
   color: #E6DAB8;
-}
-
-.panel-left .panel-content {
-  animation-delay: 0.2s;
-}
-
-.panel-right .panel-content {
-  animation-delay: 0.4s;
 }
 
 .brand-title {
