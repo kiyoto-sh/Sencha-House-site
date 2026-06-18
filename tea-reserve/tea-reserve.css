@@ -27,6 +27,41 @@
   aspect-ratio: 4 / 5;
   overflow: hidden;
   background-color: #ddd5b5;
+  position: relative;
+}
+
+.tea-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 1.5rem;
+  background: linear-gradient(to top, rgba(8, 25, 14, 0.85) 0%, rgba(8, 25, 14, 0) 60%);
+  color: var(--natural-ivory);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  pointer-events: none;
+}
+
+.tea-card:hover .tea-overlay {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.tea-lot {
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.25rem;
+}
+
+.tea-harvest {
+  font-size: 0.85rem;
+  opacity: 0.8;
+  font-style: italic;
 }
 
 .tea-image img {

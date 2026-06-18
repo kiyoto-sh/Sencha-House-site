@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>discovery — experiences</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Oswald:wght@400;700&family=Playfair+Display:ital,wght@0,400;1,400&family=Zen+Kaku+Gothic+New:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="detail.css">
+</head>
+<body>
+
+  <nav class="nav">
+    <a href="/">sencha house</a>
+    <a href="./">experiences</a>
+  </nav>
+
+  <section class="section exp-detail-hero">
+    <div class="hero-image">
+      <img src="https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=1600&q=80" alt="discovery">
+    </div>
+    <div class="hero-content">
+      <h1>discovery</h1>
+      <p class="accent" style="margin-top: 0.5rem; font-size: 1.1rem;">for the curious</p>
+    </div>
+  </section>
+
+  <section class="exp-detail-menu">
+    <div class="container narrow">
+      <dl class="menu-grid">
+        <div class="menu-item">
+          <dt>teas served</dt>
+          <dd>[Teas listed here]</dd>
+        </div>
+        <div class="menu-item">
+          <dt>format</dt>
+          <dd>Guided tasting, three teas</dd>
+        </div>
+        <div class="menu-item">
+          <dt>duration</dt>
+          <dd>60 minutes</dd>
+        </div>
+        <div class="menu-item">
+          <dt>group size</dt>
+          <dd>1 to 4 guests</dd>
+        </div>
+        <div class="menu-item">
+          <dt>location</dt>
+          <dd>Sencha House, Torino</dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="exp-detail-booking">
+    <div class="container">
+      <p class="accent" style="font-size: 1.1rem; opacity: 0.8;">Ready to explore?</p>
+      <a href="/contact/" class="btn">book discovery</a>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <p style="font-size: 0.8rem; opacity: 0.5; letter-spacing: 0.1em; text-transform: uppercase;">
+      <a href="/contact/">write to us</a>
+    </p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+  <script src="../js/motion.js"></script>
+  <script>
+    // Settle hero image from expanded transition state
+    const heroImg = document.querySelector('.hero-image img');
+    if (sessionStorage.getItem('expTransition')) {
+      sessionStorage.removeItem('expTransition');
+      gsap.fromTo(heroImg,
+        { scale: 1.15 },
+        { scale: 1, duration: 1.2, ease: 'power2.out', delay: 0.1 }
+      );
+    } else {
+      gsap.fromTo(heroImg,
+        { scale: 1.08 },
+        { scale: 1, duration: 1.5, ease: 'power2.out' }
+      );
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,105 @@
+/* Experiences Index */
+
+.experiences-hero {
+  background-color: var(--natural-ivory);
+  color: var(--kabuse-green);
+  min-height: 60vh;
+  padding-top: 8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.experiences-grid {
+  background-color: var(--natural-ivory);
+  padding: 2rem 2rem 6rem;
+}
+
+.experiences-grid .container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+  max-width: 72rem;
+}
+
+.exp-card {
+  display: block;
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  text-decoration: none;
+  border-bottom: none;
+  cursor: pointer;
+}
+
+.exp-image {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.exp-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.8s ease;
+}
+
+.exp-card:hover .exp-image img {
+  transform: scale(1.05);
+}
+
+.exp-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(8, 25, 14, 0.35);
+  color: var(--natural-ivory);
+  transition: background 0.5s ease;
+}
+
+.exp-card:hover .exp-label {
+  background: rgba(8, 25, 14, 0.5);
+}
+
+.exp-name {
+  font-family: 'Oswald', sans-serif;
+  font-size: clamp(1.5rem, 4vw, 3rem);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.exp-tag {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+  margin-top: 0.5rem;
+  opacity: 0.8;
+}
+
+/* Expansion animation state */
+.exp-card.is-expanding .exp-image {
+  position: fixed;
+  z-index: 999;
+  transition: none;
+}
+
+.site-footer {
+  background-color: var(--kabuse-green);
+  color: var(--natural-ivory);
+  padding: 3rem 2rem;
+}
+
+.site-footer a {
+  border-bottom: 1px solid currentColor;
+}
+
+@media (max-width: 768px) {
+  .experiences-grid .container {
+    grid-template-columns: 1fr;
+  }
+}

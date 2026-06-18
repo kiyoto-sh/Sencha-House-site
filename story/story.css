@@ -13,6 +13,44 @@
 .founder {
   background-color: var(--natural-ivory);
   color: var(--kabuse-green);
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+.founder-atmosphere {
+  position: absolute;
+  inset: -20%;
+  background-image: url('https://images.unsplash.com/photo-1516961642265-531546e84af2?w=1600&q=80');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.08;
+  will-change: transform;
+}
+
+.founder-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  min-height: 100vh;
+  padding: 6rem 2rem;
+}
+
+.founder-title {
+  font-size: clamp(1.5rem, 3vw, 2.5rem);
+  margin-bottom: 3rem;
+  opacity: 0.4;
+}
+
+.founder-line {
+  font-size: clamp(1.4rem, 3.5vw, 2.2rem);
+  line-height: 1.8;
+  margin-bottom: 1rem;
+  opacity: 0.15;
+  transform: translateY(20px);
+  will-change: opacity, transform;
 }
 
 .founder blockquote {
