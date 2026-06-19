@@ -80,12 +80,12 @@
   /* Anchors stay at the bottom edge (the only position proven not to
      collide with content above, across two prior overlap bugs in this
      build) but are now more visible: higher opacity, slightly larger. */
-  .anc { position: absolute; z-index: 20; bottom: clamp(1.6rem,3.5vh,2.4rem); color: #fff; opacity: 0; white-space: nowrap; }
+  .anc { position: absolute; z-index: 20; top: 50%; transform: translateY(-50%); color: #fff; opacity: 0; white-space: nowrap; }
   .anc-l { left: var(--edge); font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 0.85rem; letter-spacing: 0.12em; text-transform: uppercase; }
-  .anc-c { left: 50%; transform: translateX(-50%); font-family: 'Cormorant Garamond', serif; font-weight: 300; font-style: italic; font-size: 1rem; }
+  .anc-c { left: 50%; transform: translate(-50%, -50%); font-family: 'Cormorant Garamond', serif; font-weight: 300; font-style: italic; font-size: 1rem; }
   .anc-r { right: var(--edge); font-family: 'Cormorant Garamond', serif; font-weight: 300; font-style: italic; font-size: 0.95rem; letter-spacing: 0.06em; }
 
-  .active-area { position: absolute; z-index: 20; top: clamp(1.4rem,3.5vh,2.2rem); left: var(--edge); width: 40vw; opacity: 0; }
+  .active-area { position: absolute; z-index: 20; top: 50%; transform: translateY(-50%); left: var(--edge); width: 40vw; opacity: 0; }
   .title-slot { position: absolute; top: 0; left: 0; white-space: nowrap; }
   .active-title {
     font-family: 'Plus Jakarta Sans', sans-serif;
@@ -106,15 +106,20 @@
      which is what was causing them to visually
      collide and obscure each other.
      =========================================== */
-  .queue { position: absolute; z-index: 15; right: var(--edge); top: 30vh; text-align: right; opacity: 0; }
+  .queue { position: absolute; z-index: 15; right: var(--edge); top: 50%; text-align: right; opacity: 0; }
   .q-item { position: absolute; top: 0; right: 0; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; text-transform: uppercase; font-size: clamp(1.8rem,4.4vw,4rem); line-height: 1; letter-spacing: -0.02em; color: #fff; white-space: nowrap; opacity: 0; will-change: transform, opacity; }
 
+  /* Snippet moved back under the title on the LEFT side. With anchors,
+     title, and queue all now converging on the same 50% line, the right
+     side has no room left to also host the snippet column without
+     re-colliding with the queue's stack - this is the one arrangement
+     already proven not to collide. Position is set dynamically in JS
+     (below the title's actual measured height), not a guessed offset. */
   .snippet-area {
     position: absolute;
     z-index: 20;
-    top: 56vh;
-    right: var(--edge);
-    left: auto;
+    left: var(--edge);
+    right: auto;
     text-align: left;
     width: clamp(22rem, 35vw, 30rem);
     opacity: 0;
@@ -416,6 +421,28 @@
   }
   window.addEventListener('resize', debounce(measureQueue, 200));
 
+  /* Snippet-area positioned below the active-area's REAL rendered
+     bottom edge (measured, not guessed). Since active-area is now
+     vertically centered via transform:translateY(-50%), getBoundingClientRect()
+     still returns the correct post-transform box, so this works exactly
+     as before. */
+  var activeArea = document.getElementById('aa');
+  var snippetArea = document.getElementById('sa');
+  var stageEl = document.getElementById('stage');
+
+  function positionSnippetArea() {
+    var aaRect = activeArea.getBoundingClientRect();
+    var stageRect = stageEl.getBoundingClientRect();
+    var gap = 32;
+    snippetArea.style.top = (aaRect.bottom - stageRect.top + gap) + 'px';
+  }
+  positionSnippetArea();
+
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(function() { positionSnippetArea(); });
+  }
+  window.addEventListener('resize', debounce(positionSnippetArea, 200));
+
   var bigChar = document.getElementById('bigChar');
   gsap.set(bigChar, { rotation: 0, scale: 1 });
 
@@ -424,7 +451,7 @@
 
   var intro = gsap.timeline({
     delay: 1.8,
-    onComplete: function() { lenis.start(); }
+    onComplete: function() { lenis.start(); positionSnippetArea(); }
   });
 
   intro.to('#bc', { opacity: 0, scale: 0.62, duration: 1.1, ease: 'power3.inOut' }, 0);
