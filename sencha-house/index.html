@@ -8,7 +8,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Lato:wght@300;400&family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Lato:wght@300;400&family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet">
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
@@ -19,13 +19,11 @@
       --ivory: #E6DAB8;
       --kabuse: #08190E;
       --red: #FF0033;
-      --hairline: rgba(8, 25, 14, 0.14);
-      --hairline-soft: rgba(8, 25, 14, 0.08);
+      --hairline: rgba(8, 25, 14, 0.12);
       --ease: cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
     html { scroll-behavior: smooth; }
 
     body {
@@ -38,33 +36,16 @@
 
     a { color: inherit; text-decoration: none; }
 
-    .wrap {
-      max-width: 1360px;
-      margin: 0 auto;
-      padding-left: clamp(1.5rem, 5vw, 4rem);
-      padding-right: clamp(1.5rem, 5vw, 4rem);
-    }
-
-    /* ============================
-       NAV
-       ============================ */
+    /* NAV */
     .nav {
       position: fixed;
       top: 0; left: 0; right: 0;
-      z-index: 50;
+      z-index: 100;
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 1.4rem clamp(1.5rem, 5vw, 4rem);
-      background: rgba(230, 218, 184, 0);
-      border-bottom: 1px solid transparent;
-      transition: background 0.4s var(--ease), border-color 0.4s var(--ease);
-    }
-
-    .nav.is-scrolled {
-      background: rgba(230, 218, 184, 0.92);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid var(--hairline);
+      mix-blend-mode: difference;
     }
 
     .nav-mark {
@@ -72,6 +53,7 @@
       font-weight: 300;
       font-style: italic;
       font-size: 1.3rem;
+      color: var(--ivory);
     }
 
     .nav-links {
@@ -82,28 +64,16 @@
 
     .nav-links a {
       font-family: 'Lato', sans-serif;
-      font-weight: 400;
+      font-weight: 300;
       font-size: 0.68rem;
       letter-spacing: 0.16em;
       text-transform: uppercase;
-      opacity: 0.7;
+      color: var(--ivory);
+      opacity: 0.8;
       transition: opacity 0.3s;
-      position: relative;
-      padding-bottom: 4px;
     }
 
     .nav-links a:hover { opacity: 1; }
-
-    .nav-links a::after {
-      content: '';
-      position: absolute;
-      left: 0; bottom: 0;
-      width: 0; height: 1px;
-      background: var(--kabuse);
-      transition: width 0.3s var(--ease);
-    }
-
-    .nav-links a:hover::after { width: 100%; }
 
     .nav-burger {
       display: none;
@@ -112,161 +82,249 @@
       cursor: pointer;
     }
 
-    .nav-burger span {
-      width: 22px; height: 1px;
-      background: var(--kabuse);
-    }
+    .nav-burger span { width: 22px; height: 1px; background: var(--ivory); }
 
-    /* ============================
-       MANIFESTO SECTION (shared)
-       ============================ */
-    .manifesto {
+    /* SECTION */
+    .sect {
       position: sticky;
       top: 0;
+      width: 100%;
       height: 100vh;
       height: 100dvh;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
       overflow: hidden;
       will-change: transform;
     }
 
-    main > section:nth-of-type(1) { z-index: 1; }
-    main > section:nth-of-type(2) { z-index: 2; }
-    main > section:nth-of-type(3) { z-index: 3; }
-    main > section:nth-of-type(4) { z-index: 4; }
+    .sect:nth-of-type(1) { z-index: 1; }
+    .sect:nth-of-type(2) { z-index: 2; }
+    .sect:nth-of-type(3) { z-index: 3; }
+    .sect:nth-of-type(4) { z-index: 4; }
+    .sect:nth-of-type(5) { z-index: 5; }
 
-    .manifesto-bg {
+    .sect-bg {
       position: absolute;
       inset: 0;
       z-index: 0;
-      background: linear-gradient(180deg, #d8cda8 0%, #cabb8e 50%, #b8a572 100%);
     }
 
-    .manifesto-bg video,
-    .manifesto-bg img {
+    .sect-bg video,
+    .sect-bg img {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      opacity: 0.9;
     }
 
-    .manifesto-overlay {
+    .sect-overlay {
       position: absolute;
       inset: 0;
       z-index: 1;
-      background: linear-gradient(
-        180deg,
-        rgba(230,218,184,0.15) 0%,
-        rgba(230,218,184,0.1) 35%,
-        rgba(8,25,14,0.78) 100%
-      );
     }
 
-    .manifesto-content {
-      position: relative;
+    /* TYPO LAYER */
+    .typo {
+      position: absolute;
+      inset: 0;
       z-index: 2;
-      padding-bottom: clamp(3rem, 7vw, 5.5rem);
+      padding: clamp(5rem, 8vh, 7rem) clamp(1.5rem, 5vw, 4rem) clamp(2rem, 5vh, 4rem);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
       color: var(--ivory);
     }
 
-    .manifesto-index {
-      font-family: 'Lato', sans-serif;
-      font-weight: 300;
-      font-size: 0.7rem;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      color: rgba(230,218,184,0.65);
-      margin-bottom: 1.4rem;
+    .typo-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
     }
 
-    .manifesto-headline {
+    .typo-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 2rem;
+    }
+
+    .typo-mid {
+      flex: 1;
+      display: flex;
+      align-items: center;
+    }
+
+    /* Display type */
+    .display {
       font-family: 'Plus Jakarta Sans', sans-serif;
       font-weight: 800;
-      font-size: clamp(2.2rem, 5.5vw, 4.8rem);
-      letter-spacing: 0.01em;
-      line-height: 1.02;
       text-transform: uppercase;
-      max-width: 18ch;
-      margin-bottom: 1.8rem;
+      line-height: 0.88;
+      letter-spacing: -0.02em;
     }
 
-    .manifesto-sub {
+    .display--hero { font-size: clamp(4rem, 14vw, 13rem); }
+    .display--mega { font-size: clamp(3.5rem, 12vw, 11rem); }
+    .display--large { font-size: clamp(2.5rem, 8vw, 7rem); }
+    .display--mid { font-size: clamp(1.8rem, 5vw, 4rem); }
+
+    .accent {
       font-family: 'Cormorant Garamond', serif;
       font-weight: 300;
       font-style: italic;
-      font-size: clamp(1rem, 1.6vw, 1.3rem);
-      color: rgba(230,218,184,0.85);
-      margin-bottom: 0;
     }
 
-    .manifesto-copy {
+    .accent--xl { font-size: clamp(1.6rem, 4vw, 3.5rem); line-height: 1.2; }
+    .accent--large { font-size: clamp(1.2rem, 2.8vw, 2.4rem); line-height: 1.3; }
+    .accent--mid { font-size: clamp(1rem, 1.8vw, 1.5rem); line-height: 1.4; }
+
+    .body-float {
       font-weight: 300;
-      font-size: clamp(0.92rem, 1.05vw, 1rem);
+      font-size: clamp(0.85rem, 1vw, 0.95rem);
       line-height: 1.8;
+      max-width: 26rem;
       color: rgba(230,218,184,0.82);
-      max-width: 36rem;
-      margin-top: 1.6rem;
     }
 
-    .manifesto-scrollcue {
-      position: absolute;
-      bottom: 2.2rem;
-      right: clamp(1.5rem, 5vw, 4rem);
-      z-index: 2;
-      font-family: 'Lato', sans-serif;
+    .sect-index {
+      font-weight: 300;
+      font-size: 0.68rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      opacity: 0.5;
+    }
+
+    .scroll-cue {
+      font-weight: 300;
       font-size: 0.62rem;
       letter-spacing: 0.2em;
       text-transform: uppercase;
-      color: rgba(230,218,184,0.55);
+      opacity: 0.5;
       display: flex;
       align-items: center;
-      gap: 0.8rem;
+      gap: 0.6rem;
     }
 
-    .manifesto-scrollcue-line {
+    .scroll-cue-line {
       width: 1px;
-      height: 2.5rem;
-      background: rgba(230,218,184,0.3);
+      height: 2.2rem;
+      background: currentColor;
+      opacity: 0.4;
       position: relative;
       overflow: hidden;
     }
 
-    .manifesto-scrollcue-line::after {
+    .scroll-cue-line::after {
       content: '';
       position: absolute;
       top: 0; left: 0;
       width: 100%; height: 30%;
-      background: var(--ivory);
-      animation: scrollDrip 2.4s ease-in-out infinite;
+      background: currentColor;
+      opacity: 1;
+      animation: drip 2.4s ease-in-out infinite;
     }
 
-    @keyframes scrollDrip {
+    @keyframes drip {
       0%   { transform: translateY(-100%); }
       100% { transform: translateY(330%); }
     }
 
-    /* ============================
-       IN YOUR HANDS (closing line)
-       ============================ */
-    .closing-line {
+    /* S0 — OPENING */
+    .s0 .sect-overlay {
+      background: linear-gradient(180deg, rgba(8,25,14,0.3) 0%, rgba(8,25,14,0.65) 100%);
+    }
+
+    /* S1 — THE STANDARD */
+    .s1 .sect-overlay {
+      background: linear-gradient(170deg, rgba(8,25,14,0.25) 0%, rgba(8,25,14,0.72) 100%);
+    }
+
+    .s1-headline {
+      position: absolute;
+      top: 50%;
+      left: clamp(1.5rem, 5vw, 4rem);
+      transform: translateY(-65%);
+    }
+
+    .s1-body {
+      position: absolute;
+      bottom: clamp(2rem, 5vh, 4rem);
+      right: clamp(1.5rem, 5vw, 4rem);
+      text-align: right;
+    }
+
+    /* S2 — CULTURAL TRANSLATION */
+    .s2 .sect-overlay {
+      background: linear-gradient(190deg, rgba(8,25,14,0.2) 0%, rgba(8,25,14,0.68) 100%);
+    }
+
+    .s2-headline {
+      position: absolute;
+      top: 50%;
+      right: clamp(1.5rem, 5vw, 4rem);
+      transform: translateY(-55%);
+      text-align: right;
+    }
+
+    .s2-body {
+      position: absolute;
+      bottom: clamp(2rem, 5vh, 4rem);
+      left: clamp(1.5rem, 5vw, 4rem);
+    }
+
+    /* S3 — TEA DESIGN */
+    .s3 .sect-overlay {
+      background: linear-gradient(175deg, rgba(8,25,14,0.3) 0%, rgba(8,25,14,0.7) 100%);
+    }
+
+    .s3-headline {
+      position: absolute;
+      bottom: 22%;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      width: 90%;
+    }
+
+    .s3-body {
+      position: absolute;
+      top: clamp(5rem, 10vh, 8rem);
+      right: clamp(1.5rem, 5vw, 4rem);
+      text-align: right;
+    }
+
+    /* S4 — OTHER HANDS */
+    .s4 .sect-overlay {
+      background: linear-gradient(160deg, rgba(8,25,14,0.2) 0%, rgba(8,25,14,0.72) 100%);
+    }
+
+    .s4-headline {
+      position: absolute;
+      bottom: 18%;
+      left: clamp(1.5rem, 5vw, 4rem);
+    }
+
+    .s4-body {
+      position: absolute;
+      top: clamp(5rem, 10vh, 8rem);
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+    }
+
+    /* CLOSING */
+    .closing {
       position: relative;
-      z-index: 5;
+      z-index: 6;
       background: var(--ivory);
       padding: clamp(6rem, 14vw, 11rem) 0;
       text-align: center;
-      border-top: 1px solid var(--hairline-soft);
     }
 
     .closing-eyebrow {
-      font-family: 'Lato', sans-serif;
       font-weight: 300;
       font-size: 0.7rem;
       letter-spacing: 0.3em;
       text-transform: uppercase;
-      color: rgba(8,25,14,0.5);
-      margin-bottom: 2rem;
+      opacity: 0.5;
+      margin-bottom: 2.5rem;
     }
 
     .closing-headline {
@@ -274,8 +332,8 @@
       font-weight: 300;
       font-style: italic;
       font-size: clamp(1.6rem, 4vw, 3.2rem);
-      line-height: 1.3;
-      max-width: 26ch;
+      line-height: 1.35;
+      max-width: 24ch;
       margin: 0 auto;
     }
 
@@ -284,16 +342,14 @@
       font-family: 'Plus Jakarta Sans', sans-serif;
       font-weight: 800;
       text-transform: uppercase;
-      font-size: 0.7em;
+      font-size: 0.72em;
       letter-spacing: 0.02em;
     }
 
-    /* ============================
-       3-WAY BRANCH
-       ============================ */
+    /* BRANCH */
     .branch {
       position: relative;
-      z-index: 5;
+      z-index: 6;
       display: flex;
       width: 100%;
       height: 100vh;
@@ -312,15 +368,11 @@
 
     .branch-panel:last-child { border-right: none; }
 
-    .branch-bg {
-      position: absolute;
-      inset: 0;
-      z-index: 0;
-    }
+    .branch-bg { position: absolute; inset: 0; z-index: 0; }
 
-    .branch-panel--experiences .branch-bg { background: linear-gradient(165deg, #1a3015 0%, #0d1f0a 100%); }
-    .branch-panel--reserve .branch-bg { background: linear-gradient(165deg, #2d4a22 0%, #16280f 100%); }
-    .branch-panel--design .branch-bg { background: linear-gradient(165deg, #08190E 0%, #050d07 100%); }
+    .branch-panel--exp .branch-bg { background: linear-gradient(165deg, #1a3015 0%, #0d1f0a 100%); }
+    .branch-panel--res .branch-bg { background: linear-gradient(165deg, #2d4a22 0%, #16280f 100%); }
+    .branch-panel--des .branch-bg { background: linear-gradient(165deg, #08190E 0%, #050d07 100%); }
 
     .branch-overlay {
       position: absolute;
@@ -330,9 +382,7 @@
       transition: background 0.6s var(--ease);
     }
 
-    .branch-panel:hover .branch-overlay {
-      background: rgba(8,25,14,0.15);
-    }
+    .branch-panel:hover .branch-overlay { background: rgba(8,25,14,0.15); }
 
     .branch-content {
       position: relative;
@@ -345,13 +395,12 @@
       color: var(--ivory);
     }
 
-    .branch-index {
-      font-family: 'Lato', sans-serif;
+    .branch-idx {
       font-weight: 300;
       font-size: 0.66rem;
       letter-spacing: 0.25em;
       text-transform: uppercase;
-      color: rgba(230,218,184,0.6);
+      opacity: 0.6;
       margin-bottom: 1.2rem;
     }
 
@@ -376,13 +425,9 @@
       transition: opacity 0.5s var(--ease), max-height 0.5s var(--ease);
     }
 
-    .branch-panel:hover .branch-desc {
-      opacity: 1;
-      max-height: 8rem;
-      margin-bottom: 1.4rem;
-    }
+    .branch-panel:hover .branch-desc { opacity: 1; max-height: 8rem; margin-bottom: 1.4rem; }
 
-    .branch-link {
+    .branch-cta {
       font-family: 'Cormorant Garamond', serif;
       font-weight: 300;
       font-style: italic;
@@ -392,16 +437,16 @@
       gap: 0.75rem;
     }
 
-    .branch-link-arrow {
+    .branch-cta-arrow {
       width: 1.8rem; height: 1px;
       background: var(--ivory);
       position: relative;
       transition: width 0.4s var(--ease);
     }
 
-    .branch-panel:hover .branch-link-arrow { width: 2.6rem; }
+    .branch-panel:hover .branch-cta-arrow { width: 2.6rem; }
 
-    .branch-link-arrow::after {
+    .branch-cta-arrow::after {
       content: '';
       position: absolute;
       right: 0; top: -3px;
@@ -411,65 +456,49 @@
       transform: rotate(45deg);
     }
 
-    /* ============================
-       SVG FILTERS
-       ============================ */
+    /* SVG FILTERS */
     .svg-filters { position: absolute; width: 0; height: 0; overflow: hidden; }
 
-    /* ============================
-       SCROLL REVEAL
-       ============================ */
-    [data-reveal] { opacity: 0; transform: translateY(28px); }
+    /* REVEAL BASE */
+    [data-r] { opacity: 0; }
 
-    /* ============================
-       MOBILE
-       ============================ */
+    /* MOBILE */
     @media (max-width: 860px) {
       .nav-links { display: none; }
       .nav-burger { display: flex; }
 
-      .manifesto {
+      .sect { position: relative; height: auto; min-height: 100dvh; }
+      .sect:nth-of-type(1), .sect:nth-of-type(2), .sect:nth-of-type(3),
+      .sect:nth-of-type(4), .sect:nth-of-type(5) { z-index: auto; }
+
+      .typo {
         position: relative;
-        height: auto;
         min-height: 100dvh;
       }
 
-      main > section:nth-of-type(1),
-      main > section:nth-of-type(2),
-      main > section:nth-of-type(3),
-      main > section:nth-of-type(4) {
-        z-index: auto;
+      .s1-headline, .s2-headline, .s3-headline, .s4-headline {
+        position: relative; top: auto; left: auto; right: auto; bottom: auto;
+        transform: none; text-align: left; width: 100%;
       }
 
-      .manifesto-headline { max-width: 100%; }
-
-      .branch {
-        flex-direction: column;
-        height: auto;
+      .s1-body, .s2-body, .s3-body, .s4-body {
+        position: relative; top: auto; left: auto; right: auto; bottom: auto;
+        transform: none; text-align: left; margin-top: 1.5rem;
       }
 
-      .branch-panel {
-        flex: none;
-        height: 70vh;
-        border-right: none;
-        border-bottom: 1px solid rgba(230,218,184,0.12);
-      }
+      .display--hero { font-size: clamp(3rem, 16vw, 5rem); }
+      .display--mega { font-size: clamp(2.8rem, 14vw, 4.5rem); }
+      .display--large { font-size: clamp(2.2rem, 11vw, 3.5rem); }
 
+      .branch { flex-direction: column; height: auto; }
+      .branch-panel { flex: none; height: 70vh; border-right: none; border-bottom: 1px solid rgba(230,218,184,0.12); }
       .branch-panel:last-child { border-bottom: none; }
-
-      .branch-desc {
-        opacity: 1;
-        max-height: 8rem;
-        margin-bottom: 1.4rem;
-      }
+      .branch-desc { opacity: 1; max-height: 8rem; margin-bottom: 1.4rem; }
     }
 
     @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        transition-duration: 0.01ms !important;
-      }
-      [data-reveal] { opacity: 1; transform: none; }
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+      [data-r] { opacity: 1; }
     }
   </style>
 </head>
@@ -477,15 +506,15 @@
 
   <svg class="svg-filters">
     <defs>
-      <filter id="gentle-ripple-sh">
-        <feTurbulence type="fractalNoise" baseFrequency="0.012 0.008" numOctaves="3" seed="7" result="noise" />
-        <feDisplacementMap in="SourceGraphic" in2="noise" scale="4" xChannelSelector="R" yChannelSelector="G" />
+      <filter id="ripple-sh">
+        <feTurbulence type="fractalNoise" baseFrequency="0.012 0.008" numOctaves="3" seed="7" result="noise"/>
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="4" xChannelSelector="R" yChannelSelector="G"/>
       </filter>
     </defs>
   </svg>
 
-  <!-- ============ NAV ============ -->
-  <nav class="nav" id="nav">
+  <!-- NAV -->
+  <nav class="nav">
     <a href="/" class="nav-mark">Sh</a>
     <ul class="nav-links">
       <li><a href="/sencha-house/experiences/">Experiences</a></li>
@@ -498,136 +527,182 @@
 
   <main>
 
-    <!-- ============ I — THE STANDARD ============ -->
-    <section class="manifesto">
-      <div class="manifesto-bg">
+    <!-- 0 - OPENING -->
+    <section class="sect s0">
+      <div class="sect-bg">
+        <video autoplay muted loop playsinline>
+          <source src="https://videos.pexels.com/video-files/5929428/5929428-hd_1920_1080_25fps.mp4" type="video/mp4">
+        </video>
+      </div>
+      <div class="sect-overlay"></div>
+      <div class="typo">
+        <div class="typo-top">
+          <span class="sect-index" data-r>Shaping Essence Into Language</span>
+          <span class="scroll-cue" data-r>
+            <span>Scroll</span>
+            <span class="scroll-cue-line"></span>
+          </span>
+        </div>
+        <div class="typo-mid" style="flex-direction:column;align-items:center;justify-content:center;text-align:center;">
+          <h1 data-r>
+            <span class="display display--hero" style="display:block;">SENCHA</span>
+            <span class="accent accent--xl" style="display:block;margin-top:0.2em;">house</span>
+          </h1>
+          <p class="accent accent--mid" data-r style="margin-top:2rem;max-width:30rem;opacity:0.85;">
+            Some things carry more than form. They carry origin, intention, the discipline behind them, everything it took to make them right.
+          </p>
+        </div>
+        <div class="typo-bottom" style="justify-content:center;">
+          <span data-r style="font-weight:300;font-size:0.65rem;letter-spacing:0.35em;text-transform:uppercase;opacity:0.6;">Guided by Ikeda</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- I - THE STANDARD -->
+    <section class="sect s1">
+      <div class="sect-bg">
         <video autoplay muted loop playsinline>
           <source src="https://videos.pexels.com/video-files/4926072/4926072-uhd_2732_1440_30fps.mp4" type="video/mp4">
         </video>
       </div>
-      <div class="manifesto-overlay"></div>
-      <div class="manifesto-content wrap" data-reveal>
-        <div class="manifesto-index">I &middot; The Standard</div>
-        <h1 class="manifesto-headline">Before Anything<br>Is Designed</h1>
-        <p class="manifesto-sub">the tea has already been decided.</p>
-        <p class="manifesto-copy">Selection, blending, roasting: in Japanese tea these are not marketing language, they are a discipline refined over decades by people who answer to a standard most producers will never reach. This is the floor everything else is built on. The leaf is the one part of this we never have to argue for.</p>
-      </div>
-      <div class="manifesto-scrollcue">
-        <span>Scroll</span>
-        <span class="manifesto-scrollcue-line"></span>
-      </div>
-    </section>
-
-    <!-- ============ II — DESIGN AS CULTURAL TRANSLATION ============ -->
-    <section class="manifesto">
-      <div class="manifesto-bg">
-        <img src="https://images.pexels.com/photos/7233931/pexels-photo-7233931.jpeg?auto=compress&cs=tinysrgb&h=1200&w=1920&fit=crop" alt="" style="filter: url(#gentle-ripple-sh);">
-      </div>
-      <div class="manifesto-overlay"></div>
-      <div class="manifesto-content wrap" data-reveal>
-        <div class="manifesto-index">II &middot; Design as Cultural Translation</div>
-        <h1 class="manifesto-headline">Listening Comes<br>First</h1>
-        <p class="manifesto-sub">expression comes only after.</p>
-        <p class="manifesto-copy">Everything past that floor is design, and design, here, is not decoration. It is how we think, speak, and shape: how a tea is packaged, how a space is arranged, how a word is chosen. We do not import Japan and set it down somewhere else. We take what is essential in its values and find the form that lets it resonate here, now, for the people actually in front of us.</p>
-      </div>
-      <div class="manifesto-scrollcue">
-        <span>Scroll</span>
-        <span class="manifesto-scrollcue-line"></span>
+      <div class="sect-overlay"></div>
+      <div class="typo">
+        <div class="typo-top">
+          <span class="sect-index" data-r>I &middot; The Standard</span>
+          <span class="scroll-cue" data-r>
+            <span>Scroll</span>
+            <span class="scroll-cue-line"></span>
+          </span>
+        </div>
+        <div class="s1-headline" data-r>
+          <div class="display display--mega">BEFORE</div>
+          <div class="display display--large" style="margin-left:clamp(0.5rem,4vw,3rem);">ANYTHING</div>
+          <div class="accent accent--large" style="margin-top:0.4rem;margin-left:clamp(0.5rem,4vw,3rem);">is designed, the tea has already been decided.</div>
+        </div>
+        <div class="s1-body" data-r>
+          <p class="body-float">Selection, blending, roasting: in Japanese tea these are not marketing language, they are a discipline refined over decades. This is the floor everything else is built on. The leaf is the one part of this we never have to argue for.</p>
+        </div>
       </div>
     </section>
 
-    <!-- ============ III — TEA DESIGN ============ -->
-    <section class="manifesto">
-      <div class="manifesto-bg">
+    <!-- II - DESIGN AS CULTURAL TRANSLATION -->
+    <section class="sect s2">
+      <div class="sect-bg">
+        <img src="https://images.pexels.com/photos/7233931/pexels-photo-7233931.jpeg?auto=compress&cs=tinysrgb&h=1200&w=1920&fit=crop" alt="" style="filter:url(#ripple-sh);">
+      </div>
+      <div class="sect-overlay"></div>
+      <div class="typo">
+        <div class="typo-top">
+          <span class="sect-index" data-r>II &middot; Design as Cultural Translation</span>
+          <span class="scroll-cue" data-r>
+            <span>Scroll</span>
+            <span class="scroll-cue-line"></span>
+          </span>
+        </div>
+        <div class="s2-headline" data-r>
+          <div class="display display--mega">LISTENING</div>
+          <div class="display display--large">COMES FIRST</div>
+          <div class="accent accent--large" style="margin-top:0.5rem;">expression comes only after.</div>
+        </div>
+        <div class="s2-body" data-r>
+          <p class="body-float">We do not import Japan and set it down somewhere else. We take what is essential in its values and find the form that lets it resonate here, now, for the people actually in front of us.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- III - TEA DESIGN -->
+    <section class="sect s3">
+      <div class="sect-bg">
         <video autoplay muted loop playsinline>
           <source src="https://videos.pexels.com/video-files/13722700/13722700-hd_1080_1920_25fps.mp4" type="video/mp4">
         </video>
       </div>
-      <div class="manifesto-overlay"></div>
-      <div class="manifesto-content wrap" data-reveal>
-        <div class="manifesto-index">III &middot; Tea Design</div>
-        <h1 class="manifesto-headline">Rituals Without<br>A Name Yet</h1>
-        <p class="manifesto-sub">structured for clarity, not stillness.</p>
-        <p class="manifesto-copy">We do not recreate tea ceremonies. A tradition already exists to do that properly. What we build instead are formats that don't have a name yet: discovery for the curious, wellness for the body, connection for the table, vitality for the hours that ask for clarity. Whatever the format, the standard underneath doesn't move. Only the shape does.</p>
-      </div>
-      <div class="manifesto-scrollcue">
-        <span>Scroll</span>
-        <span class="manifesto-scrollcue-line"></span>
+      <div class="sect-overlay"></div>
+      <div class="typo">
+        <div class="typo-top" style="justify-content:flex-end;">
+          <span class="scroll-cue" data-r>
+            <span>Scroll</span>
+            <span class="scroll-cue-line"></span>
+          </span>
+        </div>
+        <div class="s3-body" data-r>
+          <span class="sect-index" style="display:block;margin-bottom:1rem;">III &middot; Tea Design</span>
+          <p class="body-float">We do not recreate tea ceremonies. A tradition already exists to do that properly. What we build are formats that don't have a name yet: discovery, wellness, connection, vitality.</p>
+        </div>
+        <div class="s3-headline" data-r>
+          <div class="display display--mega">RITUALS</div>
+          <div class="accent accent--large" style="margin-top:0.3rem;">without a name yet</div>
+          <div class="display display--mid" style="margin-top:0.2rem;">CLARITY NOT STILLNESS</div>
+        </div>
       </div>
     </section>
 
-    <!-- ============ IV — OTHER HANDS ============ -->
-    <section class="manifesto">
-      <div class="manifesto-bg">
+    <!-- IV - OTHER HANDS -->
+    <section class="sect s4">
+      <div class="sect-bg">
         <video autoplay muted loop playsinline>
           <source src="https://videos.pexels.com/video-files/6694787/6694787-uhd_2732_1440_25fps.mp4" type="video/mp4">
         </video>
       </div>
-      <div class="manifesto-overlay"></div>
-      <div class="manifesto-content wrap" data-reveal>
-        <div class="manifesto-index">IV &middot; Other Hands</div>
-        <h1 class="manifesto-headline">Never A<br>Solitary Act</h1>
-        <p class="manifesto-sub">we're continuing what was already there.</p>
-        <p class="manifesto-copy">The bowl a tea is served in isn't something we make. It comes from a ceramicist who has spent years learning what clay can hold, held to the same standard we hold the leaf to. Within a generation of Sen no Rikyu, the relationships he built with individual craftsmen were formalized into ten hereditary artisan families. We're not introducing collaboration into this tradition. We're continuing what was already there.</p>
-      </div>
-      <div class="manifesto-scrollcue">
-        <span>Scroll</span>
-        <span class="manifesto-scrollcue-line"></span>
-      </div>
-    </section>
-
-    <!-- ============ V — IN YOUR HANDS (closing line) ============ -->
-    <section class="closing-line">
-      <div class="wrap">
-        <div class="closing-eyebrow" data-reveal>V &middot; In Your Hands</div>
-        <p class="closing-headline" data-reveal>This is tea: made without compromise, shaped by hands beyond our own. <em>Now it's in yours.</em></p>
-      </div>
-    </section>
-
-    <!-- ============ THREE-WAY BRANCH ============ -->
-    <section class="branch" id="branch">
-      <a href="/sencha-house/experiences/" class="branch-panel branch-panel--experiences" data-branch="experiences">
-        <div class="branch-bg"></div>
-        <div class="branch-overlay"></div>
-        <div class="branch-content">
-          <div class="branch-index">01</div>
-          <h2 class="branch-title">Experiences</h2>
-          <p class="branch-desc">Tastings, daily rituals, and releases built around discovery, wellness, connection, and vitality.</p>
-          <div class="branch-link">
-            <span>Explore</span>
-            <span class="branch-link-arrow"></span>
-          </div>
+      <div class="sect-overlay"></div>
+      <div class="typo">
+        <div class="typo-top">
+          <span class="sect-index" data-r>IV &middot; Other Hands</span>
         </div>
-      </a>
-      <a href="/sencha-house/tea-reserve/" class="branch-panel branch-panel--reserve" data-branch="reserve">
-        <div class="branch-bg"></div>
-        <div class="branch-overlay"></div>
-        <div class="branch-content">
-          <div class="branch-index">02</div>
-          <h2 class="branch-title">teaReserve</h2>
-          <p class="branch-desc">A curated, gallery-style catalogue of single-origin Japanese green tea, sourced and verified lot by lot.</p>
-          <div class="branch-link">
-            <span>Browse</span>
-            <span class="branch-link-arrow"></span>
-          </div>
+        <div class="s4-body" data-r>
+          <p class="accent accent--mid" style="max-width:28rem;opacity:0.85;">Innovation, here, has never been a solitary act. It is what happens when people who have each mastered something different sit down at the same table.</p>
         </div>
-      </a>
-      <a href="/sencha-house/design/" class="branch-panel branch-panel--design" data-branch="design">
-        <div class="branch-bg"></div>
-        <div class="branch-overlay"></div>
-        <div class="branch-content">
-          <div class="branch-index">03</div>
-          <h2 class="branch-title">SH Design</h2>
-          <p class="branch-desc">Design consultancy for spaces, brands, and rituals built around Japanese tea, led by Kiyoto.</p>
-          <div class="branch-link">
-            <span>Inquire</span>
-            <span class="branch-link-arrow"></span>
-          </div>
+        <div class="s4-headline" data-r>
+          <div class="display display--mega">NEVER</div>
+          <div class="display display--large" style="margin-left:clamp(0.5rem,6vw,5rem);">ALONE</div>
+          <div class="accent accent--mid" style="margin-top:0.5rem;">we are continuing what was already there.</div>
         </div>
-      </a>
+      </div>
     </section>
 
   </main>
+
+  <!-- V - IN YOUR HANDS -->
+  <section class="closing" data-r>
+    <div style="max-width:1360px;margin:0 auto;padding:0 clamp(1.5rem,5vw,4rem);">
+      <div class="closing-eyebrow">V &middot; In Your Hands</div>
+      <p class="closing-headline">This is tea: made without compromise, shaped by hands beyond our own. <em>Now it is in yours.</em></p>
+    </div>
+  </section>
+
+  <!-- BRANCH -->
+  <section class="branch" id="branch">
+    <a href="/sencha-house/experiences/" class="branch-panel branch-panel--exp">
+      <div class="branch-bg"></div>
+      <div class="branch-overlay"></div>
+      <div class="branch-content">
+        <div class="branch-idx">01</div>
+        <h2 class="branch-title">Experiences</h2>
+        <p class="branch-desc">Tastings, daily rituals, and releases built around discovery, wellness, connection, and vitality.</p>
+        <div class="branch-cta"><span>Explore</span><span class="branch-cta-arrow"></span></div>
+      </div>
+    </a>
+    <a href="/sencha-house/tea-reserve/" class="branch-panel branch-panel--res">
+      <div class="branch-bg"></div>
+      <div class="branch-overlay"></div>
+      <div class="branch-content">
+        <div class="branch-idx">02</div>
+        <h2 class="branch-title">teaReserve</h2>
+        <p class="branch-desc">A curated, gallery-style catalogue of single-origin Japanese green tea, sourced and verified lot by lot.</p>
+        <div class="branch-cta"><span>Browse</span><span class="branch-cta-arrow"></span></div>
+      </div>
+    </a>
+    <a href="/sencha-house/design/" class="branch-panel branch-panel--des">
+      <div class="branch-bg"></div>
+      <div class="branch-overlay"></div>
+      <div class="branch-content">
+        <div class="branch-idx">03</div>
+        <h2 class="branch-title">SH Design</h2>
+        <p class="branch-desc">Design consultancy for spaces, brands, and rituals built around Japanese tea, led by Kiyoto.</p>
+        <div class="branch-cta"><span>Inquire</span><span class="branch-cta-arrow"></span></div>
+      </div>
+    </a>
+  </section>
 
   <script>
     (function () {
@@ -635,76 +710,39 @@
 
       gsap.registerPlugin(ScrollTrigger);
 
-      const nav = document.getElementById('nav');
+      /* Lenis smooth scroll */
+      var lenis = new Lenis({ lerp: 0.08, smoothWheel: true });
+      lenis.on('scroll', ScrollTrigger.update);
+      gsap.ticker.add(function(time) { lenis.raf(time * 1000); });
+      gsap.ticker.lagSmoothing(0);
 
-      /* ---- Nav background on scroll ---- */
-      ScrollTrigger.create({
-        start: 'top -80',
-        onUpdate: (self) => {
-          nav.classList.toggle('is-scrolled', self.scroll() > 80);
-        }
-      });
+      var isMobile = window.matchMedia('(max-width: 860px)').matches;
 
-      /* ---- First section entrance ---- */
-      gsap.timeline({ defaults: { ease: 'expo.out' } })
-        .to('.manifesto:first-of-type [data-reveal]', {
-          opacity: 1, y: 0, duration: 1.2, delay: 0.3
-        });
-
-      /* ---- Scroll reveals for everything else ---- */
-      gsap.utils.toArray('[data-reveal]').forEach((el, i) => {
-        if (i === 0) return; // first section handled above
+      /* Entrance reveals */
+      gsap.utils.toArray('[data-r]').forEach(function(el, i) {
+        var trig = el.closest('.sect') || el;
         gsap.to(el, {
           opacity: 1,
-          y: 0,
-          duration: 1,
-          ease: 'power3.out',
+          duration: 1.2,
+          ease: 'power2.out',
+          delay: i < 4 ? 0.2 + i * 0.15 : 0,
           scrollTrigger: {
-            trigger: el,
-            start: 'top 80%',
+            trigger: trig,
+            start: 'top 60%',
             once: true
           }
         });
       });
 
-      /* ---- 3-way branch hover expand (desktop only) ---- */
-      const isMobile = window.matchMedia('(max-width: 860px)').matches;
-
+      /* Sticky-stack scroll effects (desktop) */
       if (!isMobile) {
-        const branch = document.getElementById('branch');
-        const panels = gsap.utils.toArray('.branch-panel');
+        gsap.utils.toArray('.sect').forEach(function(section) {
+          var bg = section.querySelector('.sect-bg video, .sect-bg img');
+          var typo = section.querySelector('.typo');
 
-        panels.forEach((panel) => {
-          panel.addEventListener('mouseenter', () => {
-            panels.forEach((p) => {
-              gsap.to(p, {
-                flex: p === panel ? '1 1 50%' : '1 1 25%',
-                duration: 0.7,
-                ease: 'power3.inOut'
-              });
-            });
-          });
-        });
-
-        branch.addEventListener('mouseleave', () => {
-          gsap.to(panels, {
-            flex: '1 1 33.333%',
-            duration: 0.7,
-            ease: 'power3.inOut'
-          });
-        });
-      }
-
-      /* ---- Fluid scroll motion on the manifesto stack ---- */
-      if (!isMobile) {
-        gsap.utils.toArray('.manifesto').forEach((section) => {
-          const bg = section.querySelector('.manifesto-bg video, .manifesto-bg img');
-          const content = section.querySelector('.manifesto-content');
-
-          // Background zooms in slowly the entire time this section is pinned
           if (bg) {
             gsap.fromTo(bg,
-              { scale: 1.18 },
+              { scale: 1.15 },
               {
                 scale: 1.0,
                 ease: 'none',
@@ -718,15 +756,14 @@
             );
           }
 
-          // Content fades and lifts away as the next section slides over it
-          if (content) {
-            gsap.to(content, {
-              opacity: 0.25,
-              y: -50,
+          if (typo) {
+            gsap.to(typo, {
+              opacity: 0,
+              y: -60,
               ease: 'none',
               scrollTrigger: {
                 trigger: section,
-                start: 'top top',
+                start: '60% top',
                 end: 'bottom top',
                 scrub: true
               }
@@ -735,11 +772,36 @@
         });
       }
 
-      /* ---- Safety timeout ---- */
-      setTimeout(() => {
-        document.querySelectorAll('[data-reveal]').forEach(el => {
+      /* 3-way branch hover expand */
+      if (!isMobile) {
+        var branch = document.getElementById('branch');
+        var panels = gsap.utils.toArray('.branch-panel');
+
+        panels.forEach(function(panel) {
+          panel.addEventListener('mouseenter', function() {
+            panels.forEach(function(p) {
+              gsap.to(p, {
+                flex: p === panel ? '1 1 50%' : '1 1 25%',
+                duration: 0.7,
+                ease: 'power3.inOut'
+              });
+            });
+          });
+        });
+
+        branch.addEventListener('mouseleave', function() {
+          gsap.to(panels, {
+            flex: '1 1 33.333%',
+            duration: 0.7,
+            ease: 'power3.inOut'
+          });
+        });
+      }
+
+      /* Safety timeout */
+      setTimeout(function() {
+        document.querySelectorAll('[data-r]').forEach(function(el) {
           el.style.opacity = '1';
-          el.style.transform = 'none';
         });
       }, 3500);
 
