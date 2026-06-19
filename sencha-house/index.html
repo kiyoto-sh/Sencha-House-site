@@ -19,14 +19,13 @@
       --ivory: #E6DAB8;
       --kabuse: #08190E;
       --red: #FF0033;
-      --ease: cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      background: var(--kabuse);
-      color: var(--ivory);
+      background: #fff;
+      color: var(--kabuse);
       font-family: 'Lato', sans-serif;
       -webkit-font-smoothing: antialiased;
       overflow-x: hidden;
@@ -34,43 +33,33 @@
 
     a { color: inherit; text-decoration: none; }
 
-    /* NAV */
+    /* ============================
+       NAV (top-right, like B&C)
+       ============================ */
     .nav {
       position: fixed;
-      top: 0; left: 0; right: 0;
+      top: 0; right: 0;
       z-index: 200;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      padding: 1.4rem clamp(1.5rem, 5vw, 4rem);
-      pointer-events: none;
+      gap: clamp(1.2rem, 2.5vw, 2rem);
+      padding: 1.6rem clamp(1.5rem, 5vw, 4rem);
     }
 
-    .nav > * { pointer-events: auto; }
-
-    .nav-mark {
-      font-family: 'Cormorant Garamond', serif;
-      font-weight: 300;
-      font-style: italic;
-      font-size: 1.3rem;
-    }
-
-    .nav-links {
-      display: flex;
-      gap: clamp(1.2rem, 2.5vw, 2.2rem);
-      list-style: none;
-    }
-
-    .nav-links a {
-      font-weight: 300;
-      font-size: 0.68rem;
-      letter-spacing: 0.16em;
+    .nav a {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 700;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
-      opacity: 0.7;
+      color: var(--kabuse);
+      mix-blend-mode: difference;
+      filter: invert(1);
+      opacity: 0.85;
       transition: opacity 0.3s;
     }
 
-    .nav-links a:hover { opacity: 1; }
+    .nav a:hover { opacity: 1; }
 
     .nav-burger {
       display: none;
@@ -79,18 +68,53 @@
       cursor: pointer;
     }
 
-    .nav-burger span { width: 22px; height: 1px; background: var(--ivory); }
+    .nav-burger span { width: 22px; height: 1px; background: var(--kabuse); }
 
     /* ============================
-       THE SCROLL STAGE
-       One tall wrapper gives scroll
-       distance. One sticky viewport
-       stays pinned. Everything inside
-       it transitions via timeline.
+       HERO: Full-viewport brand name
+       (like B&C's "BENNETT & CLIVE")
        ============================ */
-    .scroll-wrapper {
+    .hero {
       position: relative;
-      height: 600vh;
+      height: 100vh;
+      height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .hero-brand {
+      text-align: center;
+      z-index: 2;
+    }
+
+    .hero-sencha {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      font-size: clamp(5rem, 18vw, 18rem);
+      text-transform: uppercase;
+      line-height: 0.85;
+      letter-spacing: -0.03em;
+      display: block;
+    }
+
+    .hero-house {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-style: italic;
+      font-size: clamp(2.5rem, 8vw, 8rem);
+      display: block;
+      margin-top: -0.1em;
+    }
+
+    /* ============================
+       SCROLL STAGE
+       ============================ */
+    .scroll-wrap {
+      position: relative;
+      height: 500vh;
     }
 
     .stage {
@@ -102,207 +126,158 @@
       overflow: hidden;
     }
 
-    /* BACKGROUNDS */
-    .bg-layer {
+    /* Backgrounds */
+    .bg {
       position: absolute;
       inset: 0;
       z-index: 0;
     }
 
-    .bg-layer video,
-    .bg-layer img {
+    .bg video, .bg img {
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
 
-    .bg-0 { opacity: 1; }
-    .bg-1, .bg-2, .bg-3, .bg-4 { opacity: 0; }
+    .bg-0, .bg-1, .bg-2, .bg-3 { opacity: 0; }
 
-    .stage-overlay {
+    .stage-ov {
       position: absolute;
       inset: 0;
       z-index: 1;
-      background: linear-gradient(
-        180deg,
-        rgba(8,25,14,0.35) 0%,
-        rgba(8,25,14,0.2) 40%,
-        rgba(8,25,14,0.6) 100%
-      );
+      background: rgba(0,0,0,0.15);
     }
 
-    /* PERSISTENT ANCHORS (like B&C's split brand name) */
-    .persist {
+    /* ============================
+       PERSISTENT BRAND ANCHORS
+       (like "BENNETT" left, "CLIVE" right)
+       ============================ */
+    .anchor-left {
       position: absolute;
-      z-index: 5;
-      pointer-events: none;
-    }
-
-    .persist-left {
-      bottom: clamp(2rem, 4vh, 3rem);
-      left: clamp(1.5rem, 5vw, 4rem);
+      z-index: 10;
+      bottom: 50%;
+      left: clamp(1.5rem, 3vw, 2.5rem);
+      transform: translateY(50%);
       font-family: 'Plus Jakarta Sans', sans-serif;
       font-weight: 800;
-      font-size: 0.7rem;
-      letter-spacing: 0.35em;
+      font-size: 0.75rem;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
-      opacity: 0.4;
-      writing-mode: vertical-rl;
-      text-orientation: mixed;
+      color: #fff;
+      writing-mode: vertical-lr;
       transform: rotate(180deg);
+      opacity: 0;
     }
 
-    .persist-right {
-      bottom: clamp(2rem, 4vh, 3rem);
-      right: clamp(1.5rem, 5vw, 4rem);
+    .anchor-right {
+      position: absolute;
+      z-index: 10;
+      bottom: 50%;
+      right: clamp(1.5rem, 3vw, 2.5rem);
+      transform: translateY(50%);
       font-family: 'Cormorant Garamond', serif;
       font-weight: 300;
       font-style: italic;
       font-size: 0.85rem;
-      letter-spacing: 0.15em;
-      opacity: 0.4;
-      writing-mode: vertical-rl;
+      letter-spacing: 0.1em;
+      color: #fff;
+      writing-mode: vertical-lr;
+      opacity: 0;
     }
 
-    .persist-scroll {
-      bottom: clamp(2rem, 4vh, 3rem);
-      left: 50%;
-      transform: translateX(-50%);
-      font-weight: 300;
-      font-size: 0.6rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      opacity: 0.4;
+    /* ============================
+       SECTION TITLES
+       (like B&C's stacked client names
+       on the right: ADIDAS, CALVIN KLEIN...)
+       ============================ */
+    .titles {
+      position: absolute;
+      z-index: 5;
+      right: clamp(1.5rem, 5vw, 4rem);
+      top: 50%;
+      transform: translateY(-50%);
+      text-align: right;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      gap: 0.5rem;
+      gap: clamp(0.3rem, 0.8vw, 0.6rem);
+      opacity: 0;
     }
 
-    .scroll-line {
-      width: 1px; height: 2.2rem;
-      background: var(--ivory);
-      opacity: 0.4;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .scroll-line::after {
-      content: '';
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 30%;
-      background: var(--ivory);
-      animation: drip 2.4s ease-in-out infinite;
-    }
-
-    @keyframes drip {
-      0% { transform: translateY(-100%); }
-      100% { transform: translateY(330%); }
-    }
-
-    /* TEXT STATES (all absolutely positioned, all start at opacity 0 except state-0) */
-    .state {
-      position: absolute;
-      inset: 0;
-      z-index: 3;
-      padding: clamp(5rem, 8vh, 7rem) clamp(1.5rem, 5vw, 4rem) clamp(3rem, 6vh, 5rem);
-    }
-
-    .state-0 { opacity: 1; }
-    .state-1, .state-2, .state-3, .state-4 { opacity: 0; }
-
-    /* Display type */
-    .d {
+    .titles a {
       font-family: 'Plus Jakarta Sans', sans-serif;
       font-weight: 800;
+      font-size: clamp(1.8rem, 5.5vw, 5rem);
       text-transform: uppercase;
-      line-height: 0.88;
+      line-height: 1;
       letter-spacing: -0.02em;
+      color: #fff;
+      opacity: 0.25;
+      transition: opacity 0.5s, font-size 0.5s;
+      display: block;
     }
 
-    .d-hero { font-size: clamp(5rem, 16vw, 15rem); }
-    .d-mega { font-size: clamp(3.5rem, 11vw, 10rem); }
-    .d-large { font-size: clamp(2.5rem, 7vw, 6.5rem); }
-    .d-mid { font-size: clamp(1.6rem, 4vw, 3.2rem); }
-
-    .i {
-      font-family: 'Cormorant Garamond', serif;
-      font-weight: 300;
-      font-style: italic;
+    .titles a.is-active {
+      opacity: 1;
+      font-size: clamp(2.2rem, 7vw, 6.5rem);
     }
 
-    .i-xl { font-size: clamp(1.6rem, 4vw, 3.5rem); line-height: 1.2; }
-    .i-lg { font-size: clamp(1.2rem, 2.5vw, 2.2rem); line-height: 1.3; }
-    .i-md { font-size: clamp(1rem, 1.6vw, 1.35rem); line-height: 1.45; }
-
-    .body {
-      font-weight: 300;
-      font-size: clamp(0.82rem, 0.95vw, 0.92rem);
-      line-height: 1.8;
-      max-width: 24rem;
-      opacity: 0.78;
+    /* ============================
+       LEFT-SIDE TEXT SNIPPETS
+       (appear for each active section)
+       ============================ */
+    .snippets {
+      position: absolute;
+      z-index: 5;
+      left: clamp(1.5rem, 5vw, 4rem);
+      top: 50%;
+      transform: translateY(-50%);
+      max-width: clamp(14rem, 28vw, 22rem);
+      opacity: 0;
     }
 
-    .idx {
+    .snippet {
+      position: absolute;
+      top: 0; left: 0;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.4s, transform 0.4s;
+    }
+
+    .snippet.is-active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .snippet-idx {
       font-weight: 300;
       font-size: 0.68rem;
       letter-spacing: 0.3em;
       text-transform: uppercase;
-      opacity: 0.45;
+      color: rgba(255,255,255,0.5);
+      margin-bottom: 1rem;
     }
 
-    /* === STATE 0: OPENING === */
-    .state-0 {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-    }
-
-    .state-0 .body { text-align: center; margin: 2rem auto 0; }
-
-    .s0-guided {
-      position: absolute;
-      bottom: clamp(3rem, 6vh, 5rem);
-      left: 50%;
-      transform: translateX(-50%);
+    .snippet-sub {
+      font-family: 'Cormorant Garamond', serif;
       font-weight: 300;
-      font-size: 0.65rem;
-      letter-spacing: 0.35em;
-      text-transform: uppercase;
-      opacity: 0.5;
+      font-style: italic;
+      font-size: clamp(1rem, 1.6vw, 1.35rem);
+      color: rgba(255,255,255,0.9);
+      margin-bottom: 1rem;
+      line-height: 1.4;
     }
 
-    /* === STATE 1: THE STANDARD === */
-    .state-1 { display: flex; flex-direction: column; justify-content: space-between; }
-
-    .s1-top { text-align: left; }
-    .s1-bottom { display: flex; justify-content: flex-end; }
-
-    /* === STATE 2: CULTURAL TRANSLATION === */
-    .state-2 { display: flex; flex-direction: column; justify-content: space-between; }
-
-    .s2-top { text-align: right; align-self: flex-end; }
-    .s2-bottom { display: flex; justify-content: flex-start; }
-
-    /* === STATE 3: TEA DESIGN === */
-    .state-3 { display: flex; flex-direction: column; align-items: center; justify-content: space-between; }
-
-    .s3-top { text-align: right; align-self: flex-end; }
-    .s3-center { text-align: center; }
-
-    /* === STATE 4: OTHER HANDS === */
-    .state-4 { display: flex; flex-direction: column; justify-content: space-between; }
-
-    .s4-center { text-align: center; align-self: center; max-width: 30rem; }
-    .s4-bottom { text-align: left; }
+    .snippet-body {
+      font-weight: 300;
+      font-size: clamp(0.82rem, 0.9vw, 0.88rem);
+      line-height: 1.8;
+      color: rgba(255,255,255,0.7);
+    }
 
     /* ============================
        CLOSING + BRANCH
        ============================ */
-    .post-stage {
+    .post {
       position: relative;
       z-index: 10;
       background: var(--ivory);
@@ -314,7 +289,7 @@
       text-align: center;
     }
 
-    .closing-eyebrow {
+    .closing-ey {
       font-weight: 300;
       font-size: 0.7rem;
       letter-spacing: 0.3em;
@@ -341,7 +316,6 @@
       font-size: 0.72em;
     }
 
-    /* BRANCH */
     .branch {
       display: flex;
       width: 100%;
@@ -356,21 +330,21 @@
       height: 100%;
       overflow: hidden;
       cursor: pointer;
-      border-right: 1px solid rgba(8,25,14,0.08);
+      border-right: 1px solid rgba(230,218,184,0.12);
     }
 
     .bp:last-child { border-right: none; }
 
     .bp-bg { position: absolute; inset: 0; z-index: 0; }
 
-    .bp--exp .bp-bg { background: linear-gradient(165deg, #1a3015, #0d1f0a); }
-    .bp--res .bp-bg { background: linear-gradient(165deg, #2d4a22, #16280f); }
-    .bp--des .bp-bg { background: linear-gradient(165deg, #08190E, #050d07); }
+    .bp--a .bp-bg { background: linear-gradient(165deg, #1a3015, #0d1f0a); }
+    .bp--b .bp-bg { background: linear-gradient(165deg, #2d4a22, #16280f); }
+    .bp--c .bp-bg { background: linear-gradient(165deg, #08190E, #050d07); }
 
     .bp-ov {
       position: absolute; inset: 0; z-index: 1;
       background: rgba(8,25,14,0.35);
-      transition: background 0.6s var(--ease);
+      transition: background 0.6s cubic-bezier(0.16,1,0.3,1);
     }
 
     .bp:hover .bp-ov { background: rgba(8,25,14,0.12); }
@@ -385,7 +359,7 @@
       color: var(--ivory);
     }
 
-    .bp-idx {
+    .bp-n {
       font-weight: 300;
       font-size: 0.66rem;
       letter-spacing: 0.25em;
@@ -410,7 +384,7 @@
       color: rgba(230,218,184,0.75);
       max-width: 22rem;
       opacity: 0; max-height: 0;
-      transition: opacity 0.5s var(--ease), max-height 0.5s var(--ease);
+      transition: opacity 0.5s cubic-bezier(0.16,1,0.3,1), max-height 0.5s cubic-bezier(0.16,1,0.3,1);
     }
 
     .bp:hover .bp-d { opacity: 1; max-height: 8rem; margin-bottom: 1.4rem; }
@@ -429,7 +403,7 @@
       width: 1.8rem; height: 1px;
       background: var(--ivory);
       position: relative;
-      transition: width 0.4s var(--ease);
+      transition: width 0.4s cubic-bezier(0.16,1,0.3,1);
     }
 
     .bp:hover .bp-arr { width: 2.6rem; }
@@ -444,30 +418,28 @@
       transform: rotate(45deg);
     }
 
-    /* SVG */
     .svg-f { position: absolute; width: 0; height: 0; overflow: hidden; }
 
     /* MOBILE */
     @media (max-width: 860px) {
-      .nav-links { display: none; }
+      .nav a { display: none; }
       .nav-burger { display: flex; }
 
-      .scroll-wrapper { height: auto; }
-      .stage { position: relative; height: auto; }
+      .hero-sencha { font-size: clamp(3.5rem, 20vw, 6rem); }
+      .hero-house { font-size: clamp(2rem, 10vw, 3.5rem); }
 
-      .state {
-        position: relative;
-        min-height: 100dvh;
-        opacity: 1 !important;
-      }
+      .scroll-wrap { height: auto; }
+      .stage { position: relative; height: auto; min-height: 100dvh; }
 
-      .bg-layer { opacity: 1 !important; position: relative; height: 100dvh; }
+      .titles { position: relative; transform: none; top: auto; right: auto; text-align: left; padding: 2rem clamp(1.5rem,5vw,4rem); opacity: 1 !important; }
+      .titles a { opacity: 0.8 !important; font-size: clamp(2rem, 8vw, 3rem) !important; }
 
-      .persist { display: none; }
+      .snippets { position: relative; transform: none; top: auto; left: auto; max-width: 100%; padding: 2rem clamp(1.5rem,5vw,4rem); opacity: 1 !important; }
+      .snippet { position: relative; opacity: 1 !important; transform: none !important; margin-bottom: 3rem; }
 
-      .d-hero { font-size: clamp(3rem, 16vw, 5rem); }
-      .d-mega { font-size: clamp(2.8rem, 14vw, 4.5rem); }
-      .d-large { font-size: clamp(2rem, 10vw, 3.2rem); }
+      .anchor-left, .anchor-right { display: none; }
+
+      .bg { position: relative; height: 60vh; opacity: 1 !important; }
 
       .branch { flex-direction: column; height: auto; }
       .bp { flex: none; height: 70vh; border-right: none; border-bottom: 1px solid rgba(230,218,184,0.12); }
@@ -491,157 +463,122 @@
     </defs>
   </svg>
 
+  <!-- NAV (top-right like B&C: HOME WORK ABOUT CONTACT) -->
   <nav class="nav">
-    <a href="/" class="nav-mark">Sh</a>
-    <ul class="nav-links">
-      <li><a href="/sencha-house/experiences/">Experiences</a></li>
-      <li><a href="/sencha-house/tea-reserve/">teaReserve</a></li>
-      <li><a href="/sencha-house/design/">SH Design</a></li>
-      <li><a href="/sencha-house/contact/">Contact</a></li>
-    </ul>
+    <a href="/">Home</a>
+    <a href="/sencha-house/experiences/">Experiences</a>
+    <a href="/sencha-house/tea-reserve/">teaReserve</a>
+    <a href="/sencha-house/design/">Design</a>
+    <a href="/sencha-house/contact/">Contact</a>
     <div class="nav-burger" aria-label="Menu"><span></span><span></span><span></span></div>
   </nav>
 
-  <!-- ============ THE SCROLL STAGE ============ -->
-  <div class="scroll-wrapper">
-    <div class="stage">
+  <!-- ============ HERO: full-viewport brand name ============ -->
+  <section class="hero" id="hero">
+    <div class="hero-brand">
+      <span class="hero-sencha">SENCHA</span>
+      <span class="hero-house">house</span>
+    </div>
+  </section>
 
-      <!-- BACKGROUNDS (stacked, opacity-controlled) -->
-      <div class="bg-layer bg-0">
+  <!-- ============ SCROLL STAGE ============ -->
+  <div class="scroll-wrap" id="scrollWrap">
+    <div class="stage" id="stage">
+
+      <!-- Backgrounds (stacked, crossfade) -->
+      <div class="bg bg-0">
         <video autoplay muted loop playsinline>
           <source src="https://videos.pexels.com/video-files/5929428/5929428-hd_1920_1080_25fps.mp4" type="video/mp4">
         </video>
       </div>
-      <div class="bg-layer bg-1">
+      <div class="bg bg-1">
         <video autoplay muted loop playsinline>
           <source src="https://videos.pexels.com/video-files/4926072/4926072-uhd_2732_1440_30fps.mp4" type="video/mp4">
         </video>
       </div>
-      <div class="bg-layer bg-2">
+      <div class="bg bg-2">
         <img src="https://images.pexels.com/photos/7233931/pexels-photo-7233931.jpeg?auto=compress&cs=tinysrgb&h=1200&w=1920&fit=crop" alt="" style="filter:url(#rp);">
       </div>
-      <div class="bg-layer bg-3">
-        <video autoplay muted loop playsinline>
-          <source src="https://videos.pexels.com/video-files/13722700/13722700-hd_1080_1920_25fps.mp4" type="video/mp4">
-        </video>
-      </div>
-      <div class="bg-layer bg-4">
+      <div class="bg bg-3">
         <video autoplay muted loop playsinline>
           <source src="https://videos.pexels.com/video-files/6694787/6694787-uhd_2732_1440_25fps.mp4" type="video/mp4">
         </video>
       </div>
 
-      <div class="stage-overlay"></div>
+      <div class="stage-ov"></div>
 
-      <!-- PERSISTENT ANCHORS -->
-      <div class="persist persist-left">Sencha House</div>
-      <div class="persist persist-right">Guided by Ikeda</div>
-      <div class="persist persist-scroll">
-        <span>Scroll</span>
-        <span class="scroll-line"></span>
+      <!-- Persistent anchors -->
+      <div class="anchor-left persist">SENCHA</div>
+      <div class="anchor-right persist">house</div>
+
+      <!-- Right-side stacked titles (like B&C's ADIDAS / CALVIN KLEIN / ...) -->
+      <div class="titles" id="titles">
+        <a href="#" data-i="0" class="is-active">The Standard</a>
+        <a href="#" data-i="1">Listening</a>
+        <a href="#" data-i="2">Rituals</a>
+        <a href="#" data-i="3">Other Hands</a>
       </div>
 
-      <!-- STATE 0: OPENING -->
-      <div class="state state-0">
-        <h1 style="margin-bottom:0.3em;">
-          <span class="d d-hero" style="display:block;">SENCHA</span>
-          <span class="i i-xl" style="display:block;">house</span>
-        </h1>
-        <p class="i i-md body" style="max-width:30rem;opacity:0.85;">Some things carry more than form. They carry origin, intention, the discipline behind them, everything it took to make them right. Japanese tea is one of them.</p>
-        <span class="s0-guided">Guided by Ikeda</span>
-      </div>
-
-      <!-- STATE 1: THE STANDARD -->
-      <div class="state state-1">
-        <div class="s1-top">
-          <span class="idx">I &middot; The Standard</span>
-          <div class="d d-mega" style="margin-top:1rem;">BEFORE</div>
-          <div class="d d-large" style="margin-left:clamp(1rem,5vw,4rem);">ANYTHING</div>
-          <div class="i i-lg" style="margin-top:0.5rem;margin-left:clamp(1rem,5vw,4rem);">is designed, the tea has already been decided.</div>
+      <!-- Left-side text snippets (one per section) -->
+      <div class="snippets" id="snippets">
+        <div class="snippet is-active" data-i="0">
+          <div class="snippet-idx">I &middot; The Standard</div>
+          <div class="snippet-sub">Before anything is designed, the tea has already been decided.</div>
+          <p class="snippet-body">Selection, blending, roasting: in Japanese tea these are not marketing language, they are a discipline refined over decades. This is the floor everything else is built on.</p>
         </div>
-        <div class="s1-bottom">
-          <p class="body" style="text-align:right;">Selection, blending, roasting: in Japanese tea these are not marketing language, they are a discipline refined over decades. This is the floor everything else is built on.</p>
+        <div class="snippet" data-i="1">
+          <div class="snippet-idx">II &middot; Design as Cultural Translation</div>
+          <div class="snippet-sub">Listening comes first. Expression comes only after.</div>
+          <p class="snippet-body">We do not import Japan and set it down somewhere else. We take what is essential in its values and find the form that lets it resonate here, now, for the people actually in front of us.</p>
         </div>
-      </div>
-
-      <!-- STATE 2: CULTURAL TRANSLATION -->
-      <div class="state state-2">
-        <div class="s2-top">
-          <span class="idx">II &middot; Design as Cultural Translation</span>
-          <div class="d d-mega" style="margin-top:1rem;">LISTENING</div>
-          <div class="d d-large">COMES FIRST</div>
-          <div class="i i-lg" style="margin-top:0.5rem;">expression comes only after.</div>
+        <div class="snippet" data-i="2">
+          <div class="snippet-idx">III &middot; Tea Design</div>
+          <div class="snippet-sub">Formats that don't have a name yet.</div>
+          <p class="snippet-body">We do not recreate tea ceremonies. What we build instead are structured around discovery, wellness, connection, and vitality. Whatever the format, the standard underneath doesn't move.</p>
         </div>
-        <div class="s2-bottom">
-          <p class="body">We do not import Japan and set it down somewhere else. We take what is essential in its values and find the form that lets it resonate here, now, for the people actually in front of us.</p>
-        </div>
-      </div>
-
-      <!-- STATE 3: TEA DESIGN -->
-      <div class="state state-3">
-        <div class="s3-top">
-          <span class="idx">III &middot; Tea Design</span>
-          <p class="body" style="text-align:right;margin-top:1rem;">We do not recreate tea ceremonies. A tradition already exists to do that properly. What we build are formats that don't have a name yet.</p>
-        </div>
-        <div class="s3-center">
-          <div class="d d-mega">RITUALS</div>
-          <div class="i i-xl" style="margin-top:0.2em;">without a name yet</div>
-          <div class="d d-mid" style="margin-top:0.3em;">CLARITY NOT STILLNESS</div>
-        </div>
-      </div>
-
-      <!-- STATE 4: OTHER HANDS -->
-      <div class="state state-4">
-        <div class="s4-center">
-          <span class="idx" style="display:block;margin-bottom:1rem;">IV &middot; Other Hands</span>
-          <p class="i i-md" style="opacity:0.85;">Innovation, here, has never been a solitary act. It is what happens when people who have each mastered something different sit down at the same table.</p>
-        </div>
-        <div class="s4-bottom">
-          <div class="d d-mega">NEVER</div>
-          <div class="d d-large" style="margin-left:clamp(1rem,8vw,6rem);">ALONE</div>
-          <div class="i i-md" style="margin-top:0.5rem;">we are continuing what was already there.</div>
+        <div class="snippet" data-i="3">
+          <div class="snippet-idx">IV &middot; Other Hands</div>
+          <div class="snippet-sub">Never a solitary act.</div>
+          <p class="snippet-body">The bowl a tea is served in comes from a ceramicist held to the same standard we hold the leaf to. We are not introducing collaboration into this tradition. We are continuing what was already there.</p>
         </div>
       </div>
 
     </div>
   </div>
 
-  <!-- POST-STAGE (exits the dark scroll world) -->
-  <div class="post-stage">
+  <!-- ============ POST-STAGE ============ -->
+  <div class="post">
 
     <section class="closing">
       <div style="max-width:1360px;margin:0 auto;padding:0 clamp(1.5rem,5vw,4rem);">
-        <div class="closing-eyebrow">V &middot; In Your Hands</div>
+        <div class="closing-ey">V &middot; In Your Hands</div>
         <p class="closing-hl">This is tea: made without compromise, shaped by hands beyond our own. <em>Now it is in yours.</em></p>
       </div>
     </section>
 
     <section class="branch" id="branch">
-      <a href="/sencha-house/experiences/" class="bp bp--exp">
-        <div class="bp-bg"></div>
-        <div class="bp-ov"></div>
+      <a href="/sencha-house/experiences/" class="bp bp--a">
+        <div class="bp-bg"></div><div class="bp-ov"></div>
         <div class="bp-c">
-          <div class="bp-idx">01</div>
+          <div class="bp-n">01</div>
           <h2 class="bp-t">Experiences</h2>
           <p class="bp-d">Tastings, daily rituals, and releases built around discovery, wellness, connection, and vitality.</p>
           <div class="bp-cta"><span>Explore</span><span class="bp-arr"></span></div>
         </div>
       </a>
-      <a href="/sencha-house/tea-reserve/" class="bp bp--res">
-        <div class="bp-bg"></div>
-        <div class="bp-ov"></div>
+      <a href="/sencha-house/tea-reserve/" class="bp bp--b">
+        <div class="bp-bg"></div><div class="bp-ov"></div>
         <div class="bp-c">
-          <div class="bp-idx">02</div>
+          <div class="bp-n">02</div>
           <h2 class="bp-t">teaReserve</h2>
           <p class="bp-d">A curated, gallery-style catalogue of single-origin Japanese green tea, sourced and verified lot by lot.</p>
           <div class="bp-cta"><span>Browse</span><span class="bp-arr"></span></div>
         </div>
       </a>
-      <a href="/sencha-house/design/" class="bp bp--des">
-        <div class="bp-bg"></div>
-        <div class="bp-ov"></div>
+      <a href="/sencha-house/design/" class="bp bp--c">
+        <div class="bp-bg"></div><div class="bp-ov"></div>
         <div class="bp-c">
-          <div class="bp-idx">03</div>
+          <div class="bp-n">03</div>
           <h2 class="bp-t">SH Design</h2>
           <p class="bp-d">Design consultancy for spaces, brands, and rituals built around Japanese tea, led by Kiyoto.</p>
           <div class="bp-cta"><span>Inquire</span><span class="bp-arr"></span></div>
@@ -665,74 +602,81 @@
       var isMobile = window.matchMedia('(max-width: 860px)').matches;
       if (isMobile) return;
 
-      /* ---- MAIN TIMELINE ---- */
+      var titleEls = document.querySelectorAll('.titles a');
+      var snippetEls = document.querySelectorAll('.snippet');
+      var bgEls = ['.bg-0', '.bg-1', '.bg-2', '.bg-3'];
+      var sectionCount = 4;
+      var currentIdx = 0;
+
+      /* ---- SET ACTIVE STATE ---- */
+      function setActive(idx) {
+        if (idx === currentIdx) return;
+        currentIdx = idx;
+
+        titleEls.forEach(function(el, i) {
+          el.classList.toggle('is-active', i === idx);
+        });
+
+        snippetEls.forEach(function(el, i) {
+          el.classList.toggle('is-active', i === idx);
+        });
+      }
+
+      /* ---- MAIN SCROLL TIMELINE ---- */
       var tl = gsap.timeline({
         scrollTrigger: {
-          trigger: '.scroll-wrapper',
+          trigger: '#scrollWrap',
           start: 'top top',
           end: 'bottom bottom',
-          scrub: 1.2
+          scrub: 1.5,
+          onUpdate: function(self) {
+            var p = self.progress;
+            // Map scroll progress to section index
+            var idx = Math.min(Math.floor(p * sectionCount), sectionCount - 1);
+            setActive(idx);
+          }
         }
       });
 
-      /*
-        Timeline structure (total ~50 units):
-        0-2:    hold opening
-        2-4:    transition 0->1 (bg crossfade + text swap)
-        4-8:    hold state 1
-        8-10:   transition 1->2
-        10-14:  hold state 2
-        14-16:  transition 2->3
-        16-20:  hold state 3
-        20-22:  transition 3->4
-        22-26:  hold state 4
-        26-27:  fade out everything
-      */
+      /* Fade in the stage elements at start */
+      tl.to('.titles', { opacity: 1, duration: 1 }, 0)
+        .to('.snippets', { opacity: 1, duration: 1 }, 0)
+        .to('.anchor-left', { opacity: 0.35, duration: 1 }, 0)
+        .to('.anchor-right', { opacity: 0.35, duration: 1 }, 0);
 
-      /* --- Hold opening --- */
-      tl.to({}, { duration: 2 });
+      /* Background crossfades */
+      // bg-0 visible from 0-25%
+      tl.to('.bg-0', { opacity: 1, duration: 0.5 }, 0);
+      tl.to('.bg-0', { opacity: 0, duration: 2 }, 3);
 
-      /* --- 0 -> 1 --- */
-      tl.to('.state-0', { opacity: 0, y: -80, duration: 2, ease: 'none' })
-        .to('.bg-0', { opacity: 0, duration: 2, ease: 'none' }, '<')
-        .fromTo('.state-1', { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 2, ease: 'none' }, '<')
-        .to('.bg-1', { opacity: 1, duration: 2, ease: 'none' }, '<');
+      // bg-1 visible from 25-50%
+      tl.to('.bg-1', { opacity: 1, duration: 2 }, 3);
+      tl.to('.bg-1', { opacity: 0, duration: 2 }, 7);
 
-      /* --- Hold 1 --- */
+      // bg-2 visible from 50-75%
+      tl.to('.bg-2', { opacity: 1, duration: 2 }, 7);
+      tl.to('.bg-2', { opacity: 0, duration: 2 }, 11);
+
+      // bg-3 visible from 75-100%
+      tl.to('.bg-3', { opacity: 1, duration: 2 }, 11);
+
+      /* Pad out the timeline length */
       tl.to({}, { duration: 4 });
 
-      /* --- 1 -> 2 --- */
-      tl.to('.state-1', { opacity: 0, y: -80, duration: 2, ease: 'none' })
-        .to('.bg-1', { opacity: 0, duration: 2, ease: 'none' }, '<')
-        .fromTo('.state-2', { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 2, ease: 'none' }, '<')
-        .to('.bg-2', { opacity: 1, duration: 2, ease: 'none' }, '<');
+      /* ---- HERO EXIT ----
+         Hero fades out as you scroll into the stage */
+      gsap.to('.hero', {
+        opacity: 0,
+        scale: 0.92,
+        scrollTrigger: {
+          trigger: '.hero',
+          start: 'top top',
+          end: 'bottom top',
+          scrub: true
+        }
+      });
 
-      /* --- Hold 2 --- */
-      tl.to({}, { duration: 4 });
-
-      /* --- 2 -> 3 --- */
-      tl.to('.state-2', { opacity: 0, y: -80, duration: 2, ease: 'none' })
-        .to('.bg-2', { opacity: 0, duration: 2, ease: 'none' }, '<')
-        .fromTo('.state-3', { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 2, ease: 'none' }, '<')
-        .to('.bg-3', { opacity: 1, duration: 2, ease: 'none' }, '<');
-
-      /* --- Hold 3 --- */
-      tl.to({}, { duration: 4 });
-
-      /* --- 3 -> 4 --- */
-      tl.to('.state-3', { opacity: 0, y: -80, duration: 2, ease: 'none' })
-        .to('.bg-3', { opacity: 0, duration: 2, ease: 'none' }, '<')
-        .fromTo('.state-4', { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 2, ease: 'none' }, '<')
-        .to('.bg-4', { opacity: 1, duration: 2, ease: 'none' }, '<');
-
-      /* --- Hold 4 --- */
-      tl.to({}, { duration: 4 });
-
-      /* --- Fade out to closing --- */
-      tl.to('.state-4', { opacity: 0, duration: 1.5, ease: 'none' })
-        .to('.bg-4', { opacity: 0.3, duration: 1.5, ease: 'none' }, '<');
-
-      /* ---- Branch hover ---- */
+      /* ---- BRANCH HOVER ---- */
       var branch = document.getElementById('branch');
       var bps = gsap.utils.toArray('.bp');
 
