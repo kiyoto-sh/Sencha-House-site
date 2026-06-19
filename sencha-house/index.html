@@ -19,16 +19,14 @@
       --ivory: #E6DAB8;
       --kabuse: #08190E;
       --red: #FF0033;
-      --hairline: rgba(8, 25, 14, 0.12);
       --ease: cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
 
     body {
-      background: var(--ivory);
-      color: var(--kabuse);
+      background: var(--kabuse);
+      color: var(--ivory);
       font-family: 'Lato', sans-serif;
       -webkit-font-smoothing: antialiased;
       overflow-x: hidden;
@@ -40,20 +38,21 @@
     .nav {
       position: fixed;
       top: 0; left: 0; right: 0;
-      z-index: 100;
+      z-index: 200;
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 1.4rem clamp(1.5rem, 5vw, 4rem);
-      mix-blend-mode: difference;
+      pointer-events: none;
     }
+
+    .nav > * { pointer-events: auto; }
 
     .nav-mark {
       font-family: 'Cormorant Garamond', serif;
       font-weight: 300;
       font-style: italic;
       font-size: 1.3rem;
-      color: var(--ivory);
     }
 
     .nav-links {
@@ -63,13 +62,11 @@
     }
 
     .nav-links a {
-      font-family: 'Lato', sans-serif;
       font-weight: 300;
       font-size: 0.68rem;
       letter-spacing: 0.16em;
       text-transform: uppercase;
-      color: var(--ivory);
-      opacity: 0.8;
+      opacity: 0.7;
       transition: opacity 0.3s;
     }
 
@@ -84,75 +81,139 @@
 
     .nav-burger span { width: 22px; height: 1px; background: var(--ivory); }
 
-    /* SECTION */
-    .sect {
+    /* ============================
+       THE SCROLL STAGE
+       One tall wrapper gives scroll
+       distance. One sticky viewport
+       stays pinned. Everything inside
+       it transitions via timeline.
+       ============================ */
+    .scroll-wrapper {
+      position: relative;
+      height: 600vh;
+    }
+
+    .stage {
       position: sticky;
       top: 0;
       width: 100%;
       height: 100vh;
       height: 100dvh;
       overflow: hidden;
-      will-change: transform;
     }
 
-    .sect:nth-of-type(1) { z-index: 1; }
-    .sect:nth-of-type(2) { z-index: 2; }
-    .sect:nth-of-type(3) { z-index: 3; }
-    .sect:nth-of-type(4) { z-index: 4; }
-    .sect:nth-of-type(5) { z-index: 5; }
-
-    .sect-bg {
+    /* BACKGROUNDS */
+    .bg-layer {
       position: absolute;
       inset: 0;
       z-index: 0;
     }
 
-    .sect-bg video,
-    .sect-bg img {
+    .bg-layer video,
+    .bg-layer img {
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
 
-    .sect-overlay {
+    .bg-0 { opacity: 1; }
+    .bg-1, .bg-2, .bg-3, .bg-4 { opacity: 0; }
+
+    .stage-overlay {
       position: absolute;
       inset: 0;
       z-index: 1;
+      background: linear-gradient(
+        180deg,
+        rgba(8,25,14,0.35) 0%,
+        rgba(8,25,14,0.2) 40%,
+        rgba(8,25,14,0.6) 100%
+      );
     }
 
-    /* TYPO LAYER */
-    .typo {
+    /* PERSISTENT ANCHORS (like B&C's split brand name) */
+    .persist {
       position: absolute;
-      inset: 0;
-      z-index: 2;
-      padding: clamp(5rem, 8vh, 7rem) clamp(1.5rem, 5vw, 4rem) clamp(2rem, 5vh, 4rem);
+      z-index: 5;
+      pointer-events: none;
+    }
+
+    .persist-left {
+      bottom: clamp(2rem, 4vh, 3rem);
+      left: clamp(1.5rem, 5vw, 4rem);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      font-size: 0.7rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      opacity: 0.4;
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      transform: rotate(180deg);
+    }
+
+    .persist-right {
+      bottom: clamp(2rem, 4vh, 3rem);
+      right: clamp(1.5rem, 5vw, 4rem);
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-style: italic;
+      font-size: 0.85rem;
+      letter-spacing: 0.15em;
+      opacity: 0.4;
+      writing-mode: vertical-rl;
+    }
+
+    .persist-scroll {
+      bottom: clamp(2rem, 4vh, 3rem);
+      left: 50%;
+      transform: translateX(-50%);
+      font-weight: 300;
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      opacity: 0.4;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
-      color: var(--ivory);
-    }
-
-    .typo-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-    }
-
-    .typo-bottom {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      gap: 2rem;
-    }
-
-    .typo-mid {
-      flex: 1;
-      display: flex;
       align-items: center;
+      gap: 0.5rem;
     }
+
+    .scroll-line {
+      width: 1px; height: 2.2rem;
+      background: var(--ivory);
+      opacity: 0.4;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .scroll-line::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 30%;
+      background: var(--ivory);
+      animation: drip 2.4s ease-in-out infinite;
+    }
+
+    @keyframes drip {
+      0% { transform: translateY(-100%); }
+      100% { transform: translateY(330%); }
+    }
+
+    /* TEXT STATES (all absolutely positioned, all start at opacity 0 except state-0) */
+    .state {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      padding: clamp(5rem, 8vh, 7rem) clamp(1.5rem, 5vw, 4rem) clamp(3rem, 6vh, 5rem);
+    }
+
+    .state-0 { opacity: 1; }
+    .state-1, .state-2, .state-3, .state-4 { opacity: 0; }
 
     /* Display type */
-    .display {
+    .d {
       font-family: 'Plus Jakarta Sans', sans-serif;
       font-weight: 800;
       text-transform: uppercase;
@@ -160,160 +221,95 @@
       letter-spacing: -0.02em;
     }
 
-    .display--hero { font-size: clamp(4rem, 14vw, 13rem); }
-    .display--mega { font-size: clamp(3.5rem, 12vw, 11rem); }
-    .display--large { font-size: clamp(2.5rem, 8vw, 7rem); }
-    .display--mid { font-size: clamp(1.8rem, 5vw, 4rem); }
+    .d-hero { font-size: clamp(5rem, 16vw, 15rem); }
+    .d-mega { font-size: clamp(3.5rem, 11vw, 10rem); }
+    .d-large { font-size: clamp(2.5rem, 7vw, 6.5rem); }
+    .d-mid { font-size: clamp(1.6rem, 4vw, 3.2rem); }
 
-    .accent {
+    .i {
       font-family: 'Cormorant Garamond', serif;
       font-weight: 300;
       font-style: italic;
     }
 
-    .accent--xl { font-size: clamp(1.6rem, 4vw, 3.5rem); line-height: 1.2; }
-    .accent--large { font-size: clamp(1.2rem, 2.8vw, 2.4rem); line-height: 1.3; }
-    .accent--mid { font-size: clamp(1rem, 1.8vw, 1.5rem); line-height: 1.4; }
+    .i-xl { font-size: clamp(1.6rem, 4vw, 3.5rem); line-height: 1.2; }
+    .i-lg { font-size: clamp(1.2rem, 2.5vw, 2.2rem); line-height: 1.3; }
+    .i-md { font-size: clamp(1rem, 1.6vw, 1.35rem); line-height: 1.45; }
 
-    .body-float {
+    .body {
       font-weight: 300;
-      font-size: clamp(0.85rem, 1vw, 0.95rem);
+      font-size: clamp(0.82rem, 0.95vw, 0.92rem);
       line-height: 1.8;
-      max-width: 26rem;
-      color: rgba(230,218,184,0.82);
+      max-width: 24rem;
+      opacity: 0.78;
     }
 
-    .sect-index {
+    .idx {
       font-weight: 300;
       font-size: 0.68rem;
       letter-spacing: 0.3em;
       text-transform: uppercase;
-      opacity: 0.5;
+      opacity: 0.45;
     }
 
-    .scroll-cue {
+    /* === STATE 0: OPENING === */
+    .state-0 {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .state-0 .body { text-align: center; margin: 2rem auto 0; }
+
+    .s0-guided {
+      position: absolute;
+      bottom: clamp(3rem, 6vh, 5rem);
+      left: 50%;
+      transform: translateX(-50%);
       font-weight: 300;
-      font-size: 0.62rem;
-      letter-spacing: 0.2em;
+      font-size: 0.65rem;
+      letter-spacing: 0.35em;
       text-transform: uppercase;
       opacity: 0.5;
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
     }
 
-    .scroll-cue-line {
-      width: 1px;
-      height: 2.2rem;
-      background: currentColor;
-      opacity: 0.4;
+    /* === STATE 1: THE STANDARD === */
+    .state-1 { display: flex; flex-direction: column; justify-content: space-between; }
+
+    .s1-top { text-align: left; }
+    .s1-bottom { display: flex; justify-content: flex-end; }
+
+    /* === STATE 2: CULTURAL TRANSLATION === */
+    .state-2 { display: flex; flex-direction: column; justify-content: space-between; }
+
+    .s2-top { text-align: right; align-self: flex-end; }
+    .s2-bottom { display: flex; justify-content: flex-start; }
+
+    /* === STATE 3: TEA DESIGN === */
+    .state-3 { display: flex; flex-direction: column; align-items: center; justify-content: space-between; }
+
+    .s3-top { text-align: right; align-self: flex-end; }
+    .s3-center { text-align: center; }
+
+    /* === STATE 4: OTHER HANDS === */
+    .state-4 { display: flex; flex-direction: column; justify-content: space-between; }
+
+    .s4-center { text-align: center; align-self: center; max-width: 30rem; }
+    .s4-bottom { text-align: left; }
+
+    /* ============================
+       CLOSING + BRANCH
+       ============================ */
+    .post-stage {
       position: relative;
-      overflow: hidden;
-    }
-
-    .scroll-cue-line::after {
-      content: '';
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 30%;
-      background: currentColor;
-      opacity: 1;
-      animation: drip 2.4s ease-in-out infinite;
-    }
-
-    @keyframes drip {
-      0%   { transform: translateY(-100%); }
-      100% { transform: translateY(330%); }
-    }
-
-    /* S0 — OPENING */
-    .s0 .sect-overlay {
-      background: linear-gradient(180deg, rgba(8,25,14,0.3) 0%, rgba(8,25,14,0.65) 100%);
-    }
-
-    /* S1 — THE STANDARD */
-    .s1 .sect-overlay {
-      background: linear-gradient(170deg, rgba(8,25,14,0.25) 0%, rgba(8,25,14,0.72) 100%);
-    }
-
-    .s1-headline {
-      position: absolute;
-      top: 50%;
-      left: clamp(1.5rem, 5vw, 4rem);
-      transform: translateY(-65%);
-    }
-
-    .s1-body {
-      position: absolute;
-      bottom: clamp(2rem, 5vh, 4rem);
-      right: clamp(1.5rem, 5vw, 4rem);
-      text-align: right;
-    }
-
-    /* S2 — CULTURAL TRANSLATION */
-    .s2 .sect-overlay {
-      background: linear-gradient(190deg, rgba(8,25,14,0.2) 0%, rgba(8,25,14,0.68) 100%);
-    }
-
-    .s2-headline {
-      position: absolute;
-      top: 50%;
-      right: clamp(1.5rem, 5vw, 4rem);
-      transform: translateY(-55%);
-      text-align: right;
-    }
-
-    .s2-body {
-      position: absolute;
-      bottom: clamp(2rem, 5vh, 4rem);
-      left: clamp(1.5rem, 5vw, 4rem);
-    }
-
-    /* S3 — TEA DESIGN */
-    .s3 .sect-overlay {
-      background: linear-gradient(175deg, rgba(8,25,14,0.3) 0%, rgba(8,25,14,0.7) 100%);
-    }
-
-    .s3-headline {
-      position: absolute;
-      bottom: 22%;
-      left: 50%;
-      transform: translateX(-50%);
-      text-align: center;
-      width: 90%;
-    }
-
-    .s3-body {
-      position: absolute;
-      top: clamp(5rem, 10vh, 8rem);
-      right: clamp(1.5rem, 5vw, 4rem);
-      text-align: right;
-    }
-
-    /* S4 — OTHER HANDS */
-    .s4 .sect-overlay {
-      background: linear-gradient(160deg, rgba(8,25,14,0.2) 0%, rgba(8,25,14,0.72) 100%);
-    }
-
-    .s4-headline {
-      position: absolute;
-      bottom: 18%;
-      left: clamp(1.5rem, 5vw, 4rem);
-    }
-
-    .s4-body {
-      position: absolute;
-      top: clamp(5rem, 10vh, 8rem);
-      left: 50%;
-      transform: translateX(-50%);
-      text-align: center;
-    }
-
-    /* CLOSING */
-    .closing {
-      position: relative;
-      z-index: 6;
+      z-index: 10;
       background: var(--ivory);
+      color: var(--kabuse);
+    }
+
+    .closing {
       padding: clamp(6rem, 14vw, 11rem) 0;
       text-align: center;
     }
@@ -327,7 +323,7 @@
       margin-bottom: 2.5rem;
     }
 
-    .closing-headline {
+    .closing-hl {
       font-family: 'Cormorant Garamond', serif;
       font-weight: 300;
       font-style: italic;
@@ -337,19 +333,16 @@
       margin: 0 auto;
     }
 
-    .closing-headline em {
+    .closing-hl em {
       font-style: normal;
       font-family: 'Plus Jakarta Sans', sans-serif;
       font-weight: 800;
       text-transform: uppercase;
       font-size: 0.72em;
-      letter-spacing: 0.02em;
     }
 
     /* BRANCH */
     .branch {
-      position: relative;
-      z-index: 6;
       display: flex;
       width: 100%;
       height: 100vh;
@@ -357,36 +350,33 @@
       overflow: hidden;
     }
 
-    .branch-panel {
+    .bp {
       position: relative;
       flex: 1 1 33.333%;
       height: 100%;
       overflow: hidden;
       cursor: pointer;
-      border-right: 1px solid rgba(230,218,184,0.12);
+      border-right: 1px solid rgba(8,25,14,0.08);
     }
 
-    .branch-panel:last-child { border-right: none; }
+    .bp:last-child { border-right: none; }
 
-    .branch-bg { position: absolute; inset: 0; z-index: 0; }
+    .bp-bg { position: absolute; inset: 0; z-index: 0; }
 
-    .branch-panel--exp .branch-bg { background: linear-gradient(165deg, #1a3015 0%, #0d1f0a 100%); }
-    .branch-panel--res .branch-bg { background: linear-gradient(165deg, #2d4a22 0%, #16280f 100%); }
-    .branch-panel--des .branch-bg { background: linear-gradient(165deg, #08190E 0%, #050d07 100%); }
+    .bp--exp .bp-bg { background: linear-gradient(165deg, #1a3015, #0d1f0a); }
+    .bp--res .bp-bg { background: linear-gradient(165deg, #2d4a22, #16280f); }
+    .bp--des .bp-bg { background: linear-gradient(165deg, #08190E, #050d07); }
 
-    .branch-overlay {
-      position: absolute;
-      inset: 0;
-      z-index: 1;
+    .bp-ov {
+      position: absolute; inset: 0; z-index: 1;
       background: rgba(8,25,14,0.35);
       transition: background 0.6s var(--ease);
     }
 
-    .branch-panel:hover .branch-overlay { background: rgba(8,25,14,0.15); }
+    .bp:hover .bp-ov { background: rgba(8,25,14,0.12); }
 
-    .branch-content {
-      position: relative;
-      z-index: 2;
+    .bp-c {
+      position: relative; z-index: 2;
       height: 100%;
       display: flex;
       flex-direction: column;
@@ -395,7 +385,7 @@
       color: var(--ivory);
     }
 
-    .branch-idx {
+    .bp-idx {
       font-weight: 300;
       font-size: 0.66rem;
       letter-spacing: 0.25em;
@@ -404,30 +394,28 @@
       margin-bottom: 1.2rem;
     }
 
-    .branch-title {
+    .bp-t {
       font-family: 'Plus Jakarta Sans', sans-serif;
       font-weight: 800;
       font-size: clamp(1.5rem, 2.8vw, 2.4rem);
       text-transform: uppercase;
-      letter-spacing: 0.01em;
       line-height: 1.05;
       margin-bottom: 1rem;
     }
 
-    .branch-desc {
+    .bp-d {
       font-weight: 300;
       font-size: 0.85rem;
       line-height: 1.6;
       color: rgba(230,218,184,0.75);
       max-width: 22rem;
-      opacity: 0;
-      max-height: 0;
+      opacity: 0; max-height: 0;
       transition: opacity 0.5s var(--ease), max-height 0.5s var(--ease);
     }
 
-    .branch-panel:hover .branch-desc { opacity: 1; max-height: 8rem; margin-bottom: 1.4rem; }
+    .bp:hover .bp-d { opacity: 1; max-height: 8rem; margin-bottom: 1.4rem; }
 
-    .branch-cta {
+    .bp-cta {
       font-family: 'Cormorant Garamond', serif;
       font-weight: 300;
       font-style: italic;
@@ -437,16 +425,16 @@
       gap: 0.75rem;
     }
 
-    .branch-cta-arrow {
+    .bp-arr {
       width: 1.8rem; height: 1px;
       background: var(--ivory);
       position: relative;
       transition: width 0.4s var(--ease);
     }
 
-    .branch-panel:hover .branch-cta-arrow { width: 2.6rem; }
+    .bp:hover .bp-arr { width: 2.6rem; }
 
-    .branch-cta-arrow::after {
+    .bp-arr::after {
       content: '';
       position: absolute;
       right: 0; top: -3px;
@@ -456,64 +444,53 @@
       transform: rotate(45deg);
     }
 
-    /* SVG FILTERS */
-    .svg-filters { position: absolute; width: 0; height: 0; overflow: hidden; }
-
-    /* REVEAL BASE */
-    [data-r] { opacity: 0; }
+    /* SVG */
+    .svg-f { position: absolute; width: 0; height: 0; overflow: hidden; }
 
     /* MOBILE */
     @media (max-width: 860px) {
       .nav-links { display: none; }
       .nav-burger { display: flex; }
 
-      .sect { position: relative; height: auto; min-height: 100dvh; }
-      .sect:nth-of-type(1), .sect:nth-of-type(2), .sect:nth-of-type(3),
-      .sect:nth-of-type(4), .sect:nth-of-type(5) { z-index: auto; }
+      .scroll-wrapper { height: auto; }
+      .stage { position: relative; height: auto; }
 
-      .typo {
+      .state {
         position: relative;
         min-height: 100dvh;
+        opacity: 1 !important;
       }
 
-      .s1-headline, .s2-headline, .s3-headline, .s4-headline {
-        position: relative; top: auto; left: auto; right: auto; bottom: auto;
-        transform: none; text-align: left; width: 100%;
-      }
+      .bg-layer { opacity: 1 !important; position: relative; height: 100dvh; }
 
-      .s1-body, .s2-body, .s3-body, .s4-body {
-        position: relative; top: auto; left: auto; right: auto; bottom: auto;
-        transform: none; text-align: left; margin-top: 1.5rem;
-      }
+      .persist { display: none; }
 
-      .display--hero { font-size: clamp(3rem, 16vw, 5rem); }
-      .display--mega { font-size: clamp(2.8rem, 14vw, 4.5rem); }
-      .display--large { font-size: clamp(2.2rem, 11vw, 3.5rem); }
+      .d-hero { font-size: clamp(3rem, 16vw, 5rem); }
+      .d-mega { font-size: clamp(2.8rem, 14vw, 4.5rem); }
+      .d-large { font-size: clamp(2rem, 10vw, 3.2rem); }
 
       .branch { flex-direction: column; height: auto; }
-      .branch-panel { flex: none; height: 70vh; border-right: none; border-bottom: 1px solid rgba(230,218,184,0.12); }
-      .branch-panel:last-child { border-bottom: none; }
-      .branch-desc { opacity: 1; max-height: 8rem; margin-bottom: 1.4rem; }
+      .bp { flex: none; height: 70vh; border-right: none; border-bottom: 1px solid rgba(230,218,184,0.12); }
+      .bp:last-child { border-bottom: none; }
+      .bp-d { opacity: 1; max-height: 8rem; margin-bottom: 1.4rem; }
     }
 
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
-      [data-r] { opacity: 1; }
     }
   </style>
 </head>
 <body>
 
-  <svg class="svg-filters">
+  <svg class="svg-f">
     <defs>
-      <filter id="ripple-sh">
-        <feTurbulence type="fractalNoise" baseFrequency="0.012 0.008" numOctaves="3" seed="7" result="noise"/>
-        <feDisplacementMap in="SourceGraphic" in2="noise" scale="4" xChannelSelector="R" yChannelSelector="G"/>
+      <filter id="rp">
+        <feTurbulence type="fractalNoise" baseFrequency="0.012 0.008" numOctaves="3" seed="7" result="n"/>
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="4" xChannelSelector="R" yChannelSelector="G"/>
       </filter>
     </defs>
   </svg>
 
-  <!-- NAV -->
   <nav class="nav">
     <a href="/" class="nav-mark">Sh</a>
     <ul class="nav-links">
@@ -525,285 +502,251 @@
     <div class="nav-burger" aria-label="Menu"><span></span><span></span><span></span></div>
   </nav>
 
-  <main>
+  <!-- ============ THE SCROLL STAGE ============ -->
+  <div class="scroll-wrapper">
+    <div class="stage">
 
-    <!-- 0 - OPENING -->
-    <section class="sect s0">
-      <div class="sect-bg">
+      <!-- BACKGROUNDS (stacked, opacity-controlled) -->
+      <div class="bg-layer bg-0">
         <video autoplay muted loop playsinline>
           <source src="https://videos.pexels.com/video-files/5929428/5929428-hd_1920_1080_25fps.mp4" type="video/mp4">
         </video>
       </div>
-      <div class="sect-overlay"></div>
-      <div class="typo">
-        <div class="typo-top">
-          <span class="sect-index" data-r>Shaping Essence Into Language</span>
-          <span class="scroll-cue" data-r>
-            <span>Scroll</span>
-            <span class="scroll-cue-line"></span>
-          </span>
-        </div>
-        <div class="typo-mid" style="flex-direction:column;align-items:center;justify-content:center;text-align:center;">
-          <h1 data-r>
-            <span class="display display--hero" style="display:block;">SENCHA</span>
-            <span class="accent accent--xl" style="display:block;margin-top:0.2em;">house</span>
-          </h1>
-          <p class="accent accent--mid" data-r style="margin-top:2rem;max-width:30rem;opacity:0.85;">
-            Some things carry more than form. They carry origin, intention, the discipline behind them, everything it took to make them right.
-          </p>
-        </div>
-        <div class="typo-bottom" style="justify-content:center;">
-          <span data-r style="font-weight:300;font-size:0.65rem;letter-spacing:0.35em;text-transform:uppercase;opacity:0.6;">Guided by Ikeda</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- I - THE STANDARD -->
-    <section class="sect s1">
-      <div class="sect-bg">
+      <div class="bg-layer bg-1">
         <video autoplay muted loop playsinline>
           <source src="https://videos.pexels.com/video-files/4926072/4926072-uhd_2732_1440_30fps.mp4" type="video/mp4">
         </video>
       </div>
-      <div class="sect-overlay"></div>
-      <div class="typo">
-        <div class="typo-top">
-          <span class="sect-index" data-r>I &middot; The Standard</span>
-          <span class="scroll-cue" data-r>
-            <span>Scroll</span>
-            <span class="scroll-cue-line"></span>
-          </span>
-        </div>
-        <div class="s1-headline" data-r>
-          <div class="display display--mega">BEFORE</div>
-          <div class="display display--large" style="margin-left:clamp(0.5rem,4vw,3rem);">ANYTHING</div>
-          <div class="accent accent--large" style="margin-top:0.4rem;margin-left:clamp(0.5rem,4vw,3rem);">is designed, the tea has already been decided.</div>
-        </div>
-        <div class="s1-body" data-r>
-          <p class="body-float">Selection, blending, roasting: in Japanese tea these are not marketing language, they are a discipline refined over decades. This is the floor everything else is built on. The leaf is the one part of this we never have to argue for.</p>
-        </div>
+      <div class="bg-layer bg-2">
+        <img src="https://images.pexels.com/photos/7233931/pexels-photo-7233931.jpeg?auto=compress&cs=tinysrgb&h=1200&w=1920&fit=crop" alt="" style="filter:url(#rp);">
       </div>
-    </section>
-
-    <!-- II - DESIGN AS CULTURAL TRANSLATION -->
-    <section class="sect s2">
-      <div class="sect-bg">
-        <img src="https://images.pexels.com/photos/7233931/pexels-photo-7233931.jpeg?auto=compress&cs=tinysrgb&h=1200&w=1920&fit=crop" alt="" style="filter:url(#ripple-sh);">
-      </div>
-      <div class="sect-overlay"></div>
-      <div class="typo">
-        <div class="typo-top">
-          <span class="sect-index" data-r>II &middot; Design as Cultural Translation</span>
-          <span class="scroll-cue" data-r>
-            <span>Scroll</span>
-            <span class="scroll-cue-line"></span>
-          </span>
-        </div>
-        <div class="s2-headline" data-r>
-          <div class="display display--mega">LISTENING</div>
-          <div class="display display--large">COMES FIRST</div>
-          <div class="accent accent--large" style="margin-top:0.5rem;">expression comes only after.</div>
-        </div>
-        <div class="s2-body" data-r>
-          <p class="body-float">We do not import Japan and set it down somewhere else. We take what is essential in its values and find the form that lets it resonate here, now, for the people actually in front of us.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- III - TEA DESIGN -->
-    <section class="sect s3">
-      <div class="sect-bg">
+      <div class="bg-layer bg-3">
         <video autoplay muted loop playsinline>
           <source src="https://videos.pexels.com/video-files/13722700/13722700-hd_1080_1920_25fps.mp4" type="video/mp4">
         </video>
       </div>
-      <div class="sect-overlay"></div>
-      <div class="typo">
-        <div class="typo-top" style="justify-content:flex-end;">
-          <span class="scroll-cue" data-r>
-            <span>Scroll</span>
-            <span class="scroll-cue-line"></span>
-          </span>
-        </div>
-        <div class="s3-body" data-r>
-          <span class="sect-index" style="display:block;margin-bottom:1rem;">III &middot; Tea Design</span>
-          <p class="body-float">We do not recreate tea ceremonies. A tradition already exists to do that properly. What we build are formats that don't have a name yet: discovery, wellness, connection, vitality.</p>
-        </div>
-        <div class="s3-headline" data-r>
-          <div class="display display--mega">RITUALS</div>
-          <div class="accent accent--large" style="margin-top:0.3rem;">without a name yet</div>
-          <div class="display display--mid" style="margin-top:0.2rem;">CLARITY NOT STILLNESS</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- IV - OTHER HANDS -->
-    <section class="sect s4">
-      <div class="sect-bg">
+      <div class="bg-layer bg-4">
         <video autoplay muted loop playsinline>
           <source src="https://videos.pexels.com/video-files/6694787/6694787-uhd_2732_1440_25fps.mp4" type="video/mp4">
         </video>
       </div>
-      <div class="sect-overlay"></div>
-      <div class="typo">
-        <div class="typo-top">
-          <span class="sect-index" data-r>IV &middot; Other Hands</span>
+
+      <div class="stage-overlay"></div>
+
+      <!-- PERSISTENT ANCHORS -->
+      <div class="persist persist-left">Sencha House</div>
+      <div class="persist persist-right">Guided by Ikeda</div>
+      <div class="persist persist-scroll">
+        <span>Scroll</span>
+        <span class="scroll-line"></span>
+      </div>
+
+      <!-- STATE 0: OPENING -->
+      <div class="state state-0">
+        <h1 style="margin-bottom:0.3em;">
+          <span class="d d-hero" style="display:block;">SENCHA</span>
+          <span class="i i-xl" style="display:block;">house</span>
+        </h1>
+        <p class="i i-md body" style="max-width:30rem;opacity:0.85;">Some things carry more than form. They carry origin, intention, the discipline behind them, everything it took to make them right. Japanese tea is one of them.</p>
+        <span class="s0-guided">Guided by Ikeda</span>
+      </div>
+
+      <!-- STATE 1: THE STANDARD -->
+      <div class="state state-1">
+        <div class="s1-top">
+          <span class="idx">I &middot; The Standard</span>
+          <div class="d d-mega" style="margin-top:1rem;">BEFORE</div>
+          <div class="d d-large" style="margin-left:clamp(1rem,5vw,4rem);">ANYTHING</div>
+          <div class="i i-lg" style="margin-top:0.5rem;margin-left:clamp(1rem,5vw,4rem);">is designed, the tea has already been decided.</div>
         </div>
-        <div class="s4-body" data-r>
-          <p class="accent accent--mid" style="max-width:28rem;opacity:0.85;">Innovation, here, has never been a solitary act. It is what happens when people who have each mastered something different sit down at the same table.</p>
+        <div class="s1-bottom">
+          <p class="body" style="text-align:right;">Selection, blending, roasting: in Japanese tea these are not marketing language, they are a discipline refined over decades. This is the floor everything else is built on.</p>
         </div>
-        <div class="s4-headline" data-r>
-          <div class="display display--mega">NEVER</div>
-          <div class="display display--large" style="margin-left:clamp(0.5rem,6vw,5rem);">ALONE</div>
-          <div class="accent accent--mid" style="margin-top:0.5rem;">we are continuing what was already there.</div>
+      </div>
+
+      <!-- STATE 2: CULTURAL TRANSLATION -->
+      <div class="state state-2">
+        <div class="s2-top">
+          <span class="idx">II &middot; Design as Cultural Translation</span>
+          <div class="d d-mega" style="margin-top:1rem;">LISTENING</div>
+          <div class="d d-large">COMES FIRST</div>
+          <div class="i i-lg" style="margin-top:0.5rem;">expression comes only after.</div>
         </div>
+        <div class="s2-bottom">
+          <p class="body">We do not import Japan and set it down somewhere else. We take what is essential in its values and find the form that lets it resonate here, now, for the people actually in front of us.</p>
+        </div>
+      </div>
+
+      <!-- STATE 3: TEA DESIGN -->
+      <div class="state state-3">
+        <div class="s3-top">
+          <span class="idx">III &middot; Tea Design</span>
+          <p class="body" style="text-align:right;margin-top:1rem;">We do not recreate tea ceremonies. A tradition already exists to do that properly. What we build are formats that don't have a name yet.</p>
+        </div>
+        <div class="s3-center">
+          <div class="d d-mega">RITUALS</div>
+          <div class="i i-xl" style="margin-top:0.2em;">without a name yet</div>
+          <div class="d d-mid" style="margin-top:0.3em;">CLARITY NOT STILLNESS</div>
+        </div>
+      </div>
+
+      <!-- STATE 4: OTHER HANDS -->
+      <div class="state state-4">
+        <div class="s4-center">
+          <span class="idx" style="display:block;margin-bottom:1rem;">IV &middot; Other Hands</span>
+          <p class="i i-md" style="opacity:0.85;">Innovation, here, has never been a solitary act. It is what happens when people who have each mastered something different sit down at the same table.</p>
+        </div>
+        <div class="s4-bottom">
+          <div class="d d-mega">NEVER</div>
+          <div class="d d-large" style="margin-left:clamp(1rem,8vw,6rem);">ALONE</div>
+          <div class="i i-md" style="margin-top:0.5rem;">we are continuing what was already there.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- POST-STAGE (exits the dark scroll world) -->
+  <div class="post-stage">
+
+    <section class="closing">
+      <div style="max-width:1360px;margin:0 auto;padding:0 clamp(1.5rem,5vw,4rem);">
+        <div class="closing-eyebrow">V &middot; In Your Hands</div>
+        <p class="closing-hl">This is tea: made without compromise, shaped by hands beyond our own. <em>Now it is in yours.</em></p>
       </div>
     </section>
 
-  </main>
+    <section class="branch" id="branch">
+      <a href="/sencha-house/experiences/" class="bp bp--exp">
+        <div class="bp-bg"></div>
+        <div class="bp-ov"></div>
+        <div class="bp-c">
+          <div class="bp-idx">01</div>
+          <h2 class="bp-t">Experiences</h2>
+          <p class="bp-d">Tastings, daily rituals, and releases built around discovery, wellness, connection, and vitality.</p>
+          <div class="bp-cta"><span>Explore</span><span class="bp-arr"></span></div>
+        </div>
+      </a>
+      <a href="/sencha-house/tea-reserve/" class="bp bp--res">
+        <div class="bp-bg"></div>
+        <div class="bp-ov"></div>
+        <div class="bp-c">
+          <div class="bp-idx">02</div>
+          <h2 class="bp-t">teaReserve</h2>
+          <p class="bp-d">A curated, gallery-style catalogue of single-origin Japanese green tea, sourced and verified lot by lot.</p>
+          <div class="bp-cta"><span>Browse</span><span class="bp-arr"></span></div>
+        </div>
+      </a>
+      <a href="/sencha-house/design/" class="bp bp--des">
+        <div class="bp-bg"></div>
+        <div class="bp-ov"></div>
+        <div class="bp-c">
+          <div class="bp-idx">03</div>
+          <h2 class="bp-t">SH Design</h2>
+          <p class="bp-d">Design consultancy for spaces, brands, and rituals built around Japanese tea, led by Kiyoto.</p>
+          <div class="bp-cta"><span>Inquire</span><span class="bp-arr"></span></div>
+        </div>
+      </a>
+    </section>
 
-  <!-- V - IN YOUR HANDS -->
-  <section class="closing" data-r>
-    <div style="max-width:1360px;margin:0 auto;padding:0 clamp(1.5rem,5vw,4rem);">
-      <div class="closing-eyebrow">V &middot; In Your Hands</div>
-      <p class="closing-headline">This is tea: made without compromise, shaped by hands beyond our own. <em>Now it is in yours.</em></p>
-    </div>
-  </section>
-
-  <!-- BRANCH -->
-  <section class="branch" id="branch">
-    <a href="/sencha-house/experiences/" class="branch-panel branch-panel--exp">
-      <div class="branch-bg"></div>
-      <div class="branch-overlay"></div>
-      <div class="branch-content">
-        <div class="branch-idx">01</div>
-        <h2 class="branch-title">Experiences</h2>
-        <p class="branch-desc">Tastings, daily rituals, and releases built around discovery, wellness, connection, and vitality.</p>
-        <div class="branch-cta"><span>Explore</span><span class="branch-cta-arrow"></span></div>
-      </div>
-    </a>
-    <a href="/sencha-house/tea-reserve/" class="branch-panel branch-panel--res">
-      <div class="branch-bg"></div>
-      <div class="branch-overlay"></div>
-      <div class="branch-content">
-        <div class="branch-idx">02</div>
-        <h2 class="branch-title">teaReserve</h2>
-        <p class="branch-desc">A curated, gallery-style catalogue of single-origin Japanese green tea, sourced and verified lot by lot.</p>
-        <div class="branch-cta"><span>Browse</span><span class="branch-cta-arrow"></span></div>
-      </div>
-    </a>
-    <a href="/sencha-house/design/" class="branch-panel branch-panel--des">
-      <div class="branch-bg"></div>
-      <div class="branch-overlay"></div>
-      <div class="branch-content">
-        <div class="branch-idx">03</div>
-        <h2 class="branch-title">SH Design</h2>
-        <p class="branch-desc">Design consultancy for spaces, brands, and rituals built around Japanese tea, led by Kiyoto.</p>
-        <div class="branch-cta"><span>Inquire</span><span class="branch-cta-arrow"></span></div>
-      </div>
-    </a>
-  </section>
+  </div>
 
   <script>
-    (function () {
-      'use strict';
+    (function() {
 
       gsap.registerPlugin(ScrollTrigger);
 
-      /* Lenis smooth scroll */
-      var lenis = new Lenis({ lerp: 0.08, smoothWheel: true });
+      /* Lenis */
+      var lenis = new Lenis({ lerp: 0.07, smoothWheel: true });
       lenis.on('scroll', ScrollTrigger.update);
-      gsap.ticker.add(function(time) { lenis.raf(time * 1000); });
+      gsap.ticker.add(function(t) { lenis.raf(t * 1000); });
       gsap.ticker.lagSmoothing(0);
 
       var isMobile = window.matchMedia('(max-width: 860px)').matches;
+      if (isMobile) return;
 
-      /* Entrance reveals */
-      gsap.utils.toArray('[data-r]').forEach(function(el, i) {
-        var trig = el.closest('.sect') || el;
-        gsap.to(el, {
-          opacity: 1,
-          duration: 1.2,
-          ease: 'power2.out',
-          delay: i < 4 ? 0.2 + i * 0.15 : 0,
-          scrollTrigger: {
-            trigger: trig,
-            start: 'top 60%',
-            once: true
-          }
+      /* ---- MAIN TIMELINE ---- */
+      var tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: '.scroll-wrapper',
+          start: 'top top',
+          end: 'bottom bottom',
+          scrub: 1.2
+        }
+      });
+
+      /*
+        Timeline structure (total ~50 units):
+        0-2:    hold opening
+        2-4:    transition 0->1 (bg crossfade + text swap)
+        4-8:    hold state 1
+        8-10:   transition 1->2
+        10-14:  hold state 2
+        14-16:  transition 2->3
+        16-20:  hold state 3
+        20-22:  transition 3->4
+        22-26:  hold state 4
+        26-27:  fade out everything
+      */
+
+      /* --- Hold opening --- */
+      tl.to({}, { duration: 2 });
+
+      /* --- 0 -> 1 --- */
+      tl.to('.state-0', { opacity: 0, y: -80, duration: 2, ease: 'none' })
+        .to('.bg-0', { opacity: 0, duration: 2, ease: 'none' }, '<')
+        .fromTo('.state-1', { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 2, ease: 'none' }, '<')
+        .to('.bg-1', { opacity: 1, duration: 2, ease: 'none' }, '<');
+
+      /* --- Hold 1 --- */
+      tl.to({}, { duration: 4 });
+
+      /* --- 1 -> 2 --- */
+      tl.to('.state-1', { opacity: 0, y: -80, duration: 2, ease: 'none' })
+        .to('.bg-1', { opacity: 0, duration: 2, ease: 'none' }, '<')
+        .fromTo('.state-2', { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 2, ease: 'none' }, '<')
+        .to('.bg-2', { opacity: 1, duration: 2, ease: 'none' }, '<');
+
+      /* --- Hold 2 --- */
+      tl.to({}, { duration: 4 });
+
+      /* --- 2 -> 3 --- */
+      tl.to('.state-2', { opacity: 0, y: -80, duration: 2, ease: 'none' })
+        .to('.bg-2', { opacity: 0, duration: 2, ease: 'none' }, '<')
+        .fromTo('.state-3', { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 2, ease: 'none' }, '<')
+        .to('.bg-3', { opacity: 1, duration: 2, ease: 'none' }, '<');
+
+      /* --- Hold 3 --- */
+      tl.to({}, { duration: 4 });
+
+      /* --- 3 -> 4 --- */
+      tl.to('.state-3', { opacity: 0, y: -80, duration: 2, ease: 'none' })
+        .to('.bg-3', { opacity: 0, duration: 2, ease: 'none' }, '<')
+        .fromTo('.state-4', { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 2, ease: 'none' }, '<')
+        .to('.bg-4', { opacity: 1, duration: 2, ease: 'none' }, '<');
+
+      /* --- Hold 4 --- */
+      tl.to({}, { duration: 4 });
+
+      /* --- Fade out to closing --- */
+      tl.to('.state-4', { opacity: 0, duration: 1.5, ease: 'none' })
+        .to('.bg-4', { opacity: 0.3, duration: 1.5, ease: 'none' }, '<');
+
+      /* ---- Branch hover ---- */
+      var branch = document.getElementById('branch');
+      var bps = gsap.utils.toArray('.bp');
+
+      bps.forEach(function(p) {
+        p.addEventListener('mouseenter', function() {
+          bps.forEach(function(b) {
+            gsap.to(b, { flex: b === p ? '1 1 50%' : '1 1 25%', duration: 0.7, ease: 'power3.inOut' });
+          });
         });
       });
 
-      /* Sticky-stack scroll effects (desktop) */
-      if (!isMobile) {
-        gsap.utils.toArray('.sect').forEach(function(section) {
-          var bg = section.querySelector('.sect-bg video, .sect-bg img');
-          var typo = section.querySelector('.typo');
-
-          if (bg) {
-            gsap.fromTo(bg,
-              { scale: 1.15 },
-              {
-                scale: 1.0,
-                ease: 'none',
-                scrollTrigger: {
-                  trigger: section,
-                  start: 'top top',
-                  end: 'bottom top',
-                  scrub: true
-                }
-              }
-            );
-          }
-
-          if (typo) {
-            gsap.to(typo, {
-              opacity: 0,
-              y: -60,
-              ease: 'none',
-              scrollTrigger: {
-                trigger: section,
-                start: '60% top',
-                end: 'bottom top',
-                scrub: true
-              }
-            });
-          }
-        });
-      }
-
-      /* 3-way branch hover expand */
-      if (!isMobile) {
-        var branch = document.getElementById('branch');
-        var panels = gsap.utils.toArray('.branch-panel');
-
-        panels.forEach(function(panel) {
-          panel.addEventListener('mouseenter', function() {
-            panels.forEach(function(p) {
-              gsap.to(p, {
-                flex: p === panel ? '1 1 50%' : '1 1 25%',
-                duration: 0.7,
-                ease: 'power3.inOut'
-              });
-            });
-          });
-        });
-
-        branch.addEventListener('mouseleave', function() {
-          gsap.to(panels, {
-            flex: '1 1 33.333%',
-            duration: 0.7,
-            ease: 'power3.inOut'
-          });
-        });
-      }
-
-      /* Safety timeout */
-      setTimeout(function() {
-        document.querySelectorAll('[data-r]').forEach(function(el) {
-          el.style.opacity = '1';
-        });
-      }, 3500);
+      branch.addEventListener('mouseleave', function() {
+        gsap.to(bps, { flex: '1 1 33.333%', duration: 0.7, ease: 'power3.inOut' });
+      });
 
     })();
   </script>
