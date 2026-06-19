@@ -21,6 +21,21 @@
   body { background: #fff; color: var(--kabuse); font-family: 'Lato', sans-serif; -webkit-font-smoothing: antialiased; overflow-x: hidden; cursor: none; }
   a { color: inherit; text-decoration: none; }
 
+  /* ===========================================
+     WORLD SWITCH - top-left. Symmetric: both
+     worlds shown as equal peers in one control,
+     the current one marked with an underline.
+     Same mix-blend-mode trick as the section nav
+     so it stays legible over dark video AND the
+     ivory/kabuse end of the page.
+     =========================================== */
+  .world { position: fixed; top: 0; left: 0; z-index: 200; display: flex; align-items: center; gap: 0.6rem; padding: 1.6rem var(--edge); mix-blend-mode: difference; }
+  .world-link { position: relative; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: #fff; opacity: 0.5; transition: opacity 0.3s; }
+  .world-link:hover { opacity: 1; }
+  .world-link.is-active { opacity: 1; }
+  .world-link.is-active::after { content: ''; position: absolute; left: 0; right: 0; bottom: -0.42rem; height: 1px; background: #fff; }
+  .world-sep { color: #fff; opacity: 0.32; font-size: 0.7rem; font-weight: 300; }
+
   .nav { position: fixed; top: 0; right: 0; z-index: 200; display: flex; align-items: center; gap: clamp(1.2rem,2.5vw,2rem); padding: 1.6rem var(--edge); mix-blend-mode: difference; }
   .nav a { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: #fff; opacity: 0.85; transition: opacity 0.3s; }
   .nav a:hover { opacity: 1; }
@@ -50,92 +65,89 @@
   .anc-c { left: 50%; transform: translate(-50%, -50%); font-family: 'Cormorant Garamond', serif; font-weight: 300; font-style: italic; font-size: 1rem; }
   .anc-r { right: var(--edge); font-family: 'Cormorant Garamond', serif; font-weight: 300; font-style: italic; font-size: 0.95rem; letter-spacing: 0.06em; }
 
-  /* ===========================================
-     ACTIVE TITLE - left, ABOVE the line.
-     Masked single-slot track. The mask has
-     vertical padding built into its measured
-     height (JS adds headroom) so tall ascenders
-     are never clipped - the prior "cut off" bug.
-     Bottom edge pinned just above the line via
-     translateY(calc(-100% - gap)); grows upward.
-     =========================================== */
-  /* Title slots are now individually animated (scale + fade), mirroring
-     the right-side queue. They stack at the SAME anchor point (all
-     absolute, bottom-aligned) and the animation handoff guarantees only
-     one is readable at a time: outgoing fades to 0 before incoming
-     reaches full opacity. transform-origin bottom-left so growth is
-     upward from just above the line, never crossing it. overflow is no
-     longer needed for masking since opacity does the separation, but x
-     stays visible so long titles aren't clipped. */
+  /* =========================================== ACTIVE TITLE =========================================== */
   .active-area { position: absolute; z-index: 20; top: 50%; transform: translateY(calc(-100% - 1.6rem)); left: var(--edge); width: 44vw; opacity: 0; }
   .title-track { position: relative; height: 100%; }
   .title-slot { position: absolute; left: 0; bottom: 0; white-space: nowrap; transform-origin: left bottom; will-change: transform, opacity; }
   .active-title { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 900; text-transform: uppercase; font-size: clamp(1.8rem,4.4vw,4rem); line-height: 0.92; letter-spacing: -0.06em; color: #fff; white-space: nowrap; display: block; }
 
-  /* ===========================================
-     MANIFESTO - left, BELOW the line. Fades and
-     rises in as the title reaches full size.
-     =========================================== */
+  /* =========================================== MANIFESTO =========================================== */
   .manifesto { position: absolute; z-index: 20; top: 50%; left: var(--edge); width: clamp(20rem, 34vw, 30rem); margin-top: 2.2rem; opacity: 0; }
   .mani { position: absolute; top: 0; left: 0; width: 100%; opacity: 0; }
   .mani-idx { font-size: 10px; letter-spacing: 0.4em; font-weight: 400; color: var(--ivory); opacity: 0.5; text-transform: uppercase; margin-bottom: 1.1rem; }
   .mani-body { font-weight: 300; font-size: clamp(0.82rem, 0.95vw, 0.92rem); line-height: 1.85; color: rgba(255,255,255,0.72); }
 
-  /* ===========================================
-     QUEUE - right, BELOW the line, under "house".
-     Items rise from lower-right toward the line,
-     shrinking and fading, vanishing before they
-     reach it. Mirror of the left title entrance.
-     =========================================== */
-  /* Queue anchored just BELOW the line (calc(50% + gap)) so the stack
-     sits cleanly under the "house" anchor. Items extend downward from
-     here; the front item rises toward the line as it departs but is
-     fully faded before reaching it. */
+  /* =========================================== QUEUE =========================================== */
   .queue { position: absolute; z-index: 15; right: var(--edge); top: calc(50% + 1.6rem); text-align: right; opacity: 0; }
   .q-item { position: absolute; top: 0; right: 0; transform-origin: right top; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; text-transform: uppercase; font-size: clamp(1.8rem,4.4vw,4rem); line-height: 1; letter-spacing: -0.02em; color: #fff; white-space: nowrap; opacity: 0; will-change: transform, opacity; }
 
   .post { position: relative; z-index: 10; background: var(--ivory); color: var(--kabuse); }
-  .closing { padding: clamp(6rem,14vw,11rem) 0; text-align: center; }
-  .closing-ey { font-weight: 300; font-size: 0.7rem; letter-spacing: 0.3em; text-transform: uppercase; opacity: 0.5; margin-bottom: 2.5rem; }
-  .closing-hl { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-style: italic; font-size: clamp(1.6rem,4vw,3.2rem); line-height: 1.35; max-width: 24ch; margin: 0 auto; }
-  .closing-hl em { font-style: normal; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; text-transform: uppercase; font-size: 0.72em; }
 
-  .branch { display: flex; width: 100%; height: 100vh; height: 100dvh; overflow: hidden; }
-  .bp { position: relative; flex: 1 1 33.333%; height: 100%; overflow: hidden; cursor: none; border-right: 1px solid rgba(230,218,184,0.12); }
-  .bp:last-child { border-right: none; }
-  /* End-panel background images. bp-bg holds the image; a gradient
-     overlay sits on top for text legibility (gradient is now in bp-ov,
-     not the only layer). */
-  .bp-bg { position: absolute; inset: 0; z-index: 0; }
-  .bp-bg img { width: 100%; height: 100%; object-fit: cover; }
-  .bp-ov { position: absolute; inset: 0; z-index: 1; background: linear-gradient(to top, rgba(8,25,14,0.9) 0%, rgba(8,25,14,0.55) 50%, rgba(8,25,14,0.35) 100%); transition: background 0.6s cubic-bezier(.16,1,.3,1); }
-  .bp:hover .bp-ov { background: linear-gradient(to top, rgba(8,25,14,0.82) 0%, rgba(8,25,14,0.4) 50%, rgba(8,25,14,0.15) 100%); }
-  .bp-c { position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; padding: clamp(2rem,4vw,3rem); color: var(--ivory); }
-  .bp-n { font-weight: 300; font-size: 0.66rem; letter-spacing: 0.25em; text-transform: uppercase; opacity: 0.6; margin-bottom: 1.2rem; }
-  .bp-t { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: clamp(1.5rem,2.8vw,2.4rem); text-transform: uppercase; line-height: 1.05; margin-bottom: 1rem; }
-  .bp-d { font-weight: 300; font-size: 0.85rem; line-height: 1.6; color: rgba(230,218,184,0.78); max-width: 22rem; opacity: 0; max-height: 0; transition: opacity 0.5s cubic-bezier(.16,1,.3,1), max-height 0.5s cubic-bezier(.16,1,.3,1); }
-  .bp:hover .bp-d { opacity: 1; max-height: 8rem; margin-bottom: 1.4rem; }
-  .bp-cta { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-style: italic; font-size: 1rem; display: flex; align-items: center; gap: 0.75rem; }
-  .bp-arr { width: 1.8rem; height: 1px; background: var(--ivory); position: relative; transition: width 0.4s cubic-bezier(.16,1,.3,1); }
-  .bp:hover .bp-arr { width: 2.6rem; }
+  /* ===========================================
+     BRIDGE - the manifesto resolves into this.
+     A spine descends from the top (echoing the
+     pinned section's 50% spine), the eyebrow and
+     the closing line rise in line by line, and a
+     marker hands off into the three-way branch.
+     =========================================== */
+  .bridge { position: relative; min-height: 86vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: clamp(7rem,16vw,12rem) var(--edge) clamp(5rem,11vw,8rem); overflow: hidden; }
+  .bridge-spine { position: absolute; top: 0; left: 50%; width: 1px; height: clamp(4.5rem,10vw,8rem); background: var(--kabuse); opacity: 0.26; transform-origin: top center; transform: scaleY(0); }
+  .bridge-ey { font-weight: 300; font-size: 0.7rem; letter-spacing: 0.34em; text-transform: uppercase; opacity: 0; margin-bottom: 2.8rem; }
+  .bridge-hl { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-style: italic; font-size: clamp(1.7rem,4.6vw,3.5rem); line-height: 1.34; max-width: 26ch; margin: 0 auto; }
+  .bridge-line { display: block; opacity: 0; transform: translateY(28px); will-change: transform, opacity; }
+  .bridge-hl em { font-style: normal; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; text-transform: uppercase; font-size: 0.6em; letter-spacing: -0.01em; display: inline-block; margin-top: 0.5em; }
+  .bridge-cue { margin-top: clamp(3rem,7vw,5rem); font-weight: 300; font-size: 0.62rem; letter-spacing: 0.32em; text-transform: uppercase; opacity: 0; display: flex; flex-direction: column; align-items: center; gap: 0.9rem; }
+  .bridge-cue::after { content: ''; width: 1px; height: 2.6rem; background: var(--kabuse); opacity: 0.4; }
+
+  /* ===========================================
+     BRANCH - type-forward, manifesto language.
+     Dark Kabuse ground. A giant italic numeral
+     watermarks each panel (echo of .big-char).
+     Type is the hero and is fully composed at
+     rest; the photo sits recessed behind a heavy
+     veil and BLOOMS up on hover. Each panel's
+     content reveals on scroll, staggered. The
+     hover-expand mechanic is preserved.
+     =========================================== */
+  .branch { position: relative; display: flex; width: 100%; height: 100vh; height: 100dvh; overflow: hidden; background: var(--kabuse); }
+  .bp { position: relative; flex: 1 1 33.333%; height: 100%; overflow: hidden; cursor: none; display: block; }
+
+  .bp-edge { position: absolute; z-index: 4; top: 0; left: 0; width: 1px; height: 100%; background: rgba(230,218,184,0.16); transform-origin: top center; transform: scaleY(0); }
+  .bp:first-child .bp-edge { display: none; }
+
+  .bp-media { position: absolute; inset: 0; z-index: 0; opacity: 0.18; }
+  .bp-media img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(0.25) brightness(0.72); transform: scale(1.08); transition: transform 1.3s cubic-bezier(.16,1,.3,1); }
+  .bp:hover .bp-media img { transform: scale(1); }
+
+  .bp-veil { position: absolute; inset: 0; z-index: 1; background: linear-gradient(to top, rgba(8,25,14,0.97) 0%, rgba(8,25,14,0.85) 46%, rgba(8,25,14,0.72) 100%); transition: background 0.7s cubic-bezier(.16,1,.3,1); }
+  .bp:hover .bp-veil { background: linear-gradient(to top, rgba(8,25,14,0.9) 0%, rgba(8,25,14,0.5) 50%, rgba(8,25,14,0.26) 100%); }
+
+  .bp-num { position: absolute; z-index: 2; top: clamp(1.6rem,4vw,3.4rem); left: clamp(1.5rem,3vw,2.6rem); font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 400; font-size: clamp(5rem,11vw,11rem); line-height: 1; color: var(--ivory); opacity: 0.1; pointer-events: none; user-select: none; }
+
+  .bp-c { position: relative; z-index: 3; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; padding: clamp(2rem,4vw,3.4rem); color: var(--ivory); }
+  .bp-k { font-weight: 300; font-size: 0.64rem; letter-spacing: 0.32em; text-transform: uppercase; opacity: 0.55; margin-bottom: 1.4rem; }
+  .bp-t { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 900; font-size: clamp(1.7rem,2.9vw,2.7rem); text-transform: uppercase; line-height: 1; letter-spacing: -0.03em; margin-bottom: 1.1rem; }
+  .bp-d { font-weight: 300; font-size: 0.86rem; line-height: 1.7; color: rgba(230,218,184,0.74); max-width: 24rem; }
+  .bp-rule { width: 100%; max-width: 24rem; height: 1px; background: rgba(230,218,184,0.22); margin: 1.7rem 0 1.3rem; transform-origin: left center; transform: scaleX(0); }
+  .bp-cta { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-style: italic; font-size: 1.05rem; display: flex; align-items: center; gap: 0.8rem; }
+  .bp-arr { width: 1.9rem; height: 1px; background: var(--ivory); position: relative; transition: width 0.4s cubic-bezier(.16,1,.3,1); }
+  .bp:hover .bp-arr { width: 2.9rem; }
   .bp-arr::after { content: ''; position: absolute; right: 0; top: -3px; width: 7px; height: 7px; border-right: 1px solid var(--ivory); border-top: 1px solid var(--ivory); transform: rotate(45deg); }
 
   .svg-f { position: absolute; width: 0; height: 0; overflow: hidden; }
 
-  /* ===========================================
-     MOBILE - full parity. The pinned scroll
-     system is kept, scaled down: S and H anchors
-     on the sides, same diagonal queue/title
-     motion, same manifesto. Only sizes change.
-     white-space is reset to normal on the few
-     elements where nowrap would overflow a phone.
-     =========================================== */
+  /* =========================================== MOBILE =========================================== */
   @media (max-width: 860px) {
     :root { --edge: 1.25rem; }
     body { cursor: auto; }
     .custom-cursor { display: none; }
     .nav a:not(:last-child) { display: none; }
     .nav-burger { display: flex; }
+
+    .world { padding: 1.25rem var(--edge); gap: 0.45rem; }
+    .world-link { font-size: 0.56rem; letter-spacing: 0.05em; }
+    .world-link.is-active::after { bottom: -0.3rem; }
+    .world-sep { font-size: 0.55rem; }
 
     .big-char { font-size: 48vh; }
     .word-s, .word-h { font-size: clamp(2.6rem, 16vw, 5rem); }
@@ -144,24 +156,20 @@
     .anc-r { font-size: 0.7rem; }
     .anc-c { font-size: 0.75rem; }
 
-    /* Title: narrower column, smaller type, but SAME mechanic and same
-       above-the-line anchoring. */
     .active-area { width: 80vw; transform: translateY(calc(-100% - 0.7rem)); }
     .active-title { font-size: clamp(1.5rem, 7.5vw, 2.6rem); }
 
-    /* Manifesto: narrow left-side block, smaller text, tight line spacing
-       so it stays compact and well clear of the right-side queue. */
     .manifesto { width: 44vw; margin-top: 0.9rem; }
     .mani-body { font-size: 0.62rem; line-height: 1.45; }
     .mani-idx { font-size: 8px; margin-bottom: 0.5rem; letter-spacing: 0.3em; }
 
-    /* Queue: smaller, compact stack, same motion. */
     .q-item { font-size: clamp(1rem, 5vw, 1.7rem); }
 
     .branch { flex-direction: column; height: auto; }
-    .bp { flex: none; height: 60vh; border-right: none; border-bottom: 1px solid rgba(230,218,184,0.12); cursor: pointer; }
-    .bp:last-child { border-bottom: none; }
-    .bp-d { opacity: 1; max-height: 8rem; margin-bottom: 1.4rem; }
+    .bp { flex: none; height: 64vh; cursor: pointer; }
+    .bp-edge { display: none; }
+    .bp + .bp { border-top: 1px solid rgba(230,218,184,0.14); }
+    .bp-num { font-size: clamp(4.5rem,22vw,8rem); }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -173,6 +181,12 @@
 <svg class="svg-f"><defs><filter id="rp"><feTurbulence type="fractalNoise" baseFrequency="0.012 0.008" numOctaves="3" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="4" xChannelSelector="R" yChannelSelector="G"/></filter></defs></svg>
 
 <div class="custom-cursor" id="cursor"></div>
+
+<nav class="world" aria-label="Brand worlds">
+  <a href="/sencha-house/" class="world-link is-active">Sencha House</a>
+  <span class="world-sep">/</span>
+  <a href="/ikeda-europe/" class="world-link">Ikeda Europe</a>
+</nav>
 
 <nav class="nav">
   <a href="/">Home</a>
@@ -243,16 +257,58 @@
 </div>
 
 <div class="post">
-  <section class="closing">
-    <div style="max-width:1360px;margin:0 auto;padding:0 var(--edge);">
-      <div class="closing-ey">V &middot; In Your Hands</div>
-      <p class="closing-hl">This is tea: made without compromise, shaped by hands beyond our own. <em>Now it is in yours.</em></p>
-    </div>
+  <section class="bridge">
+    <div class="bridge-spine"></div>
+    <div class="bridge-ey">V &middot; In Your Hands</div>
+    <p class="bridge-hl">
+      <span class="bridge-line">This is tea.</span>
+      <span class="bridge-line">Made without compromise,</span>
+      <span class="bridge-line">shaped by hands beyond our own.</span>
+      <span class="bridge-line"><em>Now it is in yours.</em></span>
+    </p>
+    <div class="bridge-cue">Three Ways In</div>
   </section>
+
   <section class="branch" id="branch">
-    <a href="/sencha-house/experiences/" class="bp bp--a"><div class="bp-bg"><img src="https://images.pexels.com/photos/5946083/pexels-photo-5946083.jpeg?auto=compress&cs=tinysrgb&h=1400&w=1000&fit=crop" alt=""></div><div class="bp-ov"></div><div class="bp-c"><div class="bp-n">01</div><h2 class="bp-t">Experiences</h2><p class="bp-d">Tastings, daily rituals, and releases built around discovery, wellness, connection, and vitality.</p><div class="bp-cta"><span>Explore</span><span class="bp-arr"></span></div></div></a>
-    <a href="/sencha-house/tea-reserve/" class="bp bp--b"><div class="bp-bg"><img src="https://images.pexels.com/photos/4226896/pexels-photo-4226896.jpeg?auto=compress&cs=tinysrgb&h=1400&w=1000&fit=crop" alt=""></div><div class="bp-ov"></div><div class="bp-c"><div class="bp-n">02</div><h2 class="bp-t">teaReserve</h2><p class="bp-d">A curated, gallery-style catalogue of single-origin Japanese green tea, sourced and verified lot by lot.</p><div class="bp-cta"><span>Browse</span><span class="bp-arr"></span></div></div></a>
-    <a href="/sencha-house/design/" class="bp bp--c"><div class="bp-bg"><img src="https://images.pexels.com/photos/6087673/pexels-photo-6087673.jpeg?auto=compress&cs=tinysrgb&h=1400&w=1000&fit=crop" alt=""></div><div class="bp-ov"></div><div class="bp-c"><div class="bp-n">03</div><h2 class="bp-t">SH Design</h2><p class="bp-d">Design consultancy for spaces, brands, and rituals built around Japanese tea, led by Kiyoto.</p><div class="bp-cta"><span>Inquire</span><span class="bp-arr"></span></div></div></a>
+    <a href="/sencha-house/experiences/" class="bp">
+      <span class="bp-edge"></span>
+      <div class="bp-media"><img src="https://images.pexels.com/photos/5946083/pexels-photo-5946083.jpeg?auto=compress&cs=tinysrgb&h=1400&w=1000&fit=crop" alt=""></div>
+      <div class="bp-veil"></div>
+      <div class="bp-num">01</div>
+      <div class="bp-c">
+        <div class="bp-k">Discovery &amp; Vitality</div>
+        <h2 class="bp-t">Experiences</h2>
+        <p class="bp-d">Tastings, daily rituals, and releases built around discovery, wellness, connection, and vitality.</p>
+        <div class="bp-rule"></div>
+        <div class="bp-cta"><span>Explore</span><span class="bp-arr"></span></div>
+      </div>
+    </a>
+    <a href="/sencha-house/tea-reserve/" class="bp">
+      <span class="bp-edge"></span>
+      <div class="bp-media"><img src="https://images.pexels.com/photos/4226896/pexels-photo-4226896.jpeg?auto=compress&cs=tinysrgb&h=1400&w=1000&fit=crop" alt=""></div>
+      <div class="bp-veil"></div>
+      <div class="bp-num">02</div>
+      <div class="bp-c">
+        <div class="bp-k">Sourced Lot by Lot</div>
+        <h2 class="bp-t">teaReserve</h2>
+        <p class="bp-d">A curated, gallery-style catalogue of single-origin Japanese green tea, sourced and verified lot by lot.</p>
+        <div class="bp-rule"></div>
+        <div class="bp-cta"><span>Browse</span><span class="bp-arr"></span></div>
+      </div>
+    </a>
+    <a href="/sencha-house/design/" class="bp">
+      <span class="bp-edge"></span>
+      <div class="bp-media"><img src="https://images.pexels.com/photos/6087673/pexels-photo-6087673.jpeg?auto=compress&cs=tinysrgb&h=1400&w=1000&fit=crop" alt=""></div>
+      <div class="bp-veil"></div>
+      <div class="bp-num">03</div>
+      <div class="bp-c">
+        <div class="bp-k">Led by Kiyoto</div>
+        <h2 class="bp-t">SH Design</h2>
+        <p class="bp-d">Design consultancy for spaces, brands, and rituals built around Japanese tea, led by Kiyoto.</p>
+        <div class="bp-rule"></div>
+        <div class="bp-cta"><span>Inquire</span><span class="bp-arr"></span></div>
+      </div>
+    </a>
   </section>
 </div>
 
@@ -267,8 +323,9 @@
   gsap.ticker.add(function(t) { lenis.raf(t * 1000); });
   gsap.ticker.lagSmoothing(0);
 
-  // NOTE: mobile is NOT early-returned anymore. Full parity - the same
-  // pinned scroll system runs on every viewport, only sizes differ.
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Full parity - the same pinned scroll system runs on every viewport.
   var N = 4;
 
   var titleSlots = document.querySelectorAll('.title-slot');
@@ -285,11 +342,6 @@
   /* ---- MEASUREMENTS (runtime, never hardcoded) ---- */
   var titleSlotHeight = 0;
   function measureTitleTrack() {
-    // Font-size based, transform-independent (same reasoning as the
-    // queue: getBoundingClientRect would return the GSAP-scaled size).
-    // line-height is 0.92 so the line box is ~0.92*fs; use fs as a clean
-    // reference for the small vertical drift in updateTitles, and give
-    // the track a real height so bottom:0 slots anchor correctly.
     var fs = parseFloat(window.getComputedStyle(titleSlots[0]).fontSize);
     titleSlotHeight = fs;
     activeArea.style.height = (fs * 1.15) + 'px';
@@ -297,13 +349,6 @@
 
   var qItemHeight = 0;
   function measureQueue() {
-    // Measure from computed FONT-SIZE, not getBoundingClientRect():
-    // GSAP has already applied a scale transform to these items, so the
-    // bounding box reflects the animated (often shrunk) size, not the
-    // true line height. That was making spacing collapse and overlap.
-    // line-height is 1.0, so the natural line box == font-size. The 1.32
-    // multiplier adds clean gap between stacked items so same-size titles
-    // never touch.
     var fs = parseFloat(window.getComputedStyle(qItems[0]).fontSize);
     qItemHeight = fs * 1.04;
   }
@@ -351,54 +396,26 @@
   intro.to('#manifesto', { opacity: 1, duration: 0.7, ease: 'power2.out' }, 0.6);
   intro.to('#queue', { opacity: 1, duration: 0.7, ease: 'power2.out' }, 0.6);
 
-  /* ===========================================
-     MASTER TIMELINE
-     One scrubbed timeline. Section s occupies the
-     scroll window [s, s+1] of N total units.
-
-     The diagonal sweep, per transition:
-       - left title track slides up one slot
-       - OUTGOING manifesto fades/rises out,
-         INCOMING fades/rises in
-       - the just-promoted queue item shrinks,
-         fades, and rises toward the line then
-         vanishes (mirror of the title entrance)
-       - background peels up to reveal the next
-     Everything scrubbed, so it tracks scroll
-     exactly and reverses cleanly.
-     =========================================== */
+  /* =========================================== MASTER TIMELINE =========================================== */
   var SECTION = 1;
   var OPEN = 0.4;
   var HOLD = 0.2;
   var CLOSE = 0.4;
   var TOTAL = N * SECTION;
 
-  // Queue positioning, B&C-style. Upcoming items form a tight, evenly
-  // spaced, same-size stack below the line. The whole stack shifts up by
-  // exactly one slot per section as a rigid unit (so spacing stays even,
-  // never bunching). ONLY the single item currently being promoted - the
-  // one crossing from the front of the queue up toward the line - shrinks
-  // and fades as it leaves. Everything else just holds its clean slot.
   function updateQueue(v) {
     var activeFloor = Math.min(Math.floor(v), N - 1);
-    var frac = v - activeFloor; // 0..1 progress through the current section
+    var frac = v - activeFloor;
 
     qItems.forEach(function(el, i) {
       if (i <= activeFloor) {
-        // Already promoted/gone. Parked out of view above the origin.
         gsap.set(el, { opacity: 0, scale: 0.45, y: -qItemHeight, pointerEvents: 'none' });
         return;
       }
-
-      // Rank within the visible queue: 1 = front (closest to line / next
-      // to leave), 2 = behind it, etc. The whole stack rises by `frac`
-      // of one slot as we scroll through the section - rigid, even.
       var rank = i - activeFloor;
       var restY = (rank - frac) * qItemHeight;
 
       if (rank === 1) {
-        // The departing item: as frac goes 0 -> 1 it shrinks and fades
-        // while riding up with the stack. This is the ONLY animated one.
         gsap.set(el, {
           opacity: 1 - frac,
           scale: 1 - frac * 0.5,
@@ -406,7 +423,6 @@
           pointerEvents: 'none'
         });
       } else {
-        // Everyone else: full size, full opacity, clean even spacing.
         gsap.set(el, {
           opacity: 1,
           scale: 1,
@@ -417,30 +433,16 @@
     });
   }
 
-  /* Left title animation - mirrors the queue's physical language.
-     All slots stack at the same bottom-left anchor. At rest, the active
-     slot is full-size/full-opacity and every other slot is invisible.
-     During a transition (frac 0->1): the OUTGOING active title shrinks
-     and fades to 0, the INCOMING title grows from small and fades in.
-     The handoff is staggered so the outgoing is mostly gone before the
-     incoming is mostly there - they cross but never both read as solid,
-     so no overlap. Inverse of the queue: there the departing item leaves
-     the front; here the arriving title takes the active spot. */
   function updateTitles(v) {
     var activeFloor = Math.min(Math.floor(v), N - 1);
     var frac = v - activeFloor;
 
     titleSlots.forEach(function(el, i) {
       if (i === activeFloor) {
-        // Current active title: at frac 0 it's full; as frac->1 it
-        // shrinks and fades out (it's being replaced). Faster fade
-        // (frac*1.4 clamped) so it clears before the incoming peaks.
         var outOp = Math.max(0, 1 - frac * 1.6);
         gsap.set(el, { opacity: outOp, scale: 1 - frac * 0.45, y: -frac * (titleSlotHeight * 0.4) });
       } else if (i === activeFloor + 1) {
-        // Incoming title: grows from small and fades in, but delayed so
-        // it only becomes solid once the outgoing has mostly gone.
-        var inProg = Math.max(0, (frac - 0.35) / 0.65); // starts at 35% through
+        var inProg = Math.max(0, (frac - 0.35) / 0.65);
         gsap.set(el, { opacity: inProg, scale: 0.55 + inProg * 0.45, y: (1 - inProg) * (titleSlotHeight * 0.4) });
       } else {
         gsap.set(el, { opacity: 0 });
@@ -465,13 +467,11 @@
     }
   });
 
-  // Giant glyph drifts across the whole scroll.
   mainTl.fromTo(bigChar, { rotation: 0, scale: 1 }, { rotation: 12, scale: 1.5, ease: 'none', duration: TOTAL }, 0);
 
   for (var s = 0; s < N; s++) {
     var base = s * SECTION;
 
-    // Continuous inner parallax for whichever bg is active this window.
     mainTl.fromTo(bgInners[s],
       { yPercent: -16, scale: 1.18 },
       { yPercent: 16, scale: 1.0, ease: 'none', duration: SECTION },
@@ -481,10 +481,6 @@
     if (s < N - 1) {
       var exitStart = base + OPEN + HOLD;
 
-      // (Left title is now animated continuously in updateTitles() via
-      // onUpdate, mirroring the queue - no rigid track slide here.)
-
-      // Manifesto crossfade: current out (rise+fade), next in (rise+fade).
       mainTl.to(manis[s], { opacity: 0, y: -18, duration: CLOSE * 0.6, ease: 'power2.in' }, exitStart);
       mainTl.fromTo(manis[s + 1],
         { opacity: 0, y: 18 },
@@ -492,7 +488,6 @@
         exitStart + CLOSE * 0.35
       );
 
-      // Background peel up to reveal the next layer beneath.
       mainTl.to(bgEls[s], { yPercent: -100, ease: 'none', duration: CLOSE }, exitStart);
     }
   }
@@ -504,21 +499,104 @@
   var cursorScale = gsap.quickTo(cursor, 'scale', { duration: 0.3, ease: 'power3' });
   window.addEventListener('mousemove', function(e){ cursorX(e.clientX); cursorY(e.clientY); });
 
+  /* ===========================================
+     BRANCH - rest states, hover bloom + expand.
+     On touch/small screens the photo rests more
+     present (no hover to reveal it) and the
+     expand mechanic is skipped.
+     =========================================== */
+  var isTouch = window.matchMedia('(max-width: 860px)').matches || ('ontouchstart' in window);
   var bps = gsap.utils.toArray('.bp');
+  var REST_MEDIA = isTouch ? 0.5 : 0.18;
+
   bps.forEach(function(p){
-    p.addEventListener('mouseenter', function(){ cursorScale(2.6); });
-    p.addEventListener('mouseleave', function(){ cursorScale(1); });
+    gsap.set(p.querySelector('.bp-media'), { opacity: REST_MEDIA });
   });
 
-  var branch = document.getElementById('branch');
-  bps.forEach(function(p){
-    p.addEventListener('mouseenter', function(){
-      bps.forEach(function(b){ gsap.to(b, { flexGrow: b === p ? 1.5 : 0.75, duration: 0.7, ease: 'power3.inOut' }); });
+  if (!isTouch) {
+    var branch = document.getElementById('branch');
+    bps.forEach(function(p){
+      var media = p.querySelector('.bp-media');
+      p.addEventListener('mouseenter', function(){
+        cursorScale(2.6);
+        bps.forEach(function(b){ gsap.to(b, { flexGrow: b === p ? 1.6 : 0.7, duration: 0.8, ease: 'power3.inOut' }); });
+        gsap.to(media, { opacity: 0.9, duration: 0.8, ease: 'power2.out' });
+      });
+      p.addEventListener('mouseleave', function(){
+        cursorScale(1);
+        gsap.to(media, { opacity: REST_MEDIA, duration: 0.8, ease: 'power2.out' });
+      });
     });
-  });
-  branch.addEventListener('mouseleave', function(){
-    gsap.to(bps, { flexGrow: 1, duration: 0.7, ease: 'power3.inOut' });
-  });
+    branch.addEventListener('mouseleave', function(){
+      gsap.to(bps, { flexGrow: 1, duration: 0.8, ease: 'power3.inOut' });
+    });
+  }
+
+  /* ===========================================
+     BRIDGE + BRANCH REVEAL
+     Scroll-triggered, played on enter (reversible)
+     so it tracks scroll without the pin. The
+     branch reveals per panel so it works in both
+     the row (desktop) and column (mobile) layouts.
+     =========================================== */
+  function setBranchInitial(p) {
+    var num = p.querySelector('.bp-num');
+    var k = p.querySelector('.bp-k');
+    var t = p.querySelector('.bp-t');
+    var d = p.querySelector('.bp-d');
+    var rule = p.querySelector('.bp-rule');
+    var cta = p.querySelector('.bp-cta');
+    var edge = p.querySelector('.bp-edge');
+    gsap.set([k, t, d, cta], { opacity: 0, y: 30 });
+    gsap.set(num, { opacity: 0, y: 36, scale: 1.06 });
+    gsap.set(rule, { scaleX: 0, opacity: 0 });
+    if (edge) gsap.set(edge, { scaleY: 0 });
+    return { num: num, k: k, t: t, d: d, rule: rule, cta: cta, edge: edge };
+  }
+
+  if (reduce) {
+    // No motion: land everything in its final state.
+    gsap.set('.bridge-spine', { scaleY: 1 });
+    gsap.set('.bridge-ey', { opacity: 0.5, y: 0 });
+    gsap.set('.bridge-line', { opacity: 1, y: 0 });
+    gsap.set('.bridge-cue', { opacity: 0.5 });
+    bps.forEach(function(p){
+      var e = setBranchInitial(p);
+      gsap.set(e.num, { opacity: 0.1, y: 0, scale: 1 });
+      gsap.set(e.k, { opacity: 0.55, y: 0 });
+      gsap.set([e.t, e.d, e.cta], { opacity: 1, y: 0 });
+      gsap.set(e.rule, { scaleX: 1, opacity: 1 });
+      if (e.edge) gsap.set(e.edge, { scaleY: 1 });
+    });
+  } else {
+    gsap.set('.bridge-spine', { scaleY: 0 });
+    gsap.set('.bridge-ey', { opacity: 0, y: 14 });
+    gsap.set('.bridge-line', { opacity: 0, y: 28 });
+    gsap.set('.bridge-cue', { opacity: 0 });
+
+    var bridgeTl = gsap.timeline({
+      scrollTrigger: { trigger: '.bridge', start: 'top 72%', toggleActions: 'play none none reverse' }
+    });
+    bridgeTl.to('.bridge-spine', { scaleY: 1, duration: 1.0, ease: 'power3.inOut' }, 0);
+    bridgeTl.to('.bridge-ey', { opacity: 0.5, y: 0, duration: 0.7, ease: 'power2.out' }, 0.2);
+    bridgeTl.to('.bridge-line', { opacity: 1, y: 0, duration: 0.9, stagger: 0.14, ease: 'power3.out' }, 0.35);
+    bridgeTl.to('.bridge-cue', { opacity: 0.5, duration: 0.8, ease: 'power2.out' }, '-=0.2');
+
+    bps.forEach(function(p, i){
+      var e = setBranchInitial(p);
+      var tl = gsap.timeline({
+        scrollTrigger: { trigger: p, start: 'top 82%', toggleActions: 'play none none reverse' },
+        delay: isTouch ? 0 : i * 0.12
+      });
+      if (e.edge) tl.to(e.edge, { scaleY: 1, duration: 1.0, ease: 'power3.inOut' }, 0);
+      tl.to(e.num, { opacity: 0.1, y: 0, scale: 1, duration: 1.1, ease: 'power3.out' }, 0);
+      tl.to(e.k, { opacity: 0.55, y: 0, duration: 0.7, ease: 'power2.out' }, 0.15);
+      tl.to(e.t, { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }, 0.25);
+      tl.to(e.d, { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }, 0.38);
+      tl.to(e.rule, { scaleX: 1, opacity: 1, duration: 0.9, ease: 'power3.inOut' }, 0.4);
+      tl.to(e.cta, { opacity: 1, y: 0, duration: 0.7, ease: 'power2.out' }, 0.5);
+    });
+  }
 
 })();
 </script>
