@@ -85,7 +85,7 @@
   .anc-c { left: 50%; transform: translate(-50%, -50%); font-family: 'Cormorant Garamond', serif; font-weight: 300; font-style: italic; font-size: 1rem; }
   .anc-r { right: var(--edge); font-family: 'Cormorant Garamond', serif; font-weight: 300; font-style: italic; font-size: 0.95rem; letter-spacing: 0.06em; }
 
-  .active-area { position: absolute; z-index: 20; top: 50%; transform: translateY(-50%); left: var(--edge); width: 40vw; opacity: 0; }
+  .active-area { position: absolute; z-index: 20; top: 50%; transform: translateY(calc(-100% - 2.5rem)); left: var(--edge); width: 40vw; opacity: 0; }
   .title-slot { position: absolute; top: 0; left: 0; white-space: nowrap; }
   .active-title {
     font-family: 'Plus Jakarta Sans', sans-serif;
@@ -488,12 +488,17 @@
       onUpdate: function(self) {
         var v = self.progress * N;
         var activeFloor = Math.min(Math.floor(v), N - 1);
+        // disappearY is how far ABOVE the 50% line an item vanishes -
+        // a full item-height of clearance, not a slim margin, so the
+        // separation from the line is unambiguous, not just technically
+        // non-zero.
+        var disappearY = -itemHeight;
         qItems.forEach(function(el, i) {
           if (i <= activeFloor) {
-            gsap.set(el, { opacity: 0, y: -itemHeight, pointerEvents: 'none' });
+            gsap.set(el, { opacity: 0, y: disappearY - itemHeight, pointerEvents: 'none' });
           } else {
             var slot = i - v;
-            gsap.set(el, { opacity: 1, y: slot * itemHeight - itemHeight, pointerEvents: 'auto' });
+            gsap.set(el, { opacity: 1, y: disappearY - slot * itemHeight, pointerEvents: 'auto' });
           }
         });
       }
