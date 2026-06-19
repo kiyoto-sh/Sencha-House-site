@@ -85,8 +85,25 @@
   .anc-c { left: 50%; transform: translate(-50%, -50%); font-family: 'Cormorant Garamond', serif; font-weight: 300; font-style: italic; font-size: 1rem; }
   .anc-r { right: var(--edge); font-family: 'Cormorant Garamond', serif; font-weight: 300; font-style: italic; font-size: 0.95rem; letter-spacing: 0.06em; }
 
-  .active-area { position: absolute; z-index: 20; top: 50%; transform: translateY(calc(-100% - 2.5rem)); left: var(--edge); width: 40vw; opacity: 0; }
-  .title-slot { position: absolute; top: 0; left: 0; white-space: nowrap; }
+  .active-area {
+    position: absolute;
+    z-index: 20;
+    top: 50%;
+    /* Gap can be modest now - overflow:hidden below guarantees no
+       glyph spillover past the box edge, so this no longer has to
+       compensate for line-height:0.8's visual overflow by guesswork. */
+    transform: translateY(calc(-100% - 1.5rem));
+    left: var(--edge);
+    width: 40vw;
+    overflow: hidden;
+    opacity: 0;
+  }
+  .title-track { position: relative; }
+  /* No longer position:absolute - each slot is a normal block, stacked
+     vertically in document flow. The track itself slides as ONE unit;
+     two different titles occupying the same screen space at once is
+     now geometrically impossible, not just unlikely. */
+  .title-slot { white-space: nowrap; }
   .active-title {
     font-family: 'Plus Jakarta Sans', sans-serif;
     font-weight: 900;
@@ -185,7 +202,7 @@
     .anc { display: none; }
     .brand-center { font-size: 50%; }
     .active-area { width: 100%; }
-    .active-area, .snippet-area, .queue { position: relative; top: auto; left: auto; right: auto; transform: none; opacity: 1 !important; padding: 1.4rem var(--edge); max-width: 100%; width: 100%; }
+    .active-area, .snippet-area, .queue { position: relative; top: auto; left: auto; right: auto; transform: none; opacity: 1 !important; padding: 1.4rem var(--edge); max-width: 100%; width: 100%; overflow: visible; height: auto !important; }
 
     .title-slot { position: relative !important; display: none; white-space: normal; }
     .title-slot:first-child { display: block; }
@@ -245,10 +262,12 @@
     <span class="anc anc-r" id="ar">house</span>
 
     <div class="active-area" id="aa">
-      <div class="title-slot" data-i="0"><span class="active-title">The Standard</span></div>
-      <div class="title-slot" data-i="1"><span class="active-title">Listening</span></div>
-      <div class="title-slot" data-i="2"><span class="active-title">Rituals</span></div>
-      <div class="title-slot" data-i="3"><span class="active-title">Other Hands</span></div>
+      <div class="title-track" id="titleTrack">
+        <div class="title-slot" data-i="0"><span class="active-title">The Standard</span></div>
+        <div class="title-slot" data-i="1"><span class="active-title">Listening</span></div>
+        <div class="title-slot" data-i="2"><span class="active-title">Rituals</span></div>
+        <div class="title-slot" data-i="3"><span class="active-title">Other Hands</span></div>
+      </div>
     </div>
 
     <div class="queue" id="queue">
@@ -314,25 +333,6 @@
   var TITLES = ['The Standard', 'Listening', 'Rituals', 'Other Hands'];
   var N = TITLES.length;
 
-  function splitChars(el) {
-    var text = el.textContent;
-    el.textContent = '';
-    var inners = [];
-    text.split('').forEach(function(ch) {
-      var wrap = document.createElement('span');
-      wrap.style.display = 'inline-block';
-      wrap.style.overflow = 'hidden';
-      wrap.style.verticalAlign = 'top';
-      var inner = document.createElement('span');
-      inner.style.display = 'inline-block';
-      inner.textContent = (ch === ' ') ? '\u00A0' : ch;
-      wrap.appendChild(inner);
-      el.appendChild(wrap);
-      inners.push(inner);
-    });
-    return inners;
-  }
-
   function splitWords(el) {
     var text = el.textContent;
     var words = text.split(' ');
@@ -357,39 +357,45 @@
   }
 
   var titleSlots = document.querySelectorAll('.title-slot');
+  var titleTrack = document.getElementById('titleTrack');
+  var activeArea = document.getElementById('aa');
   var snips = document.querySelectorAll('.snip');
   var bgEls = [document.getElementById('bg0'), document.getElementById('bg1'), document.getElementById('bg2'), document.getElementById('bg3')];
   var bgInners = bgEls.map(function(el) { return el.querySelector('.bg-inner'); });
 
-  // Stack order: section 0 on top, descending - each layer covers the
-  // ones beneath until it peels away during its own exit window.
   bgEls.forEach(function(el, i) { el.style.zIndex = (N - i); });
+
+  // Measure one title-slot's real rendered height and set active-area's
+  // mask to exactly that - only one slot's worth of vertical space is
+  // ever visible, so two titles cannot occupy it at once.
+  var titleSlotHeight = 0;
+  function measureTitleTrack() {
+    titleSlotHeight = titleSlots[0].getBoundingClientRect().height;
+    activeArea.style.height = titleSlotHeight + 'px';
+  }
+  measureTitleTrack();
 
   var sectionData = [];
   for (var i = 0; i < N; i++) {
-    var titleChars = splitChars(titleSlots[i].querySelector('.active-title'));
     var snipEl = snips[i];
     var subEl = snipEl.querySelector('.snip-sub');
     var subWords = splitWords(subEl);
     var idxEl = snipEl.querySelector('.snip-idx');
     var bodyEl = snipEl.querySelector('.snip-body');
 
-    gsap.set(titleChars, { y: '105%', rotate: 5 });
     gsap.set(subWords, { y: '105%' });
     gsap.set(idxEl, { opacity: 0 });
-    gsap.set(bodyEl, { opacity: 0, y: 14 });
+    gsap.set(bodyEl, { opacity: 0 });
     gsap.set(bgInners[i], { yPercent: -16, scale: 1.18 });
     gsap.set(bgEls[i], { yPercent: 0 });
 
     if (i === 0) {
-      gsap.set(titleChars, { y: '0%', rotate: 0 });
       gsap.set(subWords, { y: '0%' });
       gsap.set(idxEl, { opacity: 1 });
-      gsap.set(bodyEl, { opacity: 1, y: 0 });
+      gsap.set(bodyEl, { opacity: 1 });
     }
 
     sectionData.push({
-      titleChars: titleChars,
       subWords: subWords,
       idxEl: idxEl,
       bodyEl: bodyEl,
@@ -399,6 +405,11 @@
   }
 
   var qItems = document.querySelectorAll('.q-item');
+  var itemHeight = 0;
+  function measureQueue() {
+    var ref = qItems[0];
+    var prevOpacity = ref.style.opacity;
+    ref.style.opacity = '0';var qItems = document.querySelectorAll('.q-item');
   var itemHeight = 0;
   function measureQueue() {
     var ref = qItems[0];
@@ -420,13 +431,10 @@
     };
   }
   window.addEventListener('resize', debounce(measureQueue, 200));
+  window.addEventListener('resize', debounce(measureTitleTrack, 200));
 
   /* Snippet-area positioned below the active-area's REAL rendered
-     bottom edge (measured, not guessed). Since active-area is now
-     vertically centered via transform:translateY(-50%), getBoundingClientRect()
-     still returns the correct post-transform box, so this works exactly
-     as before. */
-  var activeArea = document.getElementById('aa');
+     bottom edge (measured, not guessed). */
   var snippetArea = document.getElementById('sa');
   var stageEl = document.getElementById('stage');
 
@@ -439,7 +447,10 @@
   positionSnippetArea();
 
   if (document.fonts && document.fonts.ready) {
-    document.fonts.ready.then(function() { positionSnippetArea(); });
+    document.fonts.ready.then(function() {
+      measureTitleTrack();
+      positionSnippetArea();
+    });
   }
   window.addEventListener('resize', debounce(positionSnippetArea, 200));
 
@@ -515,7 +526,6 @@
     var data = sectionData[s];
     var base = s * SECTION;
 
-    // Subtle continuous inner parallax/scale, the whole section through.
     mainTl.fromTo(data.bgInner,
       { yPercent: -16, scale: 1.18 },
       { yPercent: 16, scale: 1.0, ease: 'none', duration: SECTION },
@@ -523,24 +533,25 @@
     );
 
     if (s > 0) {
-      mainTl.to(data.titleChars, { y: '0%', rotate: 0, duration: OPEN, stagger: 0.01, ease: 'power3.out' }, base);
       mainTl.to(data.subWords, { y: '0%', duration: OPEN, stagger: 0.01, ease: 'power3.out' }, base + 0.04);
       mainTl.to(data.idxEl, { opacity: 1, duration: OPEN * 0.7 }, base);
-      mainTl.to(data.bodyEl, { opacity: 1, y: 0, duration: OPEN * 0.8 }, base + 0.08);
+      mainTl.to(data.bodyEl, { opacity: 1, duration: OPEN * 0.8 }, base + 0.08);
     }
 
     if (s < N - 1) {
       var exitStart = base + OPEN + HOLD;
 
-      // The literal vertical scroll-peel: this layer translates straight
-      // up and out of frame, fully scrubbed to scroll position, revealing
-      // the next layer (already sitting static underneath) as it goes.
       mainTl.to(data.bgEl, { yPercent: -100, ease: 'none', duration: CLOSE }, exitStart);
 
-      mainTl.to(data.titleChars, { y: '-105%', rotate: -4, duration: CLOSE * 0.7, stagger: 0.008, ease: 'power2.in' }, exitStart);
+      // Single clean slide of the WHOLE title track to the next slot.
+      // No per-character animation, no possibility of two different
+      // titles' letters rendering at once - the mask only ever shows
+      // one slot's worth of vertical space.
+      mainTl.to(titleTrack, { y: -((s + 1) * titleSlotHeight), ease: 'power3.inOut', duration: CLOSE }, exitStart);
+
       mainTl.to(data.subWords, { y: '-105%', duration: CLOSE * 0.6, stagger: 0.008, ease: 'power2.in' }, exitStart);
       mainTl.to(data.idxEl, { opacity: 0, duration: CLOSE * 0.5 }, exitStart);
-      mainTl.to(data.bodyEl, { opacity: 0, y: -14, duration: CLOSE * 0.5 }, exitStart);
+      mainTl.to(data.bodyEl, { opacity: 0, duration: CLOSE * 0.5 }, exitStart);
     }
   }
 
