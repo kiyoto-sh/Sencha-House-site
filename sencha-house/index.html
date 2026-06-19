@@ -5,422 +5,113 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sencha House | The Story</title>
   <meta name="description" content="Sencha House selects, designs, and delivers Japanese green tea experiences built on a standard that does not move.">
-
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Lato:wght@300;400&family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Lato:wght@300;400&family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <script src="https://unpkg.com/lenis@1.1.18/dist/lenis.min.js"></script>
-
   <style>
-    :root {
-      --ivory: #E6DAB8;
-      --kabuse: #08190E;
-      --red: #FF0033;
-    }
-
+    :root { --ivory: #E6DAB8; --kabuse: #08190E; }
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
-    body {
-      background: #fff;
-      color: var(--kabuse);
-      font-family: 'Lato', sans-serif;
-      -webkit-font-smoothing: antialiased;
-      overflow-x: hidden;
-    }
-
+    body { background: #fff; color: var(--kabuse); font-family: 'Lato', sans-serif; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
     a { color: inherit; text-decoration: none; }
 
-    /* NAV */
-    .nav {
-      position: fixed;
-      top: 0; right: 0;
-      z-index: 200;
-      display: flex;
-      align-items: center;
-      gap: clamp(1.2rem, 2.5vw, 2rem);
-      padding: 1.6rem clamp(1.5rem, 5vw, 4rem);
-      mix-blend-mode: difference;
-    }
-
-    .nav a {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-weight: 700;
-      font-size: 0.72rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: #fff;
-      opacity: 0.85;
-      transition: opacity 0.3s;
-    }
-
+    /* NAV top-right */
+    .nav { position: fixed; top: 0; right: 0; z-index: 200; display: flex; align-items: center; gap: clamp(1.2rem,2.5vw,2rem); padding: 1.6rem clamp(1.5rem,5vw,4rem); mix-blend-mode: difference; }
+    .nav a { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: #fff; opacity: 0.85; transition: opacity 0.3s; }
     .nav a:hover { opacity: 1; }
-
-    .nav-burger {
-      display: none;
-      flex-direction: column;
-      gap: 5px;
-      cursor: pointer;
-    }
-
+    .nav-burger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
     .nav-burger span { width: 22px; height: 1px; background: #fff; }
 
-    /* ============================
-       SCROLL WRAPPER + STAGE
-       Stage IS the hero at scroll=0.
-       Brand name starts centered,
-       splits to edges on scroll.
-       ============================ */
-    .scroll-wrap {
-      position: relative;
-      height: 600vh;
-    }
+    /* STAGE */
+    .scroll-wrap { position: relative; height: 600vh; }
+    .stage { position: sticky; top: 0; width: 100%; height: 100vh; height: 100dvh; overflow: hidden; background: #fff; }
+    .white-cover { position: absolute; inset: 0; z-index: 20; background: #fff; pointer-events: none; }
 
-    .stage {
-      position: sticky;
-      top: 0;
-      width: 100%;
-      height: 100vh;
-      height: 100dvh;
-      overflow: hidden;
-      background: #fff;
-    }
+    /* VIDEOS - stacked, first on top, scroll up to reveal next */
+    .vid { position: absolute; inset: 0; z-index: 0; will-change: transform; }
+    .vid video, .vid img { width: 100%; height: 100%; object-fit: cover; }
+    .vid-0 { z-index: 4; }
+    .vid-1 { z-index: 3; }
+    .vid-2 { z-index: 2; }
+    .vid-3 { z-index: 1; }
+    .stage-ov { position: absolute; inset: 0; z-index: 5; background: rgba(0,0,0,0.15); opacity: 0; }
 
-    /* White cover that fades to reveal video */
-    .white-cover {
-      position: absolute;
-      inset: 0;
-      z-index: 8;
-      background: #fff;
-    }
+    /* BRAND CENTER (intro) */
+    .brand-center { position: absolute; z-index: 25; top: 50%; left: 50%; transform: translate(-50%, -50%); display: flex; align-items: baseline; gap: 0.15em; white-space: nowrap; }
+    .word-s { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; text-transform: uppercase; font-size: clamp(4rem,13vw,12rem); letter-spacing: -0.03em; line-height: 1; }
+    .word-h { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-style: italic; font-size: clamp(4rem,13vw,12rem); line-height: 1; }
 
-    /* Backgrounds */
-    .bg {
-      position: absolute;
-      inset: 0;
-      z-index: 0;
-    }
+    /* PERSISTENT ANCHORS (horizontal, small, edges) */
+    .anc { position: absolute; z-index: 10; top: 50%; transform: translateY(-50%); color: #fff; opacity: 0; white-space: nowrap; }
+    .anc-l { left: clamp(1rem,2.5vw,2rem); font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; }
+    .anc-r { right: clamp(1rem,2.5vw,2rem); font-family: 'Cormorant Garamond', serif; font-weight: 300; font-style: italic; font-size: 0.8rem; letter-spacing: 0.06em; }
 
-    .bg video, .bg img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
+    /* ACTIVE TITLE area (top-left, like B&C's active project name) */
+    .active-area { position: absolute; z-index: 10; top: clamp(1.2rem,3vh,2rem); left: clamp(1.5rem,5vw,4rem); opacity: 0; }
+    .active-title { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; text-transform: uppercase; font-size: clamp(2.5rem,6.5vw,6rem); line-height: 0.95; letter-spacing: -0.02em; color: #fff; position: absolute; top: 0; left: 0; white-space: nowrap; opacity: 0; }
+    .active-title.is-on { opacity: 1; }
+    .active-preview { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; text-transform: uppercase; font-size: clamp(0.65rem,1vw,0.85rem); letter-spacing: 0.04em; color: #fff; opacity: 0.45; position: absolute; top: clamp(3rem,7.5vw,7rem); left: 0; white-space: nowrap; }
+    .active-preview span { display: none; }
+    .active-preview span.is-on { display: inline; }
 
-    .bg-0 { opacity: 1; }
-    .bg-1, .bg-2, .bg-3 { opacity: 0; }
+    /* LEFT SNIPPET (below active title area) */
+    .snippet-area { position: absolute; z-index: 10; top: clamp(6rem,16vh,12rem); left: clamp(1.5rem,5vw,4rem); max-width: clamp(24rem,42vw,38rem); opacity: 0; }
+    .snip { position: absolute; top: 0; left: 0; opacity: 0; transform: translateY(20px); }
+    .snip.is-on { opacity: 1; transform: translateY(0); transition: opacity 0.5s cubic-bezier(0.16,1,0.3,1), transform 0.5s cubic-bezier(0.16,1,0.3,1); }
+    .snip.is-off { opacity: 0; transform: translateY(-20px); transition: opacity 0.3s, transform 0.3s; }
+    .snip-idx { font-weight: 300; font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 1rem; }
+    .snip-sub { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-style: italic; font-size: clamp(1.05rem,1.6vw,1.4rem); color: rgba(255,255,255,0.9); margin-bottom: 1rem; line-height: 1.4; }
+    .snip-body { font-weight: 300; font-size: clamp(0.82rem,0.92vw,0.9rem); line-height: 1.85; color: rgba(255,255,255,0.65); }
 
-    .stage-ov {
-      position: absolute;
-      inset: 0;
-      z-index: 1;
-      background: rgba(0,0,0,0.18);
-      opacity: 0;
-    }
+    /* RIGHT TITLES (like B&C's stacked upcoming project names) */
+    .right-titles { position: absolute; z-index: 10; right: clamp(1.5rem,5vw,4rem); top: 50%; text-align: right; opacity: 0; }
+    .rt { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; text-transform: uppercase; font-size: clamp(2.2rem,5.8vw,5.2rem); line-height: 1; letter-spacing: -0.02em; color: #fff; display: block; white-space: nowrap; margin-bottom: 0.05em; opacity: 0.45; will-change: transform, opacity; }
 
-    /* ============================
-       BRAND WORDS
-       Start centered side by side (hero).
-       Animate to edges on scroll.
-       ============================ */
-    .word {
-      position: absolute;
-      z-index: 15;
-      white-space: nowrap;
-    }
+    /* POST-STAGE */
+    .post { position: relative; z-index: 10; background: var(--ivory); color: var(--kabuse); }
+    .closing { padding: clamp(6rem,14vw,11rem) 0; text-align: center; }
+    .closing-ey { font-weight: 300; font-size: 0.7rem; letter-spacing: 0.3em; text-transform: uppercase; opacity: 0.5; margin-bottom: 2.5rem; }
+    .closing-hl { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-style: italic; font-size: clamp(1.6rem,4vw,3.2rem); line-height: 1.35; max-width: 24ch; margin: 0 auto; }
+    .closing-hl em { font-style: normal; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; text-transform: uppercase; font-size: 0.72em; }
 
-    .word-sencha {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: -0.03em;
-      line-height: 1;
-      /* Start state: centered, large */
-      top: 50%;
-      left: 50%;
-      font-size: clamp(4rem, 12vw, 11rem);
-      transform: translate(-105%, -50%);
-      color: var(--kabuse);
-    }
-
-    .word-house {
-      font-family: 'Cormorant Garamond', serif;
-      font-weight: 300;
-      font-style: italic;
-      line-height: 1;
-      /* Start state: centered, large, next to SENCHA */
-      top: 50%;
-      left: 50%;
-      font-size: clamp(4rem, 12vw, 11rem);
-      transform: translate(5%, -50%);
-      color: var(--kabuse);
-    }
-
-    /* ============================
-       RIGHT-SIDE TITLES
-       (like B&C stacked client names)
-       ============================ */
-    .titles {
-      position: absolute;
-      z-index: 5;
-      right: clamp(1.5rem, 5vw, 4rem);
-      top: 50%;
-      transform: translateY(-50%);
-      text-align: right;
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-      opacity: 0;
-    }
-
-    .title-item {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-weight: 800;
-      text-transform: uppercase;
-      line-height: 1;
-      letter-spacing: -0.02em;
-      color: #fff;
-      display: block;
-      transform-origin: right center;
-      /* Base size - GSAP will override scale and opacity */
-      font-size: clamp(2rem, 5.5vw, 5rem);
-      opacity: 0.15;
-    }
-
-    /* ============================
-       LEFT-SIDE SNIPPETS
-       ============================ */
-    .snippets {
-      position: absolute;
-      z-index: 5;
-      left: clamp(1.5rem, 5vw, 4rem);
-      top: 50%;
-      transform: translateY(-50%);
-      max-width: clamp(22rem, 48vw, 40rem);
-      opacity: 0;
-    }
-
-    .snippet {
-      position: absolute;
-      top: 0; left: 0;
-      opacity: 0;
-      transform: translateY(30px);
-    }
-
-    .snippet.is-active {
-      opacity: 1;
-      transform: translateY(0);
-      transition: opacity 0.6s cubic-bezier(0.16,1,0.3,1), transform 0.6s cubic-bezier(0.16,1,0.3,1);
-    }
-
-    .snippet.is-past {
-      opacity: 0;
-      transform: translateY(-30px);
-      transition: opacity 0.4s, transform 0.4s;
-    }
-
-    .snippet-idx {
-      font-weight: 300;
-      font-size: 0.68rem;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.45);
-      margin-bottom: 1.2rem;
-    }
-
-    .snippet-sub {
-      font-family: 'Cormorant Garamond', serif;
-      font-weight: 300;
-      font-style: italic;
-      font-size: clamp(1.1rem, 1.8vw, 1.5rem);
-      color: rgba(255,255,255,0.92);
-      margin-bottom: 1.2rem;
-      line-height: 1.4;
-    }
-
-    .snippet-body {
-      font-weight: 300;
-      font-size: clamp(0.84rem, 0.95vw, 0.92rem);
-      line-height: 1.85;
-      color: rgba(255,255,255,0.68);
-    }
-
-    /* ============================
-       CLOSING + BRANCH
-       ============================ */
-    .post {
-      position: relative;
-      z-index: 10;
-      background: var(--ivory);
-      color: var(--kabuse);
-    }
-
-    .closing {
-      padding: clamp(6rem, 14vw, 11rem) 0;
-      text-align: center;
-    }
-
-    .closing-ey {
-      font-weight: 300;
-      font-size: 0.7rem;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      opacity: 0.5;
-      margin-bottom: 2.5rem;
-    }
-
-    .closing-hl {
-      font-family: 'Cormorant Garamond', serif;
-      font-weight: 300;
-      font-style: italic;
-      font-size: clamp(1.6rem, 4vw, 3.2rem);
-      line-height: 1.35;
-      max-width: 24ch;
-      margin: 0 auto;
-    }
-
-    .closing-hl em {
-      font-style: normal;
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-weight: 800;
-      text-transform: uppercase;
-      font-size: 0.72em;
-    }
-
-    .branch {
-      display: flex;
-      width: 100%;
-      height: 100vh;
-      height: 100dvh;
-      overflow: hidden;
-    }
-
-    .bp {
-      position: relative;
-      flex: 1 1 33.333%;
-      height: 100%;
-      overflow: hidden;
-      cursor: pointer;
-      border-right: 1px solid rgba(230,218,184,0.12);
-    }
-
+    /* BRANCH */
+    .branch { display: flex; width: 100%; height: 100vh; height: 100dvh; overflow: hidden; }
+    .bp { position: relative; flex: 1 1 33.333%; height: 100%; overflow: hidden; cursor: pointer; border-right: 1px solid rgba(230,218,184,0.12); }
     .bp:last-child { border-right: none; }
-
     .bp-bg { position: absolute; inset: 0; z-index: 0; }
-
     .bp--a .bp-bg { background: linear-gradient(165deg, #1a3015, #0d1f0a); }
     .bp--b .bp-bg { background: linear-gradient(165deg, #2d4a22, #16280f); }
     .bp--c .bp-bg { background: linear-gradient(165deg, #08190E, #050d07); }
-
-    .bp-ov {
-      position: absolute; inset: 0; z-index: 1;
-      background: rgba(8,25,14,0.35);
-      transition: background 0.6s cubic-bezier(0.16,1,0.3,1);
-    }
-
+    .bp-ov { position: absolute; inset: 0; z-index: 1; background: rgba(8,25,14,0.35); transition: background 0.6s cubic-bezier(0.16,1,0.3,1); }
     .bp:hover .bp-ov { background: rgba(8,25,14,0.12); }
-
-    .bp-c {
-      position: relative; z-index: 2;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      padding: clamp(2rem, 4vw, 3rem);
-      color: var(--ivory);
-    }
-
-    .bp-n {
-      font-weight: 300;
-      font-size: 0.66rem;
-      letter-spacing: 0.25em;
-      text-transform: uppercase;
-      opacity: 0.6;
-      margin-bottom: 1.2rem;
-    }
-
-    .bp-t {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-weight: 800;
-      font-size: clamp(1.5rem, 2.8vw, 2.4rem);
-      text-transform: uppercase;
-      line-height: 1.05;
-      margin-bottom: 1rem;
-    }
-
-    .bp-d {
-      font-weight: 300;
-      font-size: 0.85rem;
-      line-height: 1.6;
-      color: rgba(230,218,184,0.75);
-      max-width: 22rem;
-      opacity: 0; max-height: 0;
-      transition: opacity 0.5s cubic-bezier(0.16,1,0.3,1), max-height 0.5s cubic-bezier(0.16,1,0.3,1);
-    }
-
+    .bp-c { position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; padding: clamp(2rem,4vw,3rem); color: var(--ivory); }
+    .bp-n { font-weight: 300; font-size: 0.66rem; letter-spacing: 0.25em; text-transform: uppercase; opacity: 0.6; margin-bottom: 1.2rem; }
+    .bp-t { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: clamp(1.5rem,2.8vw,2.4rem); text-transform: uppercase; line-height: 1.05; margin-bottom: 1rem; }
+    .bp-d { font-weight: 300; font-size: 0.85rem; line-height: 1.6; color: rgba(230,218,184,0.75); max-width: 22rem; opacity: 0; max-height: 0; transition: opacity 0.5s cubic-bezier(0.16,1,0.3,1), max-height 0.5s cubic-bezier(0.16,1,0.3,1); }
     .bp:hover .bp-d { opacity: 1; max-height: 8rem; margin-bottom: 1.4rem; }
-
-    .bp-cta {
-      font-family: 'Cormorant Garamond', serif;
-      font-weight: 300;
-      font-style: italic;
-      font-size: 1rem;
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    .bp-arr {
-      width: 1.8rem; height: 1px;
-      background: var(--ivory);
-      position: relative;
-      transition: width 0.4s cubic-bezier(0.16,1,0.3,1);
-    }
-
+    .bp-cta { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-style: italic; font-size: 1rem; display: flex; align-items: center; gap: 0.75rem; }
+    .bp-arr { width: 1.8rem; height: 1px; background: var(--ivory); position: relative; transition: width 0.4s cubic-bezier(0.16,1,0.3,1); }
     .bp:hover .bp-arr { width: 2.6rem; }
-
-    .bp-arr::after {
-      content: '';
-      position: absolute;
-      right: 0; top: -3px;
-      width: 7px; height: 7px;
-      border-right: 1px solid var(--ivory);
-      border-top: 1px solid var(--ivory);
-      transform: rotate(45deg);
-    }
+    .bp-arr::after { content: ''; position: absolute; right: 0; top: -3px; width: 7px; height: 7px; border-right: 1px solid var(--ivory); border-top: 1px solid var(--ivory); transform: rotate(45deg); }
 
     .svg-f { position: absolute; width: 0; height: 0; overflow: hidden; }
 
-    /* MOBILE */
     @media (max-width: 860px) {
-      .nav a { font-size: 0.6rem; }
-      .nav-burger { display: flex; }
       .nav a:not(:last-child) { display: none; }
-
+      .nav-burger { display: flex; }
       .scroll-wrap { height: auto; }
       .stage { position: relative; height: auto; min-height: 100dvh; }
-
-      .word-sencha, .word-house {
-        position: relative;
-        top: auto; left: auto;
-        transform: none !important;
-        font-size: clamp(3rem, 16vw, 5rem) !important;
-        opacity: 1 !important;
-        display: inline;
-      }
-
       .white-cover { display: none; }
-
-      .titles { position: relative; transform: none; top: auto; right: auto; text-align: left; padding: 2rem clamp(1.5rem,5vw,4rem); opacity: 1 !important; }
-      .title-item { opacity: 0.8 !important; font-size: clamp(2rem, 8vw, 3rem) !important; transform: none !important; }
-
-      .snippets { position: relative; transform: none; top: auto; left: auto; max-width: 100%; padding: 2rem clamp(1.5rem,5vw,4rem); opacity: 1 !important; }
-      .snippet { position: relative; opacity: 1 !important; transform: none !important; margin-bottom: 3rem; }
-
-      .bg { position: relative; height: 60vh; opacity: 1 !important; }
-
+      .anc { display: none; }
+      .brand-center { font-size: 50%; }
+      .active-area, .snippet-area, .right-titles { position: relative; top: auto; left: auto; right: auto; transform: none; opacity: 1 !important; padding: 1.5rem clamp(1.5rem,5vw,4rem); max-width: 100%; }
+      .active-title { position: relative; opacity: 1 !important; font-size: clamp(2rem,8vw,3rem); }
+      .active-title.is-on { position: relative; }
+      .snip { position: relative; opacity: 1 !important; transform: none !important; margin-bottom: 2rem; }
+      .rt { font-size: clamp(1.5rem,6vw,2.5rem); opacity: 0.7 !important; transform: none !important; }
+      .vid { position: relative; height: 60vh; }
       .branch { flex-direction: column; height: auto; }
       .bp { flex: none; height: 70vh; border-right: none; border-bottom: 1px solid rgba(230,218,184,0.12); }
       .bp:last-child { border-bottom: none; }
@@ -433,15 +124,7 @@
   </style>
 </head>
 <body>
-
-  <svg class="svg-f">
-    <defs>
-      <filter id="rp">
-        <feTurbulence type="fractalNoise" baseFrequency="0.012 0.008" numOctaves="3" seed="7" result="n"/>
-        <feDisplacementMap in="SourceGraphic" in2="n" scale="4" xChannelSelector="R" yChannelSelector="G"/>
-      </filter>
-    </defs>
-  </svg>
+  <svg class="svg-f"><defs><filter id="rp"><feTurbulence type="fractalNoise" baseFrequency="0.012 0.008" numOctaves="3" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="4" xChannelSelector="R" yChannelSelector="G"/></filter></defs></svg>
 
   <nav class="nav">
     <a href="/">Home</a>
@@ -452,75 +135,76 @@
     <div class="nav-burger" aria-label="Menu"><span></span><span></span><span></span></div>
   </nav>
 
-  <!-- ============ SCROLL STAGE ============ -->
-  <div class="scroll-wrap" id="scrollWrap">
+  <div class="scroll-wrap" id="sw">
     <div class="stage" id="stage">
+      <div class="white-cover" id="wc"></div>
 
-      <!-- White cover (hero state, fades to reveal video) -->
-      <div class="white-cover" id="whiteCover"></div>
+      <!-- Videos stacked: first on top (highest z), scroll up to peel away -->
+      <div class="vid vid-0" id="v0"><video autoplay muted loop playsinline><source src="https://videos.pexels.com/video-files/5929428/5929428-hd_1920_1080_25fps.mp4" type="video/mp4"></video></div>
+      <div class="vid vid-1" id="v1"><video autoplay muted loop playsinline><source src="https://videos.pexels.com/video-files/4926072/4926072-uhd_2732_1440_30fps.mp4" type="video/mp4"></video></div>
+      <div class="vid vid-2" id="v2"><img src="https://images.pexels.com/photos/7233931/pexels-photo-7233931.jpeg?auto=compress&cs=tinysrgb&h=1200&w=1920&fit=crop" alt="" style="filter:url(#rp);"></div>
+      <div class="vid vid-3" id="v3"><video autoplay muted loop playsinline><source src="https://videos.pexels.com/video-files/6694787/6694787-uhd_2732_1440_25fps.mp4" type="video/mp4"></video></div>
 
-      <!-- Backgrounds -->
-      <div class="bg bg-0">
-        <video autoplay muted loop playsinline>
-          <source src="https://videos.pexels.com/video-files/5929428/5929428-hd_1920_1080_25fps.mp4" type="video/mp4">
-        </video>
-      </div>
-      <div class="bg bg-1">
-        <video autoplay muted loop playsinline>
-          <source src="https://videos.pexels.com/video-files/4926072/4926072-uhd_2732_1440_30fps.mp4" type="video/mp4">
-        </video>
-      </div>
-      <div class="bg bg-2">
-        <img src="https://images.pexels.com/photos/7233931/pexels-photo-7233931.jpeg?auto=compress&cs=tinysrgb&h=1200&w=1920&fit=crop" alt="" style="filter:url(#rp);">
-      </div>
-      <div class="bg bg-3">
-        <video autoplay muted loop playsinline>
-          <source src="https://videos.pexels.com/video-files/6694787/6694787-uhd_2732_1440_25fps.mp4" type="video/mp4">
-        </video>
+      <div class="stage-ov" id="sov"></div>
+
+      <!-- Brand center (intro, fades out) -->
+      <div class="brand-center" id="bc">
+        <span class="word-s">SENCHA</span>
+        <span class="word-h">house</span>
       </div>
 
-      <div class="stage-ov" id="stageOv"></div>
+      <!-- Persistent horizontal anchors -->
+      <span class="anc anc-l" id="al">SENCHA</span>
+      <span class="anc anc-r" id="ar">house</span>
 
-      <!-- Brand words (start centered = hero, animate to edges) -->
-      <span class="word word-sencha" id="wordSencha">SENCHA</span>
-      <span class="word word-house" id="wordHouse">house</span>
-
-      <!-- Right-side titles -->
-      <div class="titles" id="titles">
-        <span class="title-item is-active" data-i="0">The Standard</span>
-        <span class="title-item is-future" data-i="1">Listening</span>
-        <span class="title-item is-future" data-i="2">Rituals</span>
-        <span class="title-item is-future" data-i="3">Other Hands</span>
-      </div>
-
-      <!-- Left-side snippets -->
-      <div class="snippets" id="snippets">
-        <div class="snippet is-active" data-i="0">
-          <div class="snippet-idx">I &middot; The Standard</div>
-          <div class="snippet-sub">Before anything is designed, the tea has already been decided.</div>
-          <p class="snippet-body">Selection, blending, roasting: in Japanese tea these are not marketing language, they are a discipline refined over decades by people who answer to a standard most producers will never reach. This is the floor everything else is built on.</p>
-        </div>
-        <div class="snippet" data-i="1">
-          <div class="snippet-idx">II &middot; Design as Cultural Translation</div>
-          <div class="snippet-sub">Listening comes first. Expression comes only after.</div>
-          <p class="snippet-body">We do not import Japan and set it down somewhere else. We take what is essential in its values and find the form that lets it resonate here, now, for the people actually in front of us.</p>
-        </div>
-        <div class="snippet" data-i="2">
-          <div class="snippet-idx">III &middot; Tea Design</div>
-          <div class="snippet-sub">Formats that don't have a name yet.</div>
-          <p class="snippet-body">We do not recreate tea ceremonies. A tradition already exists to do that properly. What we build instead are structured around discovery, wellness, connection, vitality. Whatever the format, the standard underneath doesn't move. Only the shape does.</p>
-        </div>
-        <div class="snippet" data-i="3">
-          <div class="snippet-idx">IV &middot; Other Hands</div>
-          <div class="snippet-sub">Innovation has never been a solitary act.</div>
-          <p class="snippet-body">The bowl a tea is served in comes from a ceramicist who has spent years learning what clay can hold, held to the same standard we hold the leaf to. We are not introducing collaboration into this tradition. We are continuing what was already there.</p>
+      <!-- Active title at top-left (like B&C's current project) -->
+      <div class="active-area" id="aa">
+        <div class="active-title" id="at0">The Standard</div>
+        <div class="active-title" id="at1">Listening</div>
+        <div class="active-title" id="at2">Rituals</div>
+        <div class="active-title" id="at3">Other Hands</div>
+        <div class="active-preview" id="ap">
+          <span data-i="0">Listening</span>
+          <span data-i="1">Rituals</span>
+          <span data-i="2">Other Hands</span>
+          <span data-i="3"></span>
         </div>
       </div>
 
+      <!-- Left snippet area -->
+      <div class="snippet-area" id="sa">
+        <div class="snip" data-i="0">
+          <div class="snip-idx">I &middot; The Standard</div>
+          <div class="snip-sub">Before anything is designed, the tea has already been decided.</div>
+          <p class="snip-body">Selection, blending, roasting: in Japanese tea these are not marketing language, they are a discipline refined over decades by people who answer to a standard most producers will never reach. This is the floor everything else is built on.</p>
+        </div>
+        <div class="snip" data-i="1">
+          <div class="snip-idx">II &middot; Design as Cultural Translation</div>
+          <div class="snip-sub">Listening comes first. Expression comes only after.</div>
+          <p class="snip-body">We do not import Japan and set it down somewhere else. We take what is essential in its values and find the form that lets it resonate here, now, for the people actually in front of us.</p>
+        </div>
+        <div class="snip" data-i="2">
+          <div class="snip-idx">III &middot; Tea Design</div>
+          <div class="snip-sub">Formats that don't have a name yet.</div>
+          <p class="snip-body">We do not recreate tea ceremonies. A tradition already exists to do that properly. What we build instead are structured around discovery, wellness, connection, vitality. Whatever the format, the standard underneath doesn't move.</p>
+        </div>
+        <div class="snip" data-i="3">
+          <div class="snip-idx">IV &middot; Other Hands</div>
+          <div class="snip-sub">Innovation has never been a solitary act.</div>
+          <p class="snip-body">The bowl a tea is served in comes from a ceramicist who has spent years learning what clay can hold, held to the same standard we hold the leaf to. We are not introducing collaboration into this tradition. We are continuing what was already there.</p>
+        </div>
+      </div>
+
+      <!-- Right-side titles (upcoming, like B&C's stacked project names) -->
+      <div class="right-titles" id="rtc">
+        <span class="rt" id="rt0">The Standard</span>
+        <span class="rt" id="rt1">Listening</span>
+        <span class="rt" id="rt2">Rituals</span>
+        <span class="rt" id="rt3">Other Hands</span>
+      </div>
     </div>
   </div>
 
-  <!-- POST-STAGE -->
   <div class="post">
     <section class="closing">
       <div style="max-width:1360px;margin:0 auto;padding:0 clamp(1.5rem,5vw,4rem);">
@@ -528,43 +212,16 @@
         <p class="closing-hl">This is tea: made without compromise, shaped by hands beyond our own. <em>Now it is in yours.</em></p>
       </div>
     </section>
-
     <section class="branch" id="branch">
-      <a href="/sencha-house/experiences/" class="bp bp--a">
-        <div class="bp-bg"></div><div class="bp-ov"></div>
-        <div class="bp-c">
-          <div class="bp-n">01</div>
-          <h2 class="bp-t">Experiences</h2>
-          <p class="bp-d">Tastings, daily rituals, and releases built around discovery, wellness, connection, and vitality.</p>
-          <div class="bp-cta"><span>Explore</span><span class="bp-arr"></span></div>
-        </div>
-      </a>
-      <a href="/sencha-house/tea-reserve/" class="bp bp--b">
-        <div class="bp-bg"></div><div class="bp-ov"></div>
-        <div class="bp-c">
-          <div class="bp-n">02</div>
-          <h2 class="bp-t">teaReserve</h2>
-          <p class="bp-d">A curated, gallery-style catalogue of single-origin Japanese green tea, sourced and verified lot by lot.</p>
-          <div class="bp-cta"><span>Browse</span><span class="bp-arr"></span></div>
-        </div>
-      </a>
-      <a href="/sencha-house/design/" class="bp bp--c">
-        <div class="bp-bg"></div><div class="bp-ov"></div>
-        <div class="bp-c">
-          <div class="bp-n">03</div>
-          <h2 class="bp-t">SH Design</h2>
-          <p class="bp-d">Design consultancy for spaces, brands, and rituals built around Japanese tea, led by Kiyoto.</p>
-          <div class="bp-cta"><span>Inquire</span><span class="bp-arr"></span></div>
-        </div>
-      </a>
+      <a href="/sencha-house/experiences/" class="bp bp--a"><div class="bp-bg"></div><div class="bp-ov"></div><div class="bp-c"><div class="bp-n">01</div><h2 class="bp-t">Experiences</h2><p class="bp-d">Tastings, daily rituals, and releases built around discovery, wellness, connection, and vitality.</p><div class="bp-cta"><span>Explore</span><span class="bp-arr"></span></div></div></a>
+      <a href="/sencha-house/tea-reserve/" class="bp bp--b"><div class="bp-bg"></div><div class="bp-ov"></div><div class="bp-c"><div class="bp-n">02</div><h2 class="bp-t">teaReserve</h2><p class="bp-d">A curated, gallery-style catalogue of single-origin Japanese green tea, sourced and verified lot by lot.</p><div class="bp-cta"><span>Browse</span><span class="bp-arr"></span></div></div></a>
+      <a href="/sencha-house/design/" class="bp bp--c"><div class="bp-bg"></div><div class="bp-ov"></div><div class="bp-c"><div class="bp-n">03</div><h2 class="bp-t">SH Design</h2><p class="bp-d">Design consultancy for spaces, brands, and rituals built around Japanese tea, led by Kiyoto.</p><div class="bp-cta"><span>Inquire</span><span class="bp-arr"></span></div></div></a>
     </section>
   </div>
 
   <script>
     (function() {
-
       gsap.registerPlugin(ScrollTrigger);
-
       var lenis = new Lenis({ lerp: 0.07, smoothWheel: true });
       lenis.on('scroll', ScrollTrigger.update);
       gsap.ticker.add(function(t) { lenis.raf(t * 1000); });
@@ -573,164 +230,100 @@
       var isMobile = window.matchMedia('(max-width: 860px)').matches;
       if (isMobile) return;
 
-      var titleEls = document.querySelectorAll('.title-item');
-      var snippetEls = document.querySelectorAll('.snippet');
+      var N = 4;
+      var activeTitles = document.querySelectorAll('.active-title');
+      var previews = document.querySelectorAll('.active-preview span');
+      var snippets = document.querySelectorAll('.snip');
+      var rightTitles = document.querySelectorAll('.rt');
       var currentIdx = -1;
 
-      function setSnippet(idx) {
+      function setSection(idx) {
         if (idx === currentIdx) return;
         currentIdx = idx;
-        snippetEls.forEach(function(el, i) {
-          el.classList.remove('is-active', 'is-past');
-          if (i === idx) el.classList.add('is-active');
-          else if (i < idx) el.classList.add('is-past');
+        activeTitles.forEach(function(el, i) { el.classList.toggle('is-on', i === idx); });
+        previews.forEach(function(el, i) { el.classList.toggle('is-on', i === idx); });
+        snippets.forEach(function(el, i) {
+          el.classList.remove('is-on', 'is-off');
+          if (i === idx) el.classList.add('is-on');
+          else if (i < idx) el.classList.add('is-off');
         });
       }
 
-      /* ============================
-         PHASE 1: BRAND INTRO
-         Timed auto-animation like B&C.
-         Brand name sits centered ~2s,
-         then splits to edges on its own.
-         Scroll is locked until done.
-         ============================ */
-
-      // Lock scroll during intro
+      /* ---- INTRO: timed, brand fades, stage reveals ---- */
       lenis.stop();
       window.scrollTo(0, 0);
 
-      var introTL = gsap.timeline({
-        delay: 2,
-        onComplete: function() {
-          lenis.start();
+      var intro = gsap.timeline({ delay: 2, onComplete: function() { lenis.start(); } });
+      intro.to('#bc', { opacity: 0, scale: 0.65, duration: 1.2, ease: 'power3.inOut' }, 0);
+      intro.to('#wc', { opacity: 0, duration: 1.2, ease: 'power2.inOut' }, 0);
+      intro.to('#sov', { opacity: 1, duration: 1.2, ease: 'power2.inOut' }, 0);
+      intro.to('#al', { opacity: 0.3, duration: 0.8, ease: 'power2.out' }, 0.5);
+      intro.to('#ar', { opacity: 0.3, duration: 0.8, ease: 'power2.out' }, 0.5);
+      intro.to('#aa', { opacity: 1, duration: 0.8, ease: 'power2.out' }, 0.6);
+      intro.to('#sa', { opacity: 1, duration: 0.8, ease: 'power2.out' }, 0.6);
+      intro.to('#rtc', { opacity: 1, duration: 0.8, ease: 'power2.out' }, 0.6);
+      intro.add(function() { setSection(0); }, 0.6);
+
+      /* ---- SCROLL: section cycling ---- */
+      var vh = window.innerHeight;
+
+      ScrollTrigger.create({
+        trigger: '#sw',
+        start: 'top top',
+        end: '85% top',
+        scrub: 0,
+        onUpdate: function(self) {
+          var p = self.progress;
+          var idx = Math.min(Math.floor(p * N), N - 1);
+          setSection(idx);
+
+          /* Right titles: translate up and fade as they pass */
+          rightTitles.forEach(function(el, i) {
+            var sectionProgress = p * N;
+            var offset = i - sectionProgress;
+            var y = offset * 70;
+            var o = (i < idx) ? 0 : (i === idx) ? 0.15 : 0.45;
+            gsap.set(el, { y: y, opacity: o, scale: 1 });
+          });
         }
       });
 
-      // White cover fades, video appears
-      introTL.to('#whiteCover', { opacity: 0, duration: 1.2, ease: 'power2.inOut' }, 0);
-      introTL.to('#stageOv', { opacity: 1, duration: 1.2, ease: 'power2.inOut' }, 0);
-      introTL.to('.bg-0', { opacity: 1, duration: 1.2, ease: 'power2.inOut' }, 0);
+      /* Video scroll-up (peel): each video translates up when its section ends */
+      for (var i = 0; i < N - 1; i++) {
+        (function(idx) {
+          var startPct = ((idx + 1) / N * 85) - 5;
+          var endPct = (idx + 1) / N * 85 + 5;
+          gsap.to('#v' + idx, {
+            yPercent: -100,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: '#sw',
+              start: startPct + '% top',
+              end: endPct + '% top',
+              scrub: true
+            }
+          });
+        })(i);
+      }
 
-      // SENCHA flies to left edge
-      introTL.to('#wordSencha', {
-        top: '50%',
-        left: '2rem',
-        fontSize: '0.72rem',
-        rotation: -90,
-        xPercent: 0,
-        yPercent: -50,
-        color: '#fff',
-        opacity: 0.35,
-        letterSpacing: '0.12em',
-        duration: 1.4,
-        ease: 'power3.inOut'
-      }, 0);
-
-      // house flies to right edge
-      introTL.to('#wordHouse', {
-        top: '50%',
-        left: 'auto',
-        right: '2rem',
-        fontSize: '0.82rem',
-        rotation: 90,
-        xPercent: 0,
-        yPercent: -50,
-        color: '#fff',
-        opacity: 0.35,
-        letterSpacing: '0.08em',
-        duration: 1.4,
-        ease: 'power3.inOut'
-      }, 0);
-
-      // Titles and snippets fade in after words start moving
-      introTL.to('#titles', { opacity: 1, duration: 0.8, ease: 'power2.out' }, 0.6);
-      introTL.to('#snippets', { opacity: 1, duration: 0.8, ease: 'power2.out' }, 0.6);
-
-      /* ============================
-         PHASE 2: SECTION CYCLING
-         Continuous GSAP-driven title
-         animation. Each title scales,
-         fades, and translates based
-         on distance from active center.
-         ============================ */
-      var sectionCount = 4;
-
-      var cycleTL = gsap.timeline({
-        scrollTrigger: {
-          trigger: '#scrollWrap',
-          start: 'top top',
-          end: '90% top',
-          scrub: 1.5,
-          onUpdate: function(self) {
-            var p = self.progress;
-            var activeFloat = p * sectionCount;
-            var idx = Math.min(Math.floor(activeFloat), sectionCount - 1);
-
-            setSnippet(idx);
-
-            titleEls.forEach(function(el, i) {
-              var dist = activeFloat - i;
-              var absDist = Math.abs(dist);
-              var activity = Math.max(0, 1 - absDist);
-
-              var s = 0.4 + activity * 0.6;
-              var o = 0.12 + activity * 0.88;
-              var yShift = dist * -35;
-
-              gsap.set(el, {
-                scale: s,
-                opacity: o,
-                y: yShift,
-                transformOrigin: 'right center'
-              });
-            });
-          }
-        }
-      });
-
-      cycleTL.to('.bg-0', { opacity: 0, duration: 2 }, 2.5);
-      cycleTL.to('.bg-1', { opacity: 1, duration: 2 }, 2.5);
-
-      cycleTL.to('.bg-1', { opacity: 0, duration: 2 }, 6);
-      cycleTL.to('.bg-2', { opacity: 1, duration: 2 }, 6);
-
-      cycleTL.to('.bg-2', { opacity: 0, duration: 2 }, 9.5);
-      cycleTL.to('.bg-3', { opacity: 1, duration: 2 }, 9.5);
-
-      cycleTL.to({}, { duration: 3 });
-
-      /* ============================
-         PHASE 3: EXIT
-         ============================ */
-      gsap.to(['#titles', '#snippets', '#wordSencha', '#wordHouse'], {
-        opacity: 0,
-        duration: 1,
-        scrollTrigger: {
-          trigger: '#scrollWrap',
-          start: '88% top',
-          end: '95% top',
-          scrub: true
-        }
+      /* ---- EXIT ---- */
+      gsap.to(['#aa', '#sa', '#rtc', '#al', '#ar'], {
+        opacity: 0, duration: 1,
+        scrollTrigger: { trigger: '#sw', start: '83% top', end: '90% top', scrub: true }
       });
 
       /* ---- BRANCH HOVER ---- */
       var branch = document.getElementById('branch');
       var bps = gsap.utils.toArray('.bp');
-
       bps.forEach(function(p) {
         p.addEventListener('mouseenter', function() {
-          bps.forEach(function(b) {
-            gsap.to(b, { flex: b === p ? '1 1 50%' : '1 1 25%', duration: 0.7, ease: 'power3.inOut' });
-          });
+          bps.forEach(function(b) { gsap.to(b, { flex: b === p ? '1 1 50%' : '1 1 25%', duration: 0.7, ease: 'power3.inOut' }); });
         });
       });
-
       branch.addEventListener('mouseleave', function() {
         gsap.to(bps, { flex: '1 1 33.333%', duration: 0.7, ease: 'power3.inOut' });
       });
-
     })();
   </script>
-
 </body>
 </html>
