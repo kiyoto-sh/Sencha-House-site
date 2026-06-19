@@ -146,13 +146,15 @@
     .active-area { width: 80vw; transform: translateY(calc(-100% - 0.8rem)); }
     .active-title { font-size: clamp(1.8rem, 9vw, 3.2rem); }
 
-    /* Manifesto: full readable width below the line. */
-    .manifesto { width: 78vw; margin-top: 1.4rem; }
-    .mani-body { font-size: 0.8rem; line-height: 1.7; }
-    .mani-idx { font-size: 9px; margin-bottom: 0.7rem; }
+    /* Manifesto: kept to the LEFT portion only so it never runs under
+       the right-side queue. 58vw leaves clear air on the right half. */
+    .manifesto { width: 58vw; margin-top: 1.1rem; }
+    .mani-body { font-size: 0.72rem; line-height: 1.6; }
+    .mani-idx { font-size: 9px; margin-bottom: 0.6rem; }
 
-    /* Queue: smaller, still below-line right-aligned, same motion. */
-    .q-item { font-size: clamp(1.3rem, 7vw, 2.4rem); }
+    /* Queue: smaller so the stack stays compact and clears the
+       manifesto on the left. Same motion, same below-line placement. */
+    .q-item { font-size: clamp(1.1rem, 6vw, 2rem); }
 
     .branch { flex-direction: column; height: auto; }
     .bp { flex: none; height: 60vh; border-right: none; border-bottom: 1px solid rgba(230,218,184,0.12); cursor: pointer; }
@@ -289,7 +291,15 @@
 
   var qItemHeight = 0;
   function measureQueue() {
-    qItemHeight = qItems[0].getBoundingClientRect().height * 1.15;
+    // Measure from computed FONT-SIZE, not getBoundingClientRect():
+    // GSAP has already applied a scale transform to these items, so the
+    // bounding box reflects the animated (often shrunk) size, not the
+    // true line height. That was making spacing collapse and overlap.
+    // line-height is 1.0, so the natural line box == font-size. The 1.32
+    // multiplier adds clean gap between stacked items so same-size titles
+    // never touch.
+    var fs = parseFloat(window.getComputedStyle(qItems[0]).fontSize);
+    qItemHeight = fs * 1.32;
   }
 
   function measureAll() {
