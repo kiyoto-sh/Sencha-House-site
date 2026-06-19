@@ -33,9 +33,7 @@
 
     a { color: inherit; text-decoration: none; }
 
-    /* ============================
-       NAV (top-right, like B&C)
-       ============================ */
+    /* NAV */
     .nav {
       position: fixed;
       top: 0; right: 0;
@@ -44,6 +42,7 @@
       align-items: center;
       gap: clamp(1.2rem, 2.5vw, 2rem);
       padding: 1.6rem clamp(1.5rem, 5vw, 4rem);
+      mix-blend-mode: difference;
     }
 
     .nav a {
@@ -52,9 +51,7 @@
       font-size: 0.72rem;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      color: var(--kabuse);
-      mix-blend-mode: difference;
-      filter: invert(1);
+      color: #fff;
       opacity: 0.85;
       transition: opacity 0.3s;
     }
@@ -68,53 +65,17 @@
       cursor: pointer;
     }
 
-    .nav-burger span { width: 22px; height: 1px; background: var(--kabuse); }
+    .nav-burger span { width: 22px; height: 1px; background: #fff; }
 
     /* ============================
-       HERO: Full-viewport brand name
-       (like B&C's "BENNETT & CLIVE")
-       ============================ */
-    .hero {
-      position: relative;
-      height: 100vh;
-      height: 100dvh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      background: #fff;
-    }
-
-    .hero-brand {
-      text-align: center;
-      z-index: 2;
-    }
-
-    .hero-sencha {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-weight: 800;
-      font-size: clamp(5rem, 18vw, 18rem);
-      text-transform: uppercase;
-      line-height: 0.85;
-      letter-spacing: -0.03em;
-      display: block;
-    }
-
-    .hero-house {
-      font-family: 'Cormorant Garamond', serif;
-      font-weight: 300;
-      font-style: italic;
-      font-size: clamp(2.5rem, 8vw, 8rem);
-      display: block;
-      margin-top: -0.1em;
-    }
-
-    /* ============================
-       SCROLL STAGE
+       SCROLL WRAPPER + STAGE
+       Stage IS the hero at scroll=0.
+       Brand name starts centered,
+       splits to edges on scroll.
        ============================ */
     .scroll-wrap {
       position: relative;
-      height: 500vh;
+      height: 600vh;
     }
 
     .stage {
@@ -124,6 +85,15 @@
       height: 100vh;
       height: 100dvh;
       overflow: hidden;
+      background: #fff;
+    }
+
+    /* White cover that fades to reveal video */
+    .white-cover {
+      position: absolute;
+      inset: 0;
+      z-index: 8;
+      background: #fff;
     }
 
     /* Backgrounds */
@@ -139,56 +109,58 @@
       object-fit: cover;
     }
 
-    .bg-0, .bg-1, .bg-2, .bg-3 { opacity: 0; }
+    .bg-0 { opacity: 1; }
+    .bg-1, .bg-2, .bg-3 { opacity: 0; }
 
     .stage-ov {
       position: absolute;
       inset: 0;
       z-index: 1;
-      background: rgba(0,0,0,0.15);
-    }
-
-    /* ============================
-       PERSISTENT BRAND ANCHORS
-       (like "BENNETT" left, "CLIVE" right)
-       ============================ */
-    .anchor-left {
-      position: absolute;
-      z-index: 10;
-      bottom: 50%;
-      left: clamp(1.5rem, 3vw, 2.5rem);
-      transform: translateY(50%);
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-weight: 800;
-      font-size: 0.75rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: #fff;
-      writing-mode: vertical-lr;
-      transform: rotate(180deg);
+      background: rgba(0,0,0,0.18);
       opacity: 0;
     }
 
-    .anchor-right {
+    /* ============================
+       BRAND WORDS
+       Start centered side by side (hero).
+       Animate to edges on scroll.
+       ============================ */
+    .word {
       position: absolute;
-      z-index: 10;
-      bottom: 50%;
-      right: clamp(1.5rem, 3vw, 2.5rem);
-      transform: translateY(50%);
+      z-index: 15;
+      white-space: nowrap;
+    }
+
+    .word-sencha {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      /* Start state: centered, large */
+      top: 50%;
+      left: 50%;
+      font-size: clamp(4rem, 12vw, 11rem);
+      transform: translate(-105%, -50%);
+      color: var(--kabuse);
+    }
+
+    .word-house {
       font-family: 'Cormorant Garamond', serif;
       font-weight: 300;
       font-style: italic;
-      font-size: 0.85rem;
-      letter-spacing: 0.1em;
-      color: #fff;
-      writing-mode: vertical-lr;
-      opacity: 0;
+      line-height: 1;
+      /* Start state: centered, large, next to SENCHA */
+      top: 50%;
+      left: 50%;
+      font-size: clamp(4rem, 12vw, 11rem);
+      transform: translate(5%, -50%);
+      color: var(--kabuse);
     }
 
     /* ============================
-       SECTION TITLES
-       (like B&C's stacked client names
-       on the right: ADIDAS, CALVIN KLEIN...)
+       RIGHT-SIDE TITLES
+       (like B&C stacked client names)
        ============================ */
     .titles {
       position: absolute;
@@ -199,31 +171,41 @@
       text-align: right;
       display: flex;
       flex-direction: column;
-      gap: clamp(0.3rem, 0.8vw, 0.6rem);
+      gap: clamp(0.2rem, 0.6vw, 0.5rem);
       opacity: 0;
     }
 
-    .titles a {
+    .title-item {
       font-family: 'Plus Jakarta Sans', sans-serif;
       font-weight: 800;
-      font-size: clamp(1.8rem, 5.5vw, 5rem);
+      font-size: clamp(1.6rem, 4.5vw, 4rem);
       text-transform: uppercase;
-      line-height: 1;
+      line-height: 1.05;
       letter-spacing: -0.02em;
       color: #fff;
-      opacity: 0.25;
-      transition: opacity 0.5s, font-size 0.5s;
+      opacity: 0.2;
       display: block;
+      transition: transform 0.6s cubic-bezier(0.16,1,0.3,1);
+      transform: translateY(0);
     }
 
-    .titles a.is-active {
+    .title-item.is-active {
       opacity: 1;
-      font-size: clamp(2.2rem, 7vw, 6.5rem);
+      font-size: clamp(2.2rem, 6.5vw, 5.8rem);
+    }
+
+    .title-item.is-past {
+      opacity: 0.08;
+      transform: translateY(-15px);
+    }
+
+    .title-item.is-future {
+      opacity: 0.15;
+      transform: translateY(10px);
     }
 
     /* ============================
-       LEFT-SIDE TEXT SNIPPETS
-       (appear for each active section)
+       LEFT-SIDE SNIPPETS
        ============================ */
     .snippets {
       position: absolute;
@@ -231,7 +213,7 @@
       left: clamp(1.5rem, 5vw, 4rem);
       top: 50%;
       transform: translateY(-50%);
-      max-width: clamp(14rem, 28vw, 22rem);
+      max-width: clamp(18rem, 36vw, 30rem);
       opacity: 0;
     }
 
@@ -239,13 +221,19 @@
       position: absolute;
       top: 0; left: 0;
       opacity: 0;
-      transform: translateY(20px);
-      transition: opacity 0.4s, transform 0.4s;
+      transform: translateY(30px);
     }
 
     .snippet.is-active {
       opacity: 1;
       transform: translateY(0);
+      transition: opacity 0.6s cubic-bezier(0.16,1,0.3,1), transform 0.6s cubic-bezier(0.16,1,0.3,1);
+    }
+
+    .snippet.is-past {
+      opacity: 0;
+      transform: translateY(-30px);
+      transition: opacity 0.4s, transform 0.4s;
     }
 
     .snippet-idx {
@@ -253,25 +241,25 @@
       font-size: 0.68rem;
       letter-spacing: 0.3em;
       text-transform: uppercase;
-      color: rgba(255,255,255,0.5);
-      margin-bottom: 1rem;
+      color: rgba(255,255,255,0.45);
+      margin-bottom: 1.2rem;
     }
 
     .snippet-sub {
       font-family: 'Cormorant Garamond', serif;
       font-weight: 300;
       font-style: italic;
-      font-size: clamp(1rem, 1.6vw, 1.35rem);
-      color: rgba(255,255,255,0.9);
-      margin-bottom: 1rem;
+      font-size: clamp(1.1rem, 1.8vw, 1.5rem);
+      color: rgba(255,255,255,0.92);
+      margin-bottom: 1.2rem;
       line-height: 1.4;
     }
 
     .snippet-body {
       font-weight: 300;
-      font-size: clamp(0.82rem, 0.9vw, 0.88rem);
-      line-height: 1.8;
-      color: rgba(255,255,255,0.7);
+      font-size: clamp(0.84rem, 0.95vw, 0.92rem);
+      line-height: 1.85;
+      color: rgba(255,255,255,0.68);
     }
 
     /* ============================
@@ -422,22 +410,29 @@
 
     /* MOBILE */
     @media (max-width: 860px) {
-      .nav a { display: none; }
+      .nav a { font-size: 0.6rem; }
       .nav-burger { display: flex; }
-
-      .hero-sencha { font-size: clamp(3.5rem, 20vw, 6rem); }
-      .hero-house { font-size: clamp(2rem, 10vw, 3.5rem); }
+      .nav a:not(:last-child) { display: none; }
 
       .scroll-wrap { height: auto; }
       .stage { position: relative; height: auto; min-height: 100dvh; }
 
+      .word-sencha, .word-house {
+        position: relative;
+        top: auto; left: auto;
+        transform: none !important;
+        font-size: clamp(3rem, 16vw, 5rem) !important;
+        opacity: 1 !important;
+        display: inline;
+      }
+
+      .white-cover { display: none; }
+
       .titles { position: relative; transform: none; top: auto; right: auto; text-align: left; padding: 2rem clamp(1.5rem,5vw,4rem); opacity: 1 !important; }
-      .titles a { opacity: 0.8 !important; font-size: clamp(2rem, 8vw, 3rem) !important; }
+      .title-item { opacity: 0.8 !important; font-size: clamp(2rem, 8vw, 3rem) !important; transform: none !important; }
 
       .snippets { position: relative; transform: none; top: auto; left: auto; max-width: 100%; padding: 2rem clamp(1.5rem,5vw,4rem); opacity: 1 !important; }
       .snippet { position: relative; opacity: 1 !important; transform: none !important; margin-bottom: 3rem; }
-
-      .anchor-left, .anchor-right { display: none; }
 
       .bg { position: relative; height: 60vh; opacity: 1 !important; }
 
@@ -463,7 +458,6 @@
     </defs>
   </svg>
 
-  <!-- NAV (top-right like B&C: HOME WORK ABOUT CONTACT) -->
   <nav class="nav">
     <a href="/">Home</a>
     <a href="/sencha-house/experiences/">Experiences</a>
@@ -473,19 +467,14 @@
     <div class="nav-burger" aria-label="Menu"><span></span><span></span><span></span></div>
   </nav>
 
-  <!-- ============ HERO: full-viewport brand name ============ -->
-  <section class="hero" id="hero">
-    <div class="hero-brand">
-      <span class="hero-sencha">SENCHA</span>
-      <span class="hero-house">house</span>
-    </div>
-  </section>
-
   <!-- ============ SCROLL STAGE ============ -->
   <div class="scroll-wrap" id="scrollWrap">
     <div class="stage" id="stage">
 
-      <!-- Backgrounds (stacked, crossfade) -->
+      <!-- White cover (hero state, fades to reveal video) -->
+      <div class="white-cover" id="whiteCover"></div>
+
+      <!-- Backgrounds -->
       <div class="bg bg-0">
         <video autoplay muted loop playsinline>
           <source src="https://videos.pexels.com/video-files/5929428/5929428-hd_1920_1080_25fps.mp4" type="video/mp4">
@@ -505,26 +494,26 @@
         </video>
       </div>
 
-      <div class="stage-ov"></div>
+      <div class="stage-ov" id="stageOv"></div>
 
-      <!-- Persistent anchors -->
-      <div class="anchor-left persist">SENCHA</div>
-      <div class="anchor-right persist">house</div>
+      <!-- Brand words (start centered = hero, animate to edges) -->
+      <span class="word word-sencha" id="wordSencha">SENCHA</span>
+      <span class="word word-house" id="wordHouse">house</span>
 
-      <!-- Right-side stacked titles (like B&C's ADIDAS / CALVIN KLEIN / ...) -->
+      <!-- Right-side titles -->
       <div class="titles" id="titles">
-        <a href="#" data-i="0" class="is-active">The Standard</a>
-        <a href="#" data-i="1">Listening</a>
-        <a href="#" data-i="2">Rituals</a>
-        <a href="#" data-i="3">Other Hands</a>
+        <span class="title-item is-active" data-i="0">The Standard</span>
+        <span class="title-item is-future" data-i="1">Listening</span>
+        <span class="title-item is-future" data-i="2">Rituals</span>
+        <span class="title-item is-future" data-i="3">Other Hands</span>
       </div>
 
-      <!-- Left-side text snippets (one per section) -->
+      <!-- Left-side snippets -->
       <div class="snippets" id="snippets">
         <div class="snippet is-active" data-i="0">
           <div class="snippet-idx">I &middot; The Standard</div>
           <div class="snippet-sub">Before anything is designed, the tea has already been decided.</div>
-          <p class="snippet-body">Selection, blending, roasting: in Japanese tea these are not marketing language, they are a discipline refined over decades. This is the floor everything else is built on.</p>
+          <p class="snippet-body">Selection, blending, roasting: in Japanese tea these are not marketing language, they are a discipline refined over decades by people who answer to a standard most producers will never reach. This is the floor everything else is built on.</p>
         </div>
         <div class="snippet" data-i="1">
           <div class="snippet-idx">II &middot; Design as Cultural Translation</div>
@@ -534,21 +523,20 @@
         <div class="snippet" data-i="2">
           <div class="snippet-idx">III &middot; Tea Design</div>
           <div class="snippet-sub">Formats that don't have a name yet.</div>
-          <p class="snippet-body">We do not recreate tea ceremonies. What we build instead are structured around discovery, wellness, connection, and vitality. Whatever the format, the standard underneath doesn't move.</p>
+          <p class="snippet-body">We do not recreate tea ceremonies. A tradition already exists to do that properly. What we build instead are structured around discovery, wellness, connection, vitality. Whatever the format, the standard underneath doesn't move. Only the shape does.</p>
         </div>
         <div class="snippet" data-i="3">
           <div class="snippet-idx">IV &middot; Other Hands</div>
-          <div class="snippet-sub">Never a solitary act.</div>
-          <p class="snippet-body">The bowl a tea is served in comes from a ceramicist held to the same standard we hold the leaf to. We are not introducing collaboration into this tradition. We are continuing what was already there.</p>
+          <div class="snippet-sub">Innovation has never been a solitary act.</div>
+          <p class="snippet-body">The bowl a tea is served in comes from a ceramicist who has spent years learning what clay can hold, held to the same standard we hold the leaf to. We are not introducing collaboration into this tradition. We are continuing what was already there.</p>
         </div>
       </div>
 
     </div>
   </div>
 
-  <!-- ============ POST-STAGE ============ -->
+  <!-- POST-STAGE -->
   <div class="post">
-
     <section class="closing">
       <div style="max-width:1360px;margin:0 auto;padding:0 clamp(1.5rem,5vw,4rem);">
         <div class="closing-ey">V &middot; In Your Hands</div>
@@ -585,7 +573,6 @@
         </div>
       </a>
     </section>
-
   </div>
 
   <script>
@@ -593,7 +580,6 @@
 
       gsap.registerPlugin(ScrollTrigger);
 
-      /* Lenis */
       var lenis = new Lenis({ lerp: 0.07, smoothWheel: true });
       lenis.on('scroll', ScrollTrigger.update);
       gsap.ticker.add(function(t) { lenis.raf(t * 1000); });
@@ -602,76 +588,133 @@
       var isMobile = window.matchMedia('(max-width: 860px)').matches;
       if (isMobile) return;
 
-      var titleEls = document.querySelectorAll('.titles a');
+      var titleEls = document.querySelectorAll('.title-item');
       var snippetEls = document.querySelectorAll('.snippet');
-      var bgEls = ['.bg-0', '.bg-1', '.bg-2', '.bg-3'];
-      var sectionCount = 4;
-      var currentIdx = 0;
+      var currentIdx = -1;
 
-      /* ---- SET ACTIVE STATE ---- */
       function setActive(idx) {
         if (idx === currentIdx) return;
+        var prevIdx = currentIdx;
         currentIdx = idx;
 
         titleEls.forEach(function(el, i) {
-          el.classList.toggle('is-active', i === idx);
+          el.classList.remove('is-active', 'is-past', 'is-future');
+          if (i === idx) el.classList.add('is-active');
+          else if (i < idx) el.classList.add('is-past');
+          else el.classList.add('is-future');
         });
 
         snippetEls.forEach(function(el, i) {
-          el.classList.toggle('is-active', i === idx);
+          el.classList.remove('is-active', 'is-past');
+          if (i === idx) el.classList.add('is-active');
+          else if (i < idx) el.classList.add('is-past');
         });
       }
 
-      /* ---- MAIN SCROLL TIMELINE ---- */
-      var tl = gsap.timeline({
+      /* ============================
+         PHASE 1: BRAND SPLIT
+         White cover fades, words
+         move from center to edges,
+         shrink and rotate.
+         ============================ */
+      var splitTL = gsap.timeline({
         scrollTrigger: {
           trigger: '#scrollWrap',
           start: 'top top',
-          end: 'bottom bottom',
+          end: '15% top',
+          scrub: 1
+        }
+      });
+
+      // White cover fades
+      splitTL.to('#whiteCover', { opacity: 0, duration: 1 }, 0);
+
+      // Stage overlay fades in
+      splitTL.to('#stageOv', { opacity: 1, duration: 1 }, 0);
+
+      // SENCHA moves to left edge, shrinks, rotates
+      splitTL.to('#wordSencha', {
+        top: '50%',
+        left: '2rem',
+        fontSize: '0.72rem',
+        rotation: -90,
+        xPercent: 0,
+        yPercent: -50,
+        color: '#fff',
+        opacity: 0.35,
+        letterSpacing: '0.12em',
+        duration: 1
+      }, 0);
+
+      // house moves to right edge, shrinks, rotates
+      splitTL.to('#wordHouse', {
+        top: '50%',
+        left: 'auto',
+        right: '2rem',
+        fontSize: '0.82rem',
+        rotation: 90,
+        xPercent: 0,
+        yPercent: -50,
+        color: '#fff',
+        opacity: 0.35,
+        letterSpacing: '0.08em',
+        duration: 1
+      }, 0);
+
+      // Titles and snippets fade in
+      splitTL.to('#titles', { opacity: 1, duration: 0.6 }, 0.5);
+      splitTL.to('#snippets', { opacity: 1, duration: 0.6 }, 0.5);
+
+      // First bg visible
+      splitTL.to('.bg-0', { opacity: 1, duration: 0.8 }, 0);
+
+      /* ============================
+         PHASE 2: SECTION CYCLING
+         Titles highlight, snippets
+         swap, backgrounds crossfade.
+         ============================ */
+      var cycleTL = gsap.timeline({
+        scrollTrigger: {
+          trigger: '#scrollWrap',
+          start: '15% top',
+          end: '90% top',
           scrub: 1.5,
           onUpdate: function(self) {
             var p = self.progress;
-            // Map scroll progress to section index
-            var idx = Math.min(Math.floor(p * sectionCount), sectionCount - 1);
+            var idx = Math.min(Math.floor(p * 4), 3);
             setActive(idx);
           }
         }
       });
 
-      /* Fade in the stage elements at start */
-      tl.to('.titles', { opacity: 1, duration: 1 }, 0)
-        .to('.snippets', { opacity: 1, duration: 1 }, 0)
-        .to('.anchor-left', { opacity: 0.35, duration: 1 }, 0)
-        .to('.anchor-right', { opacity: 0.35, duration: 1 }, 0);
+      // bg crossfades across the cycling phase
+      // 0-25%: bg-0
+      cycleTL.to('.bg-0', { opacity: 0, duration: 2 }, 2.5);
+      cycleTL.to('.bg-1', { opacity: 1, duration: 2 }, 2.5);
 
-      /* Background crossfades */
-      // bg-0 visible from 0-25%
-      tl.to('.bg-0', { opacity: 1, duration: 0.5 }, 0);
-      tl.to('.bg-0', { opacity: 0, duration: 2 }, 3);
+      // 25-50%: bg-1
+      cycleTL.to('.bg-1', { opacity: 0, duration: 2 }, 6);
+      cycleTL.to('.bg-2', { opacity: 1, duration: 2 }, 6);
 
-      // bg-1 visible from 25-50%
-      tl.to('.bg-1', { opacity: 1, duration: 2 }, 3);
-      tl.to('.bg-1', { opacity: 0, duration: 2 }, 7);
+      // 50-75%: bg-2
+      cycleTL.to('.bg-2', { opacity: 0, duration: 2 }, 9.5);
+      cycleTL.to('.bg-3', { opacity: 1, duration: 2 }, 9.5);
 
-      // bg-2 visible from 50-75%
-      tl.to('.bg-2', { opacity: 1, duration: 2 }, 7);
-      tl.to('.bg-2', { opacity: 0, duration: 2 }, 11);
+      // 75-100%: bg-3
+      cycleTL.to({}, { duration: 3 }); // pad
 
-      // bg-3 visible from 75-100%
-      tl.to('.bg-3', { opacity: 1, duration: 2 }, 11);
-
-      /* Pad out the timeline length */
-      tl.to({}, { duration: 4 });
-
-      /* ---- HERO EXIT ----
-         Hero fades out as you scroll into the stage */
-      gsap.to('.hero', {
+      /* ============================
+         PHASE 3: EXIT
+         Everything fades for the
+         transition to post-stage.
+         ============================ */
+      gsap.to(['#titles', '#snippets', '#wordSencha', '#wordHouse'], {
         opacity: 0,
-        scale: 0.92,
+        duration: 1,
         scrollTrigger: {
-          trigger: '.hero',
-          start: 'top top',
-          end: 'bottom top',
+          trigger: '#scrollWrap',
+          start: '88% top',
+          end: '95% top',
           scrub: true
         }
       });
