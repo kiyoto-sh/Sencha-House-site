@@ -59,14 +59,17 @@
      Bottom edge pinned just above the line via
      translateY(calc(-100% - gap)); grows upward.
      =========================================== */
-  /* overflow-y:hidden keeps the single-slot vertical mask (only one
-     title visible at a time); overflow-x:visible (via the longhand
-     split) stops long titles like THE STANDARD from being clipped at
-     the right edge - that was the "D gets cut" bug. width is now just
-     a layout hint, not a hard clip boundary. */
-  .active-area { position: absolute; z-index: 20; top: 50%; transform: translateY(calc(-100% - 1.6rem)); left: var(--edge); width: 44vw; overflow-x: visible; overflow-y: hidden; opacity: 0; }
-  .title-track { position: relative; }
-  .title-slot { white-space: nowrap; padding-top: 0.12em; }
+  /* Title slots are now individually animated (scale + fade), mirroring
+     the right-side queue. They stack at the SAME anchor point (all
+     absolute, bottom-aligned) and the animation handoff guarantees only
+     one is readable at a time: outgoing fades to 0 before incoming
+     reaches full opacity. transform-origin bottom-left so growth is
+     upward from just above the line, never crossing it. overflow is no
+     longer needed for masking since opacity does the separation, but x
+     stays visible so long titles aren't clipped. */
+  .active-area { position: absolute; z-index: 20; top: 50%; transform: translateY(calc(-100% - 1.6rem)); left: var(--edge); width: 44vw; opacity: 0; }
+  .title-track { position: relative; height: 100%; }
+  .title-slot { position: absolute; left: 0; bottom: 0; white-space: nowrap; transform-origin: left bottom; will-change: transform, opacity; }
   .active-title { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 900; text-transform: uppercase; font-size: clamp(1.8rem,4.4vw,4rem); line-height: 0.92; letter-spacing: -0.06em; color: #fff; white-space: nowrap; display: block; }
 
   /* ===========================================
@@ -141,20 +144,19 @@
     .anc-r { font-size: 0.7rem; }
     .anc-c { font-size: 0.75rem; }
 
-    /* Title: narrower column, smaller type, but SAME masked-track
-       mechanic and same above-the-line anchoring. */
-    .active-area { width: 80vw; transform: translateY(calc(-100% - 0.8rem)); }
-    .active-title { font-size: clamp(1.8rem, 9vw, 3.2rem); }
+    /* Title: narrower column, smaller type, but SAME mechanic and same
+       above-the-line anchoring. */
+    .active-area { width: 80vw; transform: translateY(calc(-100% - 0.7rem)); }
+    .active-title { font-size: clamp(1.5rem, 7.5vw, 2.6rem); }
 
-    /* Manifesto: kept to the LEFT portion only so it never runs under
-       the right-side queue. 58vw leaves clear air on the right half. */
-    .manifesto { width: 46vw; margin-top: 1.1rem; }
-    .mani-body { font-size: 0.68rem; line-height: 1.55; }
-    .mani-idx { font-size: 9px; margin-bottom: 0.6rem; }
+    /* Manifesto: narrow left-side block, smaller text, tight line spacing
+       so it stays compact and well clear of the right-side queue. */
+    .manifesto { width: 44vw; margin-top: 0.9rem; }
+    .mani-body { font-size: 0.62rem; line-height: 1.45; }
+    .mani-idx { font-size: 8px; margin-bottom: 0.5rem; letter-spacing: 0.3em; }
 
-    /* Queue: smaller so the stack stays compact and clears the
-       manifesto on the left. Same motion, same below-line placement. */
-    .q-item { font-size: clamp(1.1rem, 6vw, 2rem); }
+    /* Queue: smaller, compact stack, same motion. */
+    .q-item { font-size: clamp(1rem, 5vw, 1.7rem); }
 
     .branch { flex-direction: column; height: auto; }
     .bp { flex: none; height: 60vh; border-right: none; border-bottom: 1px solid rgba(230,218,184,0.12); cursor: pointer; }
@@ -283,10 +285,14 @@
   /* ---- MEASUREMENTS (runtime, never hardcoded) ---- */
   var titleSlotHeight = 0;
   function measureTitleTrack() {
-    // Include the slot's padding-top headroom so ascenders are never
-    // clipped by the mask (the "cut off at top" bug).
-    titleSlotHeight = titleSlots[0].getBoundingClientRect().height;
-    activeArea.style.height = titleSlotHeight + 'px';
+    // Font-size based, transform-independent (same reasoning as the
+    // queue: getBoundingClientRect would return the GSAP-scaled size).
+    // line-height is 0.92 so the line box is ~0.92*fs; use fs as a clean
+    // reference for the small vertical drift in updateTitles, and give
+    // the track a real height so bottom:0 slots anchor correctly.
+    var fs = parseFloat(window.getComputedStyle(titleSlots[0]).fontSize);
+    titleSlotHeight = fs;
+    activeArea.style.height = (fs * 1.15) + 'px';
   }
 
   var qItemHeight = 0;
@@ -322,6 +328,7 @@
 
   /* ---- INITIAL STATES ---- */
   manis.forEach(function(el, i){ gsap.set(el, { opacity: i === 0 ? 1 : 0, y: i === 0 ? 0 : 18 }); });
+  titleSlots.forEach(function(el, i){ gsap.set(el, { opacity: i === 0 ? 1 : 0, scale: i === 0 ? 1 : 0.55, y: 0 }); });
   bgInners.forEach(function(el){ gsap.set(el, { yPercent: -16, scale: 1.18 }); });
   bgEls.forEach(function(el){ gsap.set(el, { yPercent: 0 }); });
 
@@ -410,6 +417,37 @@
     });
   }
 
+  /* Left title animation - mirrors the queue's physical language.
+     All slots stack at the same bottom-left anchor. At rest, the active
+     slot is full-size/full-opacity and every other slot is invisible.
+     During a transition (frac 0->1): the OUTGOING active title shrinks
+     and fades to 0, the INCOMING title grows from small and fades in.
+     The handoff is staggered so the outgoing is mostly gone before the
+     incoming is mostly there - they cross but never both read as solid,
+     so no overlap. Inverse of the queue: there the departing item leaves
+     the front; here the arriving title takes the active spot. */
+  function updateTitles(v) {
+    var activeFloor = Math.min(Math.floor(v), N - 1);
+    var frac = v - activeFloor;
+
+    titleSlots.forEach(function(el, i) {
+      if (i === activeFloor) {
+        // Current active title: at frac 0 it's full; as frac->1 it
+        // shrinks and fades out (it's being replaced). Faster fade
+        // (frac*1.4 clamped) so it clears before the incoming peaks.
+        var outOp = Math.max(0, 1 - frac * 1.6);
+        gsap.set(el, { opacity: outOp, scale: 1 - frac * 0.45, y: -frac * (titleSlotHeight * 0.4) });
+      } else if (i === activeFloor + 1) {
+        // Incoming title: grows from small and fades in, but delayed so
+        // it only becomes solid once the outgoing has mostly gone.
+        var inProg = Math.max(0, (frac - 0.35) / 0.65); // starts at 35% through
+        gsap.set(el, { opacity: inProg, scale: 0.55 + inProg * 0.45, y: (1 - inProg) * (titleSlotHeight * 0.4) });
+      } else {
+        gsap.set(el, { opacity: 0 });
+      }
+    });
+  }
+
   var mainTl = gsap.timeline({
     scrollTrigger: {
       trigger: '#sw',
@@ -420,7 +458,9 @@
       pinSpacing: true,
       invalidateOnRefresh: true,
       onUpdate: function(self) {
-        updateQueue(self.progress * N);
+        var v = self.progress * N;
+        updateQueue(v);
+        updateTitles(v);
       }
     }
   });
@@ -441,12 +481,8 @@
     if (s < N - 1) {
       var exitStart = base + OPEN + HOLD;
 
-      // Title track slides up exactly one slot (masked - only one shows).
-      mainTl.to(titleTrack, {
-        y: -((s + 1) * titleSlotHeight),
-        ease: 'power3.inOut',
-        duration: CLOSE
-      }, exitStart);
+      // (Left title is now animated continuously in updateTitles() via
+      // onUpdate, mirroring the queue - no rigid track slide here.)
 
       // Manifesto crossfade: current out (rise+fade), next in (rise+fade).
       mainTl.to(manis[s], { opacity: 0, y: -18, duration: CLOSE * 0.6, ease: 'power2.in' }, exitStart);
