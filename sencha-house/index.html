@@ -18,7 +18,7 @@
     --edge: clamp(1.5rem, 5vw, 4rem);
   }
   *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-  body { background: #fff; color: var(--kabuse); font-family: 'Lato', sans-serif; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+  body { background: #fff; color: var(--kabuse); font-family: 'Lato', sans-serif; -webkit-font-smoothing: antialiased; overflow-x: hidden; cursor: none; }
   a { color: inherit; text-decoration: none; }
 
   .nav { position: fixed; top: 0; right: 0; z-index: 200; display: flex; align-items: center; gap: clamp(1.2rem,2.5vw,2rem); padding: 1.6rem var(--edge); mix-blend-mode: difference; }
@@ -27,31 +27,67 @@
   .nav-burger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
   .nav-burger span { width: 22px; height: 1px; background: #fff; }
 
+  /* ===========================================
+     CUSTOM CURSOR
+     =========================================== */
+  .custom-cursor {
+    position: fixed;
+    top: 0; left: 0;
+    width: 14px; height: 14px;
+    margin: -7px 0 0 -7px; /* centers on pointer without touching `transform`, which GSAP owns for x/y/scale */
+    border-radius: 50%;
+    background: #fff;
+    pointer-events: none;
+    z-index: 999;
+    mix-blend-mode: difference;
+    will-change: transform;
+  }
+
   .scroll-wrap { position: relative; }
   .stage { position: relative; width: 100%; height: 100vh; height: 100dvh; overflow: hidden; background: #fff; }
   .white-cover { position: absolute; inset: 0; z-index: 30; background: #fff; pointer-events: none; }
 
-  .bg { position: absolute; inset: 0; z-index: 0; opacity: 0; }
-  .bg video, .bg img { width: 100%; height: 100%; object-fit: cover; }
-  .bg.is-on { opacity: 1; }
+  /* ===========================================
+     BACKGROUNDS - wrapper gets clip-path window
+     reveal, inner gets parallax + scale. Two
+     separate elements so the two transforms
+     never fight on the same node.
+     =========================================== */
+  .bg { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
+  .bg-inner { position: absolute; inset: -10% -10%; will-change: transform; }
+  .bg-inner video, .bg-inner img { width: 100%; height: 100%; object-fit: cover; }
   .stage-ov { position: absolute; inset: 0; z-index: 1; background: rgba(0,0,0,0.18); opacity: 0; }
 
   .brand-center { position: absolute; z-index: 25; top: 50%; left: 50%; transform: translate(-50%,-50%); display: flex; align-items: baseline; gap: 0.15em; white-space: nowrap; }
   .word-s { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; text-transform: uppercase; font-size: clamp(4rem,13vw,12rem); letter-spacing: -0.03em; line-height: 1; }
   .word-h { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-style: italic; font-size: clamp(4rem,13vw,12rem); line-height: 1; }
 
-  .anc { position: absolute; z-index: 10; top: 50%; transform: translateY(-50%); color: #fff; opacity: 0; white-space: nowrap; }
+  .anc { position: absolute; z-index: 10; bottom: clamp(1.6rem,3.5vh,2.4rem); color: #fff; opacity: 0; white-space: nowrap; }
   .anc-l { left: var(--edge); font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; }
-  .anc-c { left: 50%; transform: translate(-50%,-50%); font-family: 'Cormorant Garamond', serif; font-weight: 300; font-style: italic; font-size: 0.9rem; }
+  .anc-c { left: 50%; transform: translateX(-50%); font-family: 'Cormorant Garamond', serif; font-weight: 300; font-style: italic; font-size: 0.9rem; }
   .anc-r { right: var(--edge); font-family: 'Cormorant Garamond', serif; font-weight: 300; font-style: italic; font-size: 0.82rem; letter-spacing: 0.06em; }
 
+  /* ===========================================
+     ACTIVE TITLE - 4 stacked slots, character-
+     split. white-space:nowrap is load-bearing:
+     it's a single-line headline, and with many
+     inline-block char spans there are far more
+     wrap opportunities than plain text, so this
+     must be explicit or it WILL wrap unexpectedly.
+     =========================================== */
   .active-area { position: absolute; z-index: 10; top: clamp(1.4rem,3.5vh,2.2rem); left: var(--edge); opacity: 0; }
+  .title-slot { position: absolute; top: 0; left: 0; white-space: nowrap; }
   .active-title { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; text-transform: uppercase; font-size: clamp(2.6rem,6.8vw,6.2rem); line-height: 0.95; letter-spacing: -0.02em; color: #fff; white-space: nowrap; }
-  .active-preview { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; text-transform: uppercase; font-size: clamp(0.7rem,1vw,0.9rem); letter-spacing: 0.04em; color: #fff; opacity: 0.42; white-space: nowrap; margin-top: 0.4em; }
 
-  .snippet-area { position: absolute; z-index: 10; top: clamp(8rem,19vh,13.5rem); left: var(--edge); max-width: clamp(26rem,46vw,42rem); opacity: 0; }
-  .snip { position: absolute; top: 0; left: 0; opacity: 0; transform: translateY(18px); }
-  .snip.is-on { opacity: 1; transform: translateY(0); transition: opacity 0.5s cubic-bezier(.16,1,.3,1), transform 0.5s cubic-bezier(.16,1,.3,1); }
+  /* ===========================================
+     SNIPPET AREA - idx/body are simple continuous
+     fades (GSAP-driven, no CSS transition needed
+     since the timeline itself supplies the easing).
+     sub is word-split kinetic (see comment above
+     on why word-level, not character-level).
+     =========================================== */
+  .snippet-area { position: absolute; z-index: 10; top: clamp(8rem,19vh,13.5rem); left: var(--edge); width: clamp(26rem,46vw,42rem); max-width: calc(100vw - var(--edge) * 2); opacity: 0; }
+  .snip { position: absolute; top: 0; left: 0; width: 100%; opacity: 0; }
   .snip-idx { font-weight: 300; font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 1rem; }
   .snip-sub { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-style: italic; font-size: clamp(1.05rem,1.6vw,1.4rem); color: rgba(255,255,255,0.9); margin-bottom: 1rem; line-height: 1.4; }
   .snip-body { font-weight: 300; font-size: clamp(0.82rem,0.92vw,0.9rem); line-height: 1.85; color: rgba(255,255,255,0.65); }
@@ -66,7 +102,7 @@
   .closing-hl em { font-style: normal; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; text-transform: uppercase; font-size: 0.72em; }
 
   .branch { display: flex; width: 100%; height: 100vh; height: 100dvh; overflow: hidden; }
-  .bp { position: relative; flex: 1 1 33.333%; height: 100%; overflow: hidden; cursor: pointer; border-right: 1px solid rgba(230,218,184,0.12); }
+  .bp { position: relative; flex: 1 1 33.333%; height: 100%; overflow: hidden; cursor: none; border-right: 1px solid rgba(230,218,184,0.12); }
   .bp:last-child { border-right: none; }
   .bp-bg { position: absolute; inset: 0; z-index: 0; }
   .bp--a .bp-bg { background: linear-gradient(165deg,#1a3015,#0d1f0a); }
@@ -87,6 +123,8 @@
   .svg-f { position: absolute; width: 0; height: 0; overflow: hidden; }
 
   @media (max-width: 860px) {
+    body { cursor: auto; }
+    .custom-cursor { display: none; }
     .nav a:not(:last-child) { display: none; }
     .nav-burger { display: flex; }
     .stage { position: relative; height: auto; min-height: 100dvh; }
@@ -94,12 +132,16 @@
     .anc { display: none; }
     .brand-center { font-size: 50%; }
     .active-area, .snippet-area, .queue { position: relative; top: auto; left: auto; right: auto; transform: none; opacity: 1 !important; padding: 1.4rem var(--edge); max-width: 100%; }
+    .title-slot { position: relative !important; display: none; }
+    .title-slot:first-child { display: block; }
     .active-title { font-size: clamp(2rem,8vw,3rem); }
-    .snip { position: relative; opacity: 1 !important; transform: none !important; margin-bottom: 2rem; }
+    .snip { position: relative !important; opacity: 1 !important; display: none; }
+    .snip:first-child { display: block; }
     .q-item { position: relative !important; opacity: 0.6 !important; transform: none !important; font-size: clamp(1.4rem,6vw,2.2rem); display: block; margin-bottom: 0.2em; text-align: left; }
-    .bg { position: relative; height: 55vh; opacity: 1 !important; }
+    .bg { position: relative; height: 55vh; clip-path: none !important; }
+    .bg-inner { inset: 0 !important; transform: none !important; }
     .branch { flex-direction: column; height: auto; }
-    .bp { flex: none; height: 70vh; border-right: none; border-bottom: 1px solid rgba(230,218,184,0.12); }
+    .bp { flex: none; height: 70vh; border-right: none; border-bottom: 1px solid rgba(230,218,184,0.12); cursor: pointer; }
     .bp:last-child { border-bottom: none; }
     .bp-d { opacity: 1; max-height: 8rem; margin-bottom: 1.4rem; }
   }
@@ -110,6 +152,8 @@
 </head>
 <body>
 <svg class="svg-f"><defs><filter id="rp"><feTurbulence type="fractalNoise" baseFrequency="0.012 0.008" numOctaves="3" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="4" xChannelSelector="R" yChannelSelector="G"/></filter></defs></svg>
+
+<div class="custom-cursor" id="cursor"></div>
 
 <nav class="nav">
   <a href="/">Home</a>
@@ -124,10 +168,10 @@
   <div class="stage" id="stage">
     <div class="white-cover" id="wc"></div>
 
-    <div class="bg is-on" id="bg0"><video autoplay muted loop playsinline><source src="https://videos.pexels.com/video-files/5929428/5929428-hd_1920_1080_25fps.mp4" type="video/mp4"></video></div>
-    <div class="bg" id="bg1"><video autoplay muted loop playsinline><source src="https://videos.pexels.com/video-files/4926072/4926072-uhd_2732_1440_30fps.mp4" type="video/mp4"></video></div>
-    <div class="bg" id="bg2"><img src="https://images.pexels.com/photos/7233931/pexels-photo-7233931.jpeg?auto=compress&cs=tinysrgb&h=1200&w=1920&fit=crop" alt="" style="filter:url(#rp);"></div>
-    <div class="bg" id="bg3"><video autoplay muted loop playsinline><source src="https://videos.pexels.com/video-files/6694787/6694787-uhd_2732_1440_25fps.mp4" type="video/mp4"></video></div>
+    <div class="bg" id="bg0"><div class="bg-inner"><video autoplay muted loop playsinline><source src="https://videos.pexels.com/video-files/5929428/5929428-hd_1920_1080_25fps.mp4" type="video/mp4"></video></div></div>
+    <div class="bg" id="bg1"><div class="bg-inner"><video autoplay muted loop playsinline><source src="https://videos.pexels.com/video-files/4926072/4926072-uhd_2732_1440_30fps.mp4" type="video/mp4"></video></div></div>
+    <div class="bg" id="bg2"><div class="bg-inner"><img src="https://images.pexels.com/photos/7233931/pexels-photo-7233931.jpeg?auto=compress&cs=tinysrgb&h=1200&w=1920&fit=crop" alt="" style="filter:url(#rp);"></div></div>
+    <div class="bg" id="bg3"><div class="bg-inner"><video autoplay muted loop playsinline><source src="https://videos.pexels.com/video-files/6694787/6694787-uhd_2732_1440_25fps.mp4" type="video/mp4"></video></div></div>
 
     <div class="stage-ov" id="sov"></div>
 
@@ -141,8 +185,10 @@
     <span class="anc anc-r" id="ar">house</span>
 
     <div class="active-area" id="aa">
-      <div class="active-title" id="atTitle">The Standard</div>
-      <div class="active-preview" id="atPreview">Listening</div>
+      <div class="title-slot" data-i="0"><span class="active-title">The Standard</span></div>
+      <div class="title-slot" data-i="1"><span class="active-title">Listening</span></div>
+      <div class="title-slot" data-i="2"><span class="active-title">Rituals</span></div>
+      <div class="title-slot" data-i="3"><span class="active-title">Other Hands</span></div>
     </div>
 
     <div class="snippet-area" id="sa">
@@ -208,15 +254,129 @@
   var TITLES = ['The Standard', 'Listening', 'Rituals', 'Other Hands'];
   var N = TITLES.length;
 
-  var qItems = document.querySelectorAll('.q-item');
+  /* ===========================================
+     KINETIC TYPOGRAPHY HELPERS
+     Character split: for short, single-line
+     headlines only (white-space:nowrap is safe).
+     Word split: for prose that needs to wrap
+     across multiple lines - each word gets its
+     own overflow:hidden clipping box instead,
+     since individual characters can't wrap
+     mid-word without breaking the word apart.
+     =========================================== */
+  function splitChars(el) {
+    var text = el.textContent;
+    el.textContent = '';
+    var inners = [];
+    text.split('').forEach(function(ch) {
+      var wrap = document.createElement('span');
+      wrap.style.display = 'inline-block';
+      wrap.style.overflow = 'hidden';
+      wrap.style.verticalAlign = 'top';
+      var inner = document.createElement('span');
+      inner.style.display = 'inline-block';
+      inner.textContent = (ch === ' ') ? '\u00A0' : ch;
+      wrap.appendChild(inner);
+      el.appendChild(wrap);
+      inners.push(inner);
+    });
+    return inners;
+  }
+
+  function splitWords(el) {
+    var text = el.textContent;
+    var words = text.split(' ');
+    el.textContent = '';
+    var inners = [];
+    words.forEach(function(w, idx) {
+      var wrap = document.createElement('span');
+      wrap.style.display = 'inline-block';
+      wrap.style.overflow = 'hidden';
+      wrap.style.verticalAlign = 'top';
+      var inner = document.createElement('span');
+      inner.style.display = 'inline-block';
+      inner.textContent = w;
+      wrap.appendChild(inner);
+      el.appendChild(wrap);
+      if (idx < words.length - 1) {
+        el.appendChild(document.createTextNode(' '));
+      }
+      inners.push(inner);
+    });
+    return inners;
+  }
+
+  /* ===========================================
+     CLIP-PATH "WINDOW" REVEAL VIA NUMERIC PROXY
+     GSAP can animate clip-path strings directly in
+     most cases, but interpolation is only reliable
+     when point count/order is identical across
+     keyframes. Driving it through a plain numeric
+     proxy object and writing the polygon string
+     ourselves in onUpdate sidesteps that entirely -
+     guaranteed-correct interpolation regardless of
+     GSAP/browser parsing quirks.
+     =========================================== */
+  function clipProxy(el, initialTop, initialBottom) {
+    var state = { top: initialTop, bottom: initialBottom };
+    function apply() {
+      el.style.clipPath = 'polygon(0% ' + state.top + '%, 100% ' + state.top + '%, 100% ' + state.bottom + '%, 0% ' + state.bottom + '%)';
+    }
+    apply();
+    return { state: state, apply: apply };
+  }
+
+  /* ===========================================
+     BUILD KINETIC ELEMENTS FOR EACH SECTION
+     =========================================== */
+  var titleSlots = document.querySelectorAll('.title-slot');
   var snips = document.querySelectorAll('.snip');
-  var bgLayers = [document.getElementById('bg0'), document.getElementById('bg1'), document.getElementById('bg2'), document.getElementById('bg3')];
-  var atTitle = document.getElementById('atTitle');
-  var atPreview = document.getElementById('atPreview');
+  var bgEls = [document.getElementById('bg0'), document.getElementById('bg1'), document.getElementById('bg2'), document.getElementById('bg3')];
+  var bgInners = bgEls.map(function(el) { return el.querySelector('.bg-inner'); });
 
+  var sectionData = [];
+  for (var i = 0; i < N; i++) {
+    var titleChars = splitChars(titleSlots[i].querySelector('.active-title'));
+    var snipEl = snips[i];
+    var subEl = snipEl.querySelector('.snip-sub');
+    var subWords = splitWords(subEl);
+    var idxEl = snipEl.querySelector('.snip-idx');
+    var bodyEl = snipEl.querySelector('.snip-body');
+    var clip = clipProxy(bgEls[i], i === 0 ? 0 : 48, i === 0 ? 100 : 52);
+
+    // Initial state: all char/word inners start "below" their clip box
+    gsap.set(titleChars, { y: '105%', rotate: 5 });
+    gsap.set(subWords, { y: '105%' });
+    gsap.set(idxEl, { opacity: 0 });
+    gsap.set(bodyEl, { opacity: 0, y: 14 });
+    gsap.set(bgInners[i], { yPercent: -16, scale: 1.18 });
+
+    // Section 0 starts already "open" - the load intro handles its
+    // reveal separately, the master timeline should not re-animate it in.
+    if (i === 0) {
+      gsap.set(titleChars, { y: '0%', rotate: 0 });
+      gsap.set(subWords, { y: '0%' });
+      gsap.set(idxEl, { opacity: 1 });
+      gsap.set(bodyEl, { opacity: 1, y: 0 });
+    }
+
+    sectionData.push({
+      titleChars: titleChars,
+      subWords: subWords,
+      idxEl: idxEl,
+      bodyEl: bodyEl,
+      clip: clip,
+      bgInner: bgInners[i]
+    });
+  }
+
+  /* ===========================================
+     ITEM HEIGHT (for the right-side queue) -
+     measured at runtime, never hardcoded.
+     =========================================== */
+  var qItems = document.querySelectorAll('.q-item');
   var itemHeight = 0;
-
-  function measure() {
+  function measureQueue() {
     var ref = qItems[0];
     var prevOpacity = ref.style.opacity;
     ref.style.opacity = '0';
@@ -226,7 +386,22 @@
     ref.style.opacity = prevOpacity;
     ref.style.visibility = '';
   }
-  measure();
+  measureQueue();
+
+  /* Snippet-area positioned below the active-area's REAL rendered
+     height (measured), not a guessed offset. */
+  var activeArea = document.getElementById('aa');
+  var snippetArea = document.getElementById('sa');
+  var stageEl = document.getElementById('stage');
+  function positionSnippetArea() {
+    var aaRect = activeArea.getBoundingClientRect();
+    var stageRect = stageEl.getBoundingClientRect();
+    snippetArea.style.top = (aaRect.top + 130 - stageRect.top + 28) + 'px';
+  }
+  positionSnippetArea();
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(function() { positionSnippetArea(); });
+  }
 
   function debounce(fn, ms) {
     var t;
@@ -235,103 +410,143 @@
       t = setTimeout(fn, ms);
     };
   }
-  window.addEventListener('resize', debounce(measure, 200));
+  window.addEventListener('resize', debounce(function() {
+    measureQueue();
+    positionSnippetArea();
+  }, 200));
 
-  var currentIdx = -1;
-
-  function promote(idx) {
-    if (idx === currentIdx) return;
-    currentIdx = idx;
-
-    gsap.to(atTitle, {
-      y: -16, opacity: 0, duration: 0.22, ease: 'power2.in',
-      onComplete: function() {
-        atTitle.textContent = TITLES[idx];
-        gsap.fromTo(atTitle, { y: 16, opacity: 0 }, { y: 0, opacity: 1, duration: 0.32, ease: 'power2.out' });
-      }
-    });
-
-    var nextTitle = TITLES[idx + 1] || '';
-    gsap.to(atPreview, {
-      opacity: 0, duration: 0.18,
-      onComplete: function() {
-        atPreview.textContent = nextTitle;
-        gsap.to(atPreview, { opacity: nextTitle ? 0.42 : 0, duration: 0.28 });
-      }
-    });
-
-    snips.forEach(function(el, i) {
-      el.classList.remove('is-on');
-      if (i === idx) el.classList.add('is-on');
-    });
-
-    bgLayers.forEach(function(layer, i) {
-      if (i === idx) {
-        gsap.to(layer, { opacity: 1, duration: 0.7, ease: 'power1.inOut' });
-        layer.classList.add('is-on');
-      } else if (layer.classList.contains('is-on')) {
-        gsap.to(layer, { opacity: 0, duration: 0.7, ease: 'power1.inOut' });
-        layer.classList.remove('is-on');
-      }
-    });
-  }
-
-  function updateQueue(v, activeIdx) {
-    qItems.forEach(function(el, i) {
-      if (i <= activeIdx) {
-        gsap.set(el, { opacity: 0, y: -itemHeight, pointerEvents: 'none' });
-      } else {
-        var slot = i - v;
-        var y = slot * itemHeight - itemHeight;
-        gsap.set(el, { opacity: 1, y: y, pointerEvents: 'auto' });
-      }
-    });
-  }
-
+  /* ===========================================
+     INTRO - timed, runs once on load. Unrelated
+     to the scroll-driven master timeline below;
+     section 0's reveal is handled here, not by
+     the scrubbed timeline (see note above).
+     =========================================== */
   lenis.stop();
   window.scrollTo(0, 0);
 
   var intro = gsap.timeline({
     delay: 1.8,
-    onComplete: function() {
-      lenis.start();
-      promote(0);
-    }
+    onComplete: function() { lenis.start(); positionSnippetArea(); }
   });
 
   intro.to('#bc', { opacity: 0, scale: 0.62, duration: 1.1, ease: 'power3.inOut' }, 0);
   intro.to('#wc', { opacity: 0, duration: 1.1, ease: 'power2.inOut' }, 0);
   intro.to('#sov', { opacity: 1, duration: 1.1, ease: 'power2.inOut' }, 0);
-  intro.to('#bg0', { opacity: 1, duration: 1.1, ease: 'power2.inOut' }, 0);
   intro.to(['#al', '#ac', '#ar'], { opacity: 0.32, duration: 0.7, ease: 'power2.out' }, 0.55);
   intro.to('#aa', { opacity: 1, duration: 0.7, ease: 'power2.out' }, 0.6);
   intro.to('#sa', { opacity: 1, duration: 0.7, ease: 'power2.out' }, 0.6);
   intro.to('#queue', { opacity: 1, duration: 0.7, ease: 'power2.out' }, 0.6);
 
-  ScrollTrigger.create({
-    trigger: '#sw',
-    start: 'top top',
-    end: function() { return '+=' + (window.innerHeight * N * 1.15); },
-    pin: '#stage',
-    pinSpacing: true,
-    scrub: 0,
-    invalidateOnRefresh: true,
-    onUpdate: function(self) {
-      var v = self.progress * N;
-      var activeIdx = Math.min(Math.floor(v), N - 1);
-      promote(activeIdx);
-      updateQueue(v, activeIdx);
-    },
-    onLeave: function() {
-      gsap.to(['#aa', '#sa', '#queue', '#al', '#ac', '#ar'], { opacity: 0, duration: 0.5 });
-    },
-    onEnterBack: function() {
-      gsap.to(['#aa', '#sa', '#queue', '#al', '#ac', '#ar'], { opacity: 1, duration: 0.5 });
+  /* ===========================================
+     MASTER TIMELINE - single continuous scrub.
+     No discrete index switching. Every value
+     (title chars, subhead words, clip-path,
+     parallax, queue position) is bound to this
+     one timeline and moves with scroll position
+     itself, not a stepped calculation.
+     =========================================== */
+  var SECTION = 1;     // one "unit" of timeline per section
+  var OPEN = 0.35;      // entrance window
+  var HOLD = 0.3;       // settled window
+  var CLOSE = 0.35;     // exit window
+
+  var mainTl = gsap.timeline({
+    scrollTrigger: {
+      trigger: '#sw',
+      start: 'top top',
+      end: '+=300%',
+      scrub: 1,
+      pin: '#stage',
+      pinSpacing: true,
+      onUpdate: function(self) {
+        // Continuous queue positioning, derived directly from raw
+        // scroll progress - no discrete jumps, no promote().
+        var v = self.progress * N;
+        var activeFloor = Math.min(Math.floor(v), N - 1);
+        qItems.forEach(function(el, i) {
+          if (i <= activeFloor) {
+            gsap.set(el, { opacity: 0, y: -itemHeight, pointerEvents: 'none' });
+          } else {
+            var slot = i - v;
+            gsap.set(el, { opacity: 1, y: slot * itemHeight - itemHeight, pointerEvents: 'auto' });
+          }
+        });
+      }
     }
   });
 
-  var branch = document.getElementById('branch');
+  for (var s = 0; s < N; s++) {
+    var data = sectionData[s];
+    var base = s * SECTION;
+
+    // Continuous parallax + scale drift across the ENTIRE section window
+    // (open + hold + close), so the image keeps breathing the whole time
+    // it's the active layer, not just during its own transition.
+    mainTl.fromTo(data.bgInner,
+      { yPercent: -16, scale: 1.18 },
+      { yPercent: 16, scale: 1.0, ease: 'none', duration: SECTION },
+      base
+    );
+
+    if (s > 0) {
+      // ENTRANCE (skip for section 0 - handled by the load intro instead)
+      mainTl.to(data.clip.state, {
+        top: 0, bottom: 100, ease: 'power2.inOut', duration: OPEN,
+        onUpdate: data.clip.apply
+      }, base);
+
+      mainTl.to(data.titleChars, { y: '0%', rotate: 0, duration: OPEN, stagger: 0.01, ease: 'power3.out' }, base);
+      mainTl.to(data.subWords, { y: '0%', duration: OPEN, stagger: 0.01, ease: 'power3.out' }, base + 0.04);
+      mainTl.to(data.idxEl, { opacity: 1, duration: OPEN * 0.7 }, base);
+      mainTl.to(data.bodyEl, { opacity: 1, y: 0, duration: OPEN * 0.8 }, base + 0.08);
+    }
+
+    if (s < N - 1) {
+      // EXIT (every section except the last hands off to the next)
+      var exitStart = base + OPEN + HOLD;
+      mainTl.to(data.clip.state, {
+        top: 50, bottom: 50, ease: 'power2.inOut', duration: CLOSE,
+        onUpdate: data.clip.apply
+      }, exitStart);
+
+      mainTl.to(data.titleChars, { y: '-105%', rotate: -4, duration: CLOSE * 0.7, stagger: 0.008, ease: 'power2.in' }, exitStart);
+      mainTl.to(data.subWords, { y: '-105%', duration: CLOSE * 0.6, stagger: 0.008, ease: 'power2.in' }, exitStart);
+      mainTl.to(data.idxEl, { opacity: 0, duration: CLOSE * 0.5 }, exitStart);
+      mainTl.to(data.bodyEl, { opacity: 0, y: -14, duration: CLOSE * 0.5 }, exitStart);
+    }
+  }
+
+  /* ===========================================
+     CUSTOM CURSOR - gsap.quickTo for maximum
+     interpolation efficiency, no per-frame
+     manual easing math.
+     =========================================== */
+  var cursor = document.getElementById('cursor');
+  var cursorX = gsap.quickTo(cursor, 'x', { duration: 0.4, ease: 'power3' });
+  var cursorY = gsap.quickTo(cursor, 'y', { duration: 0.4, ease: 'power3' });
+  var cursorScale = gsap.quickTo(cursor, 'scale', { duration: 0.3, ease: 'power3' });
+
+  window.addEventListener('mousemove', function(e) {
+    cursorX(e.clientX);
+    cursorY(e.clientY);
+  });
+
   var bps = gsap.utils.toArray('.bp');
+  bps.forEach(function(p) {
+    p.addEventListener('mouseenter', function() {
+      cursorScale(2.6);
+      cursor.style.mixBlendMode = 'difference';
+      cursor.style.background = '#fff';
+    });
+    p.addEventListener('mouseleave', function() {
+      cursorScale(1);
+    });
+  });
+
+  /* ===========================================
+     BRANCH HOVER (unrelated to scroll engine)
+     =========================================== */
+  var branch = document.getElementById('branch');
   bps.forEach(function(p) {
     p.addEventListener('mouseenter', function() {
       bps.forEach(function(b) { gsap.to(b, { flex: b === p ? '1 1 50%' : '1 1 25%', duration: 0.7, ease: 'power3.inOut' }); });
