@@ -171,37 +171,22 @@
       text-align: right;
       display: flex;
       flex-direction: column;
-      gap: clamp(0.2rem, 0.6vw, 0.5rem);
+      gap: 0;
       opacity: 0;
     }
 
     .title-item {
       font-family: 'Plus Jakarta Sans', sans-serif;
       font-weight: 800;
-      font-size: clamp(1.6rem, 4.5vw, 4rem);
       text-transform: uppercase;
-      line-height: 1.05;
+      line-height: 1;
       letter-spacing: -0.02em;
       color: #fff;
-      opacity: 0.2;
       display: block;
-      transition: transform 0.6s cubic-bezier(0.16,1,0.3,1);
-      transform: translateY(0);
-    }
-
-    .title-item.is-active {
-      opacity: 1;
-      font-size: clamp(2.2rem, 6.5vw, 5.8rem);
-    }
-
-    .title-item.is-past {
-      opacity: 0.08;
-      transform: translateY(-15px);
-    }
-
-    .title-item.is-future {
+      transform-origin: right center;
+      /* Base size - GSAP will override scale and opacity */
+      font-size: clamp(2rem, 5.5vw, 5rem);
       opacity: 0.15;
-      transform: translateY(10px);
     }
 
     /* ============================
@@ -213,7 +198,7 @@
       left: clamp(1.5rem, 5vw, 4rem);
       top: 50%;
       transform: translateY(-50%);
-      max-width: clamp(18rem, 36vw, 30rem);
+      max-width: clamp(22rem, 48vw, 40rem);
       opacity: 0;
     }
 
@@ -592,18 +577,9 @@
       var snippetEls = document.querySelectorAll('.snippet');
       var currentIdx = -1;
 
-      function setActive(idx) {
+      function setSnippet(idx) {
         if (idx === currentIdx) return;
-        var prevIdx = currentIdx;
         currentIdx = idx;
-
-        titleEls.forEach(function(el, i) {
-          el.classList.remove('is-active', 'is-past', 'is-future');
-          if (i === idx) el.classList.add('is-active');
-          else if (i < idx) el.classList.add('is-past');
-          else el.classList.add('is-future');
-        });
-
         snippetEls.forEach(function(el, i) {
           el.classList.remove('is-active', 'is-past');
           if (i === idx) el.classList.add('is-active');
@@ -612,28 +588,31 @@
       }
 
       /* ============================
-         PHASE 1: BRAND SPLIT
-         White cover fades, words
-         move from center to edges,
-         shrink and rotate.
+         PHASE 1: BRAND INTRO
+         Timed auto-animation like B&C.
+         Brand name sits centered ~2s,
+         then splits to edges on its own.
+         Scroll is locked until done.
          ============================ */
-      var splitTL = gsap.timeline({
-        scrollTrigger: {
-          trigger: '#scrollWrap',
-          start: 'top top',
-          end: '15% top',
-          scrub: 1
+
+      // Lock scroll during intro
+      lenis.stop();
+      window.scrollTo(0, 0);
+
+      var introTL = gsap.timeline({
+        delay: 2,
+        onComplete: function() {
+          lenis.start();
         }
       });
 
-      // White cover fades
-      splitTL.to('#whiteCover', { opacity: 0, duration: 1 }, 0);
+      // White cover fades, video appears
+      introTL.to('#whiteCover', { opacity: 0, duration: 1.2, ease: 'power2.inOut' }, 0);
+      introTL.to('#stageOv', { opacity: 1, duration: 1.2, ease: 'power2.inOut' }, 0);
+      introTL.to('.bg-0', { opacity: 1, duration: 1.2, ease: 'power2.inOut' }, 0);
 
-      // Stage overlay fades in
-      splitTL.to('#stageOv', { opacity: 1, duration: 1 }, 0);
-
-      // SENCHA moves to left edge, shrinks, rotates
-      splitTL.to('#wordSencha', {
+      // SENCHA flies to left edge
+      introTL.to('#wordSencha', {
         top: '50%',
         left: '2rem',
         fontSize: '0.72rem',
@@ -643,11 +622,12 @@
         color: '#fff',
         opacity: 0.35,
         letterSpacing: '0.12em',
-        duration: 1
+        duration: 1.4,
+        ease: 'power3.inOut'
       }, 0);
 
-      // house moves to right edge, shrinks, rotates
-      splitTL.to('#wordHouse', {
+      // house flies to right edge
+      introTL.to('#wordHouse', {
         top: '50%',
         left: 'auto',
         right: '2rem',
@@ -658,55 +638,69 @@
         color: '#fff',
         opacity: 0.35,
         letterSpacing: '0.08em',
-        duration: 1
+        duration: 1.4,
+        ease: 'power3.inOut'
       }, 0);
 
-      // Titles and snippets fade in
-      splitTL.to('#titles', { opacity: 1, duration: 0.6 }, 0.5);
-      splitTL.to('#snippets', { opacity: 1, duration: 0.6 }, 0.5);
-
-      // First bg visible
-      splitTL.to('.bg-0', { opacity: 1, duration: 0.8 }, 0);
+      // Titles and snippets fade in after words start moving
+      introTL.to('#titles', { opacity: 1, duration: 0.8, ease: 'power2.out' }, 0.6);
+      introTL.to('#snippets', { opacity: 1, duration: 0.8, ease: 'power2.out' }, 0.6);
 
       /* ============================
          PHASE 2: SECTION CYCLING
-         Titles highlight, snippets
-         swap, backgrounds crossfade.
+         Continuous GSAP-driven title
+         animation. Each title scales,
+         fades, and translates based
+         on distance from active center.
          ============================ */
+      var sectionCount = 4;
+
       var cycleTL = gsap.timeline({
         scrollTrigger: {
           trigger: '#scrollWrap',
-          start: '15% top',
+          start: 'top top',
           end: '90% top',
           scrub: 1.5,
           onUpdate: function(self) {
             var p = self.progress;
-            var idx = Math.min(Math.floor(p * 4), 3);
-            setActive(idx);
+            var activeFloat = p * sectionCount;
+            var idx = Math.min(Math.floor(activeFloat), sectionCount - 1);
+
+            setSnippet(idx);
+
+            titleEls.forEach(function(el, i) {
+              var dist = activeFloat - i;
+              var absDist = Math.abs(dist);
+              var activity = Math.max(0, 1 - absDist);
+
+              var s = 0.4 + activity * 0.6;
+              var o = 0.12 + activity * 0.88;
+              var yShift = dist * -35;
+
+              gsap.set(el, {
+                scale: s,
+                opacity: o,
+                y: yShift,
+                transformOrigin: 'right center'
+              });
+            });
           }
         }
       });
 
-      // bg crossfades across the cycling phase
-      // 0-25%: bg-0
       cycleTL.to('.bg-0', { opacity: 0, duration: 2 }, 2.5);
       cycleTL.to('.bg-1', { opacity: 1, duration: 2 }, 2.5);
 
-      // 25-50%: bg-1
       cycleTL.to('.bg-1', { opacity: 0, duration: 2 }, 6);
       cycleTL.to('.bg-2', { opacity: 1, duration: 2 }, 6);
 
-      // 50-75%: bg-2
       cycleTL.to('.bg-2', { opacity: 0, duration: 2 }, 9.5);
       cycleTL.to('.bg-3', { opacity: 1, duration: 2 }, 9.5);
 
-      // 75-100%: bg-3
-      cycleTL.to({}, { duration: 3 }); // pad
+      cycleTL.to({}, { duration: 3 });
 
       /* ============================
          PHASE 3: EXIT
-         Everything fades for the
-         transition to post-stage.
          ============================ */
       gsap.to(['#titles', '#snippets', '#wordSencha', '#wordHouse'], {
         opacity: 0,
