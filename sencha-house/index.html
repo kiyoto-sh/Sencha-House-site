@@ -44,20 +44,21 @@
   .stage { position: relative; width: 100%; height: 100vh; height: 100dvh; overflow: hidden; background: #fff; }
   .white-cover { position: absolute; inset: 0; z-index: 30; background: #fff; pointer-events: none; }
 
-  .bg { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
+  /* ===========================================
+     BACKGROUNDS - stacked by z-index, each layer
+     sits static in place until its own exit
+     window peels it upward (yPercent) to reveal
+     the layer beneath. Continuous, scroll-exact
+     vertical motion, not a clip-path wipe.
+     =========================================== */
+  .bg { position: absolute; inset: 0; overflow: hidden; will-change: transform; }
   .bg-inner { position: absolute; inset: -10% -10%; will-change: transform; }
   .bg-inner video, .bg-inner img { width: 100%; height: 100%; object-fit: cover; }
-  .stage-ov { position: absolute; inset: 0; z-index: 1; background: rgba(0,0,0,0.18); opacity: 0; }
+  .stage-ov { position: absolute; inset: 0; z-index: 6; background: rgba(0,0,0,0.18); opacity: 0; }
 
-  /* ===========================================
-     GIANT INTERSECTING GRAPHIC - the visual hook.
-     Sits above the parallax windows, below the
-     text layers. pointer-events:none so it never
-     intercepts clicks regardless of stacking.
-     =========================================== */
   .big-char {
     position: absolute;
-    z-index: 5;
+    z-index: 8;
     top: 50%; left: 50%;
     transform: translate(-50%, -50%);
     font-family: 'Cormorant Garamond', serif;
@@ -76,20 +77,15 @@
   .word-s { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; text-transform: uppercase; font-size: clamp(4rem,13vw,12rem); letter-spacing: -0.03em; line-height: 1; }
   .word-h { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-style: italic; font-size: clamp(4rem,13vw,12rem); line-height: 1; }
 
-  .anc { position: absolute; z-index: 10; bottom: clamp(1.6rem,3.5vh,2.4rem); color: #fff; opacity: 0; white-space: nowrap; }
-  .anc-l { left: var(--edge); font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; }
-  .anc-c { left: 50%; transform: translateX(-50%); font-family: 'Cormorant Garamond', serif; font-weight: 300; font-style: italic; font-size: 0.9rem; }
-  .anc-r { right: var(--edge); font-family: 'Cormorant Garamond', serif; font-weight: 300; font-style: italic; font-size: 0.82rem; letter-spacing: 0.06em; }
+  /* Anchors stay at the bottom edge (the only position proven not to
+     collide with content above, across two prior overlap bugs in this
+     build) but are now more visible: higher opacity, slightly larger. */
+  .anc { position: absolute; z-index: 20; bottom: clamp(1.6rem,3.5vh,2.4rem); color: #fff; opacity: 0; white-space: nowrap; }
+  .anc-l { left: var(--edge); font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 0.85rem; letter-spacing: 0.12em; text-transform: uppercase; }
+  .anc-c { left: 50%; transform: translateX(-50%); font-family: 'Cormorant Garamond', serif; font-weight: 300; font-style: italic; font-size: 1rem; }
+  .anc-r { right: var(--edge); font-family: 'Cormorant Garamond', serif; font-weight: 300; font-style: italic; font-size: 0.95rem; letter-spacing: 0.06em; }
 
-  /* ===========================================
-     ASYMMETRIC GRID - title pinned hard left,
-     snippet column pushed to the right half.
-     They no longer share a column, so the old
-     "position snippet below title height" JS
-     logic is gone; each side has its own fixed
-     anchor instead.
-     =========================================== */
-  .active-area { position: absolute; z-index: 10; top: clamp(1.4rem,3.5vh,2.2rem); left: var(--edge); width: 40vw; opacity: 0; }
+  .active-area { position: absolute; z-index: 20; top: clamp(1.4rem,3.5vh,2.2rem); left: var(--edge); width: 40vw; opacity: 0; }
   .title-slot { position: absolute; top: 0; left: 0; white-space: nowrap; }
   .active-title {
     font-family: 'Plus Jakarta Sans', sans-serif;
@@ -102,10 +98,21 @@
     white-space: nowrap;
   }
 
+  /* ===========================================
+     RIGHT COLUMN - queue and snippet now occupy
+     separate, non-competing vertical zones
+     (queue upper-middle, snippet lower-middle)
+     instead of both claiming vertical-center,
+     which is what was causing them to visually
+     collide and obscure each other.
+     =========================================== */
+  .queue { position: absolute; z-index: 15; right: var(--edge); top: 30vh; text-align: right; opacity: 0; }
+  .q-item { position: absolute; top: 0; right: 0; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; text-transform: uppercase; font-size: clamp(1.8rem,4.4vw,4rem); line-height: 1; letter-spacing: -0.02em; color: #fff; white-space: nowrap; opacity: 0; will-change: transform, opacity; }
+
   .snippet-area {
     position: absolute;
-    z-index: 10;
-    top: 30vh;
+    z-index: 20;
+    top: 56vh;
     right: var(--edge);
     left: auto;
     text-align: left;
@@ -120,13 +127,10 @@
     color: var(--ivory);
     opacity: 0.5;
     text-transform: uppercase;
-    margin-bottom: 1.8rem;
+    margin-bottom: 1.4rem;
   }
-  .snip-sub { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-style: italic; font-size: clamp(1.05rem,1.6vw,1.4rem); color: rgba(255,255,255,0.9); margin-bottom: 2rem; line-height: 1.4; }
-  .snip-body { font-weight: 300; font-size: clamp(0.82rem,0.92vw,0.9rem); line-height: 1.95; color: rgba(255,255,255,0.65); padding-bottom: 1rem; }
-
-  .queue { position: absolute; z-index: 8; right: var(--edge); top: 50%; text-align: right; opacity: 0; }
-  .q-item { position: absolute; top: 0; right: 0; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; text-transform: uppercase; font-size: clamp(2.2rem,5.8vw,5.2rem); line-height: 1; letter-spacing: -0.02em; color: #fff; white-space: nowrap; opacity: 0; will-change: transform, opacity; }
+  .snip-sub { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-style: italic; font-size: clamp(1rem,1.5vw,1.3rem); color: rgba(255,255,255,0.9); margin-bottom: 1.4rem; line-height: 1.4; }
+  .snip-body { font-weight: 300; font-size: clamp(0.8rem,0.88vw,0.86rem); line-height: 1.85; color: rgba(255,255,255,0.65); }
 
   .post { position: relative; z-index: 10; background: var(--ivory); color: var(--kabuse); }
   .closing { padding: clamp(6rem,14vw,11rem) 0; text-align: center; }
@@ -155,6 +159,16 @@
 
   .svg-f { position: absolute; width: 0; height: 0; overflow: hidden; }
 
+  /* ===========================================
+     MOBILE - the white-space:nowrap rules above
+     are load-bearing on desktop (required for
+     the character-split headline and the queue's
+     single-line items). They are NEVER reset here
+     before now, which let long titles render wider
+     than the viewport and get clipped entirely by
+     body's overflow-x:hidden - the actual cause of
+     "no text" on mobile. Fixed below.
+     =========================================== */
   @media (max-width: 860px) {
     body { cursor: auto; }
     .custom-cursor { display: none; }
@@ -167,13 +181,17 @@
     .brand-center { font-size: 50%; }
     .active-area { width: 100%; }
     .active-area, .snippet-area, .queue { position: relative; top: auto; left: auto; right: auto; transform: none; opacity: 1 !important; padding: 1.4rem var(--edge); max-width: 100%; width: 100%; }
-    .title-slot { position: relative !important; display: none; }
+
+    .title-slot { position: relative !important; display: none; white-space: normal; }
     .title-slot:first-child { display: block; }
-    .active-title { font-size: clamp(2rem,8vw,3rem); }
+    .active-title { font-size: clamp(2rem,8vw,3rem); white-space: normal; }
+
     .snip { position: relative !important; opacity: 1 !important; display: none; }
     .snip:first-child { display: block; }
-    .q-item { position: relative !important; opacity: 0.6 !important; transform: none !important; font-size: clamp(1.4rem,6vw,2.2rem); display: block; margin-bottom: 0.2em; text-align: left; }
-    .bg { position: relative; height: 55vh; clip-path: none !important; }
+
+    .q-item { position: relative !important; opacity: 0.6 !important; transform: none !important; font-size: clamp(1.4rem,6vw,2.2rem); display: block; margin-bottom: 0.2em; text-align: left; white-space: normal; }
+
+    .bg { position: relative; height: 55vh; }
     .bg-inner { inset: 0 !important; transform: none !important; }
     .branch { flex-direction: column; height: auto; }
     .bp { flex: none; height: 70vh; border-right: none; border-bottom: 1px solid rgba(230,218,184,0.12); cursor: pointer; }
@@ -228,6 +246,13 @@
       <div class="title-slot" data-i="3"><span class="active-title">Other Hands</span></div>
     </div>
 
+    <div class="queue" id="queue">
+      <div class="q-item" data-i="0">The Standard</div>
+      <div class="q-item" data-i="1">Listening</div>
+      <div class="q-item" data-i="2">Rituals</div>
+      <div class="q-item" data-i="3">Other Hands</div>
+    </div>
+
     <div class="snippet-area" id="sa">
       <div class="snip" data-i="0">
         <div class="snip-idx">I &middot; The Standard</div>
@@ -249,13 +274,6 @@
         <div class="snip-sub">Innovation has never been a solitary act.</div>
         <p class="snip-body">The bowl a tea is served in comes from a ceramicist who has spent years learning what clay can hold, held to the same standard we hold the leaf to. We are continuing what was already there.</p>
       </div>
-    </div>
-
-    <div class="queue" id="queue">
-      <div class="q-item" data-i="0">The Standard</div>
-      <div class="q-item" data-i="1">Listening</div>
-      <div class="q-item" data-i="2">Rituals</div>
-      <div class="q-item" data-i="3">Other Hands</div>
     </div>
   </div>
 </div>
@@ -333,28 +351,14 @@
     return inners;
   }
 
-  /* ===========================================
-     CLIP-PATH "CURTAIN" REVEAL VIA NUMERIC PROXY
-     Left/right axis (not top/bottom) - a vertical
-     curtain wipe rather than a horizontal band.
-     Same defensive pattern as before: write the
-     polygon string ourselves from plain numbers
-     rather than hoping GSAP parses a tweened
-     string correctly.
-     =========================================== */
-  function clipProxy(el, initialLeft, initialRight) {
-    var state = { left: initialLeft, right: initialRight };
-    function apply() {
-      el.style.clipPath = 'polygon(' + state.left + '% 0%, ' + state.right + '% 0%, ' + state.right + '% 100%, ' + state.left + '% 100%)';
-    }
-    apply();
-    return { state: state, apply: apply };
-  }
-
   var titleSlots = document.querySelectorAll('.title-slot');
   var snips = document.querySelectorAll('.snip');
   var bgEls = [document.getElementById('bg0'), document.getElementById('bg1'), document.getElementById('bg2'), document.getElementById('bg3')];
   var bgInners = bgEls.map(function(el) { return el.querySelector('.bg-inner'); });
+
+  // Stack order: section 0 on top, descending - each layer covers the
+  // ones beneath until it peels away during its own exit window.
+  bgEls.forEach(function(el, i) { el.style.zIndex = (N - i); });
 
   var sectionData = [];
   for (var i = 0; i < N; i++) {
@@ -365,15 +369,12 @@
     var idxEl = snipEl.querySelector('.snip-idx');
     var bodyEl = snipEl.querySelector('.snip-body');
 
-    // Curtain: closed = collapsed to a zero-width sliver at the left edge.
-    // Section 0 starts fully open (handled by load intro, not mainTl).
-    var clip = clipProxy(bgEls[i], 0, i === 0 ? 100 : 0);
-
     gsap.set(titleChars, { y: '105%', rotate: 5 });
     gsap.set(subWords, { y: '105%' });
     gsap.set(idxEl, { opacity: 0 });
     gsap.set(bodyEl, { opacity: 0, y: 14 });
     gsap.set(bgInners[i], { yPercent: -16, scale: 1.18 });
+    gsap.set(bgEls[i], { yPercent: 0 });
 
     if (i === 0) {
       gsap.set(titleChars, { y: '0%', rotate: 0 });
@@ -387,7 +388,7 @@
       subWords: subWords,
       idxEl: idxEl,
       bodyEl: bodyEl,
-      clip: clip,
+      bgEl: bgEls[i],
       bgInner: bgInners[i]
     });
   }
@@ -415,17 +416,9 @@
   }
   window.addEventListener('resize', debounce(measureQueue, 200));
 
-  /* ===========================================
-     GIANT BACKGROUND CHARACTER - continuous
-     rotate + scale across the ENTIRE scroll
-     length, independent of per-section timing.
-     =========================================== */
   var bigChar = document.getElementById('bigChar');
   gsap.set(bigChar, { rotation: 0, scale: 1 });
 
-  /* ===========================================
-     INTRO - unchanged mechanic from prior builds.
-     =========================================== */
   lenis.stop();
   window.scrollTo(0, 0);
 
@@ -437,13 +430,19 @@
   intro.to('#bc', { opacity: 0, scale: 0.62, duration: 1.1, ease: 'power3.inOut' }, 0);
   intro.to('#wc', { opacity: 0, duration: 1.1, ease: 'power2.inOut' }, 0);
   intro.to('#sov', { opacity: 1, duration: 1.1, ease: 'power2.inOut' }, 0);
-  intro.to(['#al', '#ac', '#ar'], { opacity: 0.32, duration: 0.7, ease: 'power2.out' }, 0.55);
+  intro.to(['#al', '#ac', '#ar'], { opacity: 0.55, duration: 0.7, ease: 'power2.out' }, 0.55);
   intro.to('#aa', { opacity: 1, duration: 0.7, ease: 'power2.out' }, 0.6);
   intro.to('#sa', { opacity: 1, duration: 0.7, ease: 'power2.out' }, 0.6);
   intro.to('#queue', { opacity: 1, duration: 0.7, ease: 'power2.out' }, 0.6);
 
   /* ===========================================
      MASTER TIMELINE
+     scrub: true (exact, zero added lag) instead
+     of scrub: 1. Lenis already smooths the raw
+     scroll input; stacking GSAP's own catch-up
+     smoothing on top of that produced motion that
+     visibly kept playing after scrolling stopped -
+     exactly the "kicks off on its own" complaint.
      =========================================== */
   var SECTION = 1;
   var OPEN = 0.35;
@@ -456,7 +455,7 @@
       trigger: '#sw',
       start: 'top top',
       end: '+=300%',
-      scrub: 1,
+      scrub: true,
       pin: '#stage',
       pinSpacing: true,
       onUpdate: function(self) {
@@ -474,8 +473,6 @@
     }
   });
 
-  // Giant character: one continuous drift across the whole timeline,
-  // independent of section boundaries, as specified.
   mainTl.fromTo(bigChar,
     { rotation: 0, scale: 1 },
     { rotation: 12, scale: 1.5, ease: 'none', duration: TOTAL },
@@ -486,6 +483,7 @@
     var data = sectionData[s];
     var base = s * SECTION;
 
+    // Subtle continuous inner parallax/scale, the whole section through.
     mainTl.fromTo(data.bgInner,
       { yPercent: -16, scale: 1.18 },
       { yPercent: 16, scale: 1.0, ease: 'none', duration: SECTION },
@@ -493,12 +491,6 @@
     );
 
     if (s > 0) {
-      // Curtain opens left-to-right: only the right edge moves.
-      mainTl.to(data.clip.state, {
-        right: 100, ease: 'power2.inOut', duration: OPEN,
-        onUpdate: data.clip.apply
-      }, base);
-
       mainTl.to(data.titleChars, { y: '0%', rotate: 0, duration: OPEN, stagger: 0.01, ease: 'power3.out' }, base);
       mainTl.to(data.subWords, { y: '0%', duration: OPEN, stagger: 0.01, ease: 'power3.out' }, base + 0.04);
       mainTl.to(data.idxEl, { opacity: 1, duration: OPEN * 0.7 }, base);
@@ -507,13 +499,11 @@
 
     if (s < N - 1) {
       var exitStart = base + OPEN + HOLD;
-      // Curtain closes by sweeping the LEFT edge rightward to catch the
-      // right edge (already at 100) - continues the same left-to-right
-      // reading direction as the entrance, rather than reversing it.
-      mainTl.to(data.clip.state, {
-        left: 100, ease: 'power2.inOut', duration: CLOSE,
-        onUpdate: data.clip.apply
-      }, exitStart);
+
+      // The literal vertical scroll-peel: this layer translates straight
+      // up and out of frame, fully scrubbed to scroll position, revealing
+      // the next layer (already sitting static underneath) as it goes.
+      mainTl.to(data.bgEl, { yPercent: -100, ease: 'none', duration: CLOSE }, exitStart);
 
       mainTl.to(data.titleChars, { y: '-105%', rotate: -4, duration: CLOSE * 0.7, stagger: 0.008, ease: 'power2.in' }, exitStart);
       mainTl.to(data.subWords, { y: '-105%', duration: CLOSE * 0.6, stagger: 0.008, ease: 'power2.in' }, exitStart);
@@ -522,9 +512,6 @@
     }
   }
 
-  /* ===========================================
-     CUSTOM CURSOR
-     =========================================== */
   var cursor = document.getElementById('cursor');
   var cursorX = gsap.quickTo(cursor, 'x', { duration: 0.4, ease: 'power3' });
   var cursorY = gsap.quickTo(cursor, 'y', { duration: 0.4, ease: 'power3' });
