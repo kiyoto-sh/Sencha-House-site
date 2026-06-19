@@ -59,10 +59,15 @@
      Bottom edge pinned just above the line via
      translateY(calc(-100% - gap)); grows upward.
      =========================================== */
-  .active-area { position: absolute; z-index: 20; top: 50%; transform: translateY(calc(-100% - 1.6rem)); left: var(--edge); width: 44vw; overflow: hidden; opacity: 0; }
+  /* overflow-y:hidden keeps the single-slot vertical mask (only one
+     title visible at a time); overflow-x:visible (via the longhand
+     split) stops long titles like THE STANDARD from being clipped at
+     the right edge - that was the "D gets cut" bug. width is now just
+     a layout hint, not a hard clip boundary. */
+  .active-area { position: absolute; z-index: 20; top: 50%; transform: translateY(calc(-100% - 1.6rem)); left: var(--edge); width: 44vw; overflow-x: visible; overflow-y: hidden; opacity: 0; }
   .title-track { position: relative; }
   .title-slot { white-space: nowrap; padding-top: 0.12em; }
-  .active-title { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 900; text-transform: uppercase; font-size: clamp(2.6rem,6.8vw,6.2rem); line-height: 0.92; letter-spacing: -0.06em; color: #fff; white-space: nowrap; display: block; }
+  .active-title { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 900; text-transform: uppercase; font-size: clamp(1.8rem,4.4vw,4rem); line-height: 0.92; letter-spacing: -0.06em; color: #fff; white-space: nowrap; display: block; }
 
   /* ===========================================
      MANIFESTO - left, BELOW the line. Fades and
@@ -79,7 +84,11 @@
      shrinking and fading, vanishing before they
      reach it. Mirror of the left title entrance.
      =========================================== */
-  .queue { position: absolute; z-index: 15; right: var(--edge); top: 50%; text-align: right; opacity: 0; }
+  /* Queue anchored just BELOW the line (calc(50% + gap)) so the stack
+     sits cleanly under the "house" anchor. Items extend downward from
+     here; the front item rises toward the line as it departs but is
+     fully faded before reaching it. */
+  .queue { position: absolute; z-index: 15; right: var(--edge); top: calc(50% + 1.6rem); text-align: right; opacity: 0; }
   .q-item { position: absolute; top: 0; right: 0; transform-origin: right top; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; text-transform: uppercase; font-size: clamp(1.8rem,4.4vw,4rem); line-height: 1; letter-spacing: -0.02em; color: #fff; white-space: nowrap; opacity: 0; will-change: transform, opacity; }
 
   .post { position: relative; z-index: 10; background: var(--ivory); color: var(--kabuse); }
@@ -347,32 +356,44 @@
   var CLOSE = 0.4;
   var TOTAL = N * SECTION;
 
-  // Queue continuous positioning. Each item i sits below the line,
-  // stacked downward, at rest. As the active index advances, items
-  // rise toward the line (y decreasing toward 0), shrink, and fade.
-  // An item never reaches y=0 while visible - it's gone before the
-  // line. This is computed continuously every frame from raw progress,
-  // not stepped, so the motion is the scrubbed diagonal you described.
+  // Queue positioning, B&C-style. Upcoming items form a tight, evenly
+  // spaced, same-size stack below the line. The whole stack shifts up by
+  // exactly one slot per section as a rigid unit (so spacing stays even,
+  // never bunching). ONLY the single item currently being promoted - the
+  // one crossing from the front of the queue up toward the line - shrinks
+  // and fades as it leaves. Everything else just holds its clean slot.
   function updateQueue(v) {
     var activeFloor = Math.min(Math.floor(v), N - 1);
+    var frac = v - activeFloor; // 0..1 progress through the current section
+
     qItems.forEach(function(el, i) {
       if (i <= activeFloor) {
-        // already promoted/past: fully gone, parked above origin
-        gsap.set(el, { opacity: 0, scale: 0.4, y: -qItemHeight * 0.6, pointerEvents: 'none' });
-      } else {
-        // distance in item-units from the current scroll cursor.
-        // slot 1 = next to leave (just below line), higher = lower down.
-        var slot = i - v;            // ranges (0 .. N]
-        var rest = slot * qItemHeight; // resting stacked position below line
-        // As slot approaches 0 (item being promoted), shrink+fade+rise.
-        var prox = Math.max(0, Math.min(1, 1 - slot)); // 0 when far, ->1 as it crosses promotion
-        var scale = 1 - prox * 0.55;       // shrinks toward 0.45
-        var opacity = slot < 1 ? Math.max(0, slot) : 1; // fades out in its last unit
-        var rise = prox * qItemHeight * 0.5;            // lifts toward the line as it goes
+        // Already promoted/gone. Parked out of view above the origin.
+        gsap.set(el, { opacity: 0, scale: 0.45, y: -qItemHeight, pointerEvents: 'none' });
+        return;
+      }
+
+      // Rank within the visible queue: 1 = front (closest to line / next
+      // to leave), 2 = behind it, etc. The whole stack rises by `frac`
+      // of one slot as we scroll through the section - rigid, even.
+      var rank = i - activeFloor;
+      var restY = (rank - frac) * qItemHeight;
+
+      if (rank === 1) {
+        // The departing item: as frac goes 0 -> 1 it shrinks and fades
+        // while riding up with the stack. This is the ONLY animated one.
         gsap.set(el, {
-          opacity: opacity,
-          scale: scale,
-          y: rest - rise,
+          opacity: 1 - frac,
+          scale: 1 - frac * 0.5,
+          y: restY,
+          pointerEvents: 'none'
+        });
+      } else {
+        // Everyone else: full size, full opacity, clean even spacing.
+        gsap.set(el, {
+          opacity: 1,
+          scale: 1,
+          y: restY,
           pointerEvents: 'auto'
         });
       }
