@@ -148,8 +148,8 @@
 
     /* Manifesto: kept to the LEFT portion only so it never runs under
        the right-side queue. 58vw leaves clear air on the right half. */
-    .manifesto { width: 58vw; margin-top: 1.1rem; }
-    .mani-body { font-size: 0.72rem; line-height: 1.6; }
+    .manifesto { width: 52vw; margin-top: 1.1rem; }
+    .mani-body { font-size: 0.68rem; line-height: 1.55; }
     .mani-idx { font-size: 9px; margin-bottom: 0.6rem; }
 
     /* Queue: smaller so the stack stays compact and clears the
@@ -299,7 +299,7 @@
     // multiplier adds clean gap between stacked items so same-size titles
     // never touch.
     var fs = parseFloat(window.getComputedStyle(qItems[0]).fontSize);
-    qItemHeight = fs * 1.32;
+    qItemHeight = fs * 1.12;
   }
 
   function measureAll() {
